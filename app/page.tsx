@@ -28,7 +28,7 @@ export default function Home() {
                 </h1>
                 
                 <p className="text-sm sm:text-lg text-gray-600 mb-8 sm:mb-10 max-w-xl leading-relaxed px-2 sm:px-0">
-                  PhishDeep mendeteksi phishing, malware, dan ancaman lain pada link, APK, dokumen, dan gambar dilengkapi bukti visual lengkap yang siap digunakan.
+                  PhishDeep mendeteksi phishing, malware, dan ancaman lain pada link, APK, dan dokumen dilengkapi bukti visual lengkap yang siap digunakan.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-10 w-full sm:w-auto px-4 sm:px-0 justify-center lg:justify-start">
@@ -37,13 +37,13 @@ export default function Home() {
                   </Link>
                 </div>
                 
-                <div className="flex flex-col xs:flex-row gap-2 sm:gap-6 text-xs sm:text-sm text-gray-600 justify-center lg:justify-start font-medium">
-                  <div className="flex items-center justify-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 shrink-0" />
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 text-sm text-gray-600 justify-center lg:justify-start font-medium mx-auto lg:mx-0">
+                  <div className="flex items-center gap-2.5 text-left">
+                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
                     <span>Kotak merah di area scam</span>
                   </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 shrink-0" />
+                  <div className="flex items-center gap-2.5 text-left">
+                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
                     <span>Laporan PDF forensik</span>
                   </div>
                 </div>
