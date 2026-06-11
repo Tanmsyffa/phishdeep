@@ -8,9 +8,9 @@ import json
 import os
 import tempfile
 import datetime
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote
 import ipaddress
-import tldextract
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 try:
     from bs4 import BeautifulSoup
@@ -18,6 +18,44 @@ except ImportError:
     BeautifulSoup = None  # type: ignore
 
 app = Flask(__name__)
+
+# ---------------------------------------------------------------------------
+# Manual root domain extractor — no network download, no external deps.
+# Handles common 2-part TLDs used in Indonesia + globally.
+# ---------------------------------------------------------------------------
+_MULTI_TLDS = {
+    'co.id', 'or.id', 'net.id', 'ac.id', 'sch.id', 'web.id', 'biz.id',
+    'co.uk', 'org.uk', 'me.uk', 'net.uk', 'ltd.uk',
+    'com.au', 'net.au', 'org.au', 'id.au',
+    'co.in', 'net.in', 'org.in', 'ac.in',
+    'com.br', 'net.br', 'org.br', 'gov.br',
+    'co.nz', 'net.nz', 'org.nz',
+    'co.za', 'org.za', 'net.za',
+    'co.jp', 'ne.jp', 'or.jp',
+    'com.sg', 'net.sg', 'org.sg',
+    'com.my', 'net.my', 'org.my',
+    'com.ph', 'net.ph', 'org.ph',
+}
+
+def _get_root_domain(hostname: str) -> tuple[str, str]:
+    """Return (root_domain, tld_suffix) without any network I/O."""
+    hostname = hostname.lower().lstrip('www.')
+    # Strip leading www.
+    if hostname.startswith('www.'):
+        hostname = hostname[4:]
+    parts = hostname.split('.')
+    if len(parts) >= 3:
+        two_part = f"{parts[-2]}.{parts[-1]}"
+        if two_part in _MULTI_TLDS:
+            return f"{parts[-3]}.{two_part}", two_part
+    if len(parts) >= 2:
+        return f"{parts[-2]}.{parts[-1]}", parts[-1]
+    return hostname, ''
+
+def _domain_only(hostname: str) -> str:
+    """Extract just the second-level name (e.g. 'google' from 'google.com')."""
+    root, tld = _get_root_domain(hostname)
+    return root.replace(f'.{tld}', '') if tld else root
 
 def is_safe_url(url):
     """Check if the URL points to a safe (public) IP to prevent SSRF."""
@@ -124,15 +162,114 @@ def analyze_link(target_url):
     redirect_chain = []
     
     parsed_url = urlparse(target_url)
-    domain = parsed_url.netloc.replace('www.', '')
-    
-    # Extract root domain (apex) for RDAP
-    extracted = tldextract.extract(target_url)
-    root_domain = f"{extracted.domain}.{extracted.suffix}" if extracted.suffix else domain
+    domain = parsed_url.netloc.replace('www.', '').split(':')[0]  # strip port
 
-    # RDAP Domain Analysis (Modern WHOIS via HTTPS)
-    try:
-        domain_info = get_rdap_info(root_domain)
+    # Extract root domain using no-download manual function
+    root_domain, _tld_suffix = _get_root_domain(domain)
+    extracted_domain_only = _domain_only(domain)
+
+    # ================================================================
+    # ALL OSINT LOOKUPS — run in parallel (ThreadPoolExecutor)
+    # Max wall-clock time = slowest individual call (~5s) not sum of all.
+    # ================================================================
+    def _task_rdap():
+        return ('rdap', get_rdap_info(root_domain))
+
+    def _task_ip():
+        if parsed_url.hostname:
+            return ('ip', socket.gethostbyname(parsed_url.hostname))
+        return ('ip', None)
+
+    def _task_ssl():
+        if parsed_url.scheme != 'https' or not parsed_url.hostname:
+            return ('ssl', None)
+        try:
+            ctx_ssl = ssl.create_default_context()
+            with socket.create_connection((parsed_url.hostname, 443), timeout=5) as sock:
+                with ctx_ssl.wrap_socket(sock, server_hostname=parsed_url.hostname) as ssock:
+                    return ('ssl', ssock.getpeercert())
+        except ssl.SSLCertVerificationError as e:
+            return ('ssl_invalid', str(getattr(e, 'verify_message', str(e))))
+        except Exception:
+            return ('ssl', None)
+
+    def _task_mx():
+        r = urllib.request.Request(
+            f'https://dns.google/resolve?name={root_domain}&type=MX',
+            headers={'Accept': 'application/json', 'User-Agent': 'PhishDeep-Analyzer/1.0'})
+        resp = urllib.request.urlopen(r, timeout=5)
+        data = json.loads(resp.read().decode())
+        return ('mx', [a.get('data', '') for a in data.get('Answer', [])])
+
+    def _task_urlscan():
+        r = urllib.request.Request(
+            f'https://urlscan.io/api/v1/search/?q=domain:{root_domain}&size=3',
+            headers={'Accept': 'application/json', 'User-Agent': 'PhishDeep-Analyzer/1.0'})
+        resp = urllib.request.urlopen(r, timeout=5)
+        return ('urlscan', json.loads(resp.read().decode()))
+
+    def _task_spf():
+        r = urllib.request.Request(
+            f'https://dns.google/resolve?name={root_domain}&type=TXT',
+            headers={'Accept': 'application/json', 'User-Agent': 'PhishDeep-Analyzer/1.0'})
+        resp = urllib.request.urlopen(r, timeout=5)
+        data = json.loads(resp.read().decode())
+        return ('spf', [a.get('data', '') for a in data.get('Answer', [])])
+
+    def _task_dmarc():
+        r = urllib.request.Request(
+            f'https://dns.google/resolve?name=_dmarc.{root_domain}&type=TXT',
+            headers={'Accept': 'application/json', 'User-Agent': 'PhishDeep-Analyzer/1.0'})
+        resp = urllib.request.urlopen(r, timeout=5)
+        data = json.loads(resp.read().decode())
+        return ('dmarc', [a.get('data', '') for a in data.get('Answer', [])])
+
+    def _task_ttl():
+        r = urllib.request.Request(
+            f'https://dns.google/resolve?name={root_domain}&type=A',
+            headers={'Accept': 'application/json', 'User-Agent': 'PhishDeep-Analyzer/1.0'})
+        resp = urllib.request.urlopen(r, timeout=5)
+        data = json.loads(resp.read().decode())
+        answers = data.get('Answer', [])
+        return ('ttl', answers[0].get('TTL', 0) if answers else None)
+
+    def _task_crt():
+        r = urllib.request.Request(
+            f'https://crt.sh/?q=%.{root_domain}&output=json',
+            headers={'Accept': 'application/json', 'User-Agent': 'PhishDeep-Analyzer/1.0'})
+        resp = urllib.request.urlopen(r, timeout=5)
+        raw = resp.read().decode()
+        if raw.strip().startswith('['):
+            return ('crt', json.loads(raw))
+        return ('crt', [])
+
+    def _task_wayback():
+        r = urllib.request.Request(
+            f'https://web.archive.org/cdx/search/cdx?url={root_domain}&output=json&limit=1&fl=timestamp&filter=statuscode:200&from=19960101',
+            headers={'User-Agent': 'PhishDeep-Analyzer/1.0'})
+        resp = urllib.request.urlopen(r, timeout=5)
+        return ('wayback', json.loads(resp.read().decode()))
+
+    osint_tasks = [
+        _task_rdap, _task_ip, _task_ssl,
+        _task_mx, _task_urlscan,
+        _task_spf, _task_dmarc, _task_ttl,
+        _task_crt, _task_wayback,
+    ]
+    osint_results = {}
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = {executor.submit(fn): fn.__name__ for fn in osint_tasks}
+        for future in as_completed(futures, timeout=10):
+            try:
+                key, val = future.result(timeout=1)
+                osint_results[key] = val
+            except Exception:
+                pass
+
+    # --- Process RDAP ---
+    rdap_data = osint_results.get('rdap', {})
+    if rdap_data:
+        domain_info.update(rdap_data)
         if domain_info.get('age_days') is not None:
             if domain_info['age_days'] < 30:
                 risk_score += 35
@@ -144,256 +281,151 @@ def analyze_link(target_url):
                 details.append({"step": "RDAP Analisis Domain", "finding": f"Domain telah aktif selama {domain_info['age_days']} hari ({round(domain_info['age_days']/365, 1)} tahun). Relatif terpercaya dari sisi usia."})
         else:
             details.append({"step": "RDAP Analisis Domain", "finding": "Data RDAP tidak tersedia untuk domain ini. Mungkin menggunakan ccTLD privat."})
-            
-        # Registrar Reputation Check
         bad_registrars = ['namecheap', 'freenom', 'hostinger', 'namesilo', 'godaddy', 'domain.com']
         if any(br in domain_info.get('registrar', '').lower() for br in bad_registrars):
             risk_score += 10
             details.append({"step": "Reputasi Registrar", "finding": f"Domain didaftarkan melalui {domain_info['registrar']}, layanan yang sering disalahgunakan untuk hosting situs phishing secara murah/gratis."})
-            
-    except Exception:
+    else:
         details.append({"step": "RDAP Analisis Domain", "finding": "Tidak dapat mengambil data registrasi domain."})
 
-    # IP Address Resolution
-    try:
-        if parsed_url.hostname:
-            domain_info['ip_address'] = socket.gethostbyname(parsed_url.hostname)
-    except Exception:
-        pass
-
-    # SSL Certificate Forensics
-    if parsed_url.scheme == 'https' and parsed_url.hostname:
+    # --- Process IP ---
+    ip_result = osint_results.get('ip')
+    if ip_result:
+        domain_info['ip_address'] = ip_result
+        # IP Geolocation (needs IP, run inline after IP is known)
         try:
-            ctx_ssl = ssl.create_default_context()
-            with socket.create_connection((parsed_url.hostname, 443), timeout=5) as sock:
-                with ctx_ssl.wrap_socket(sock, server_hostname=parsed_url.hostname) as ssock:
-                    cert = ssock.getpeercert()
-                    if cert:
-                        issuer = dict(x[0] for x in cert.get('issuer', []))
-                        domain_info['ssl_issuer'] = issuer.get('organizationName', issuer.get('commonName', 'Unknown'))
-                        domain_info['ssl_expiry_date'] = cert.get('notAfter', 'Unknown')
-                        
-                        if cert.get('notAfter'):
-                            expiry_dt = datetime.datetime.strptime(cert['notAfter'], "%b %d %H:%M:%S %Y %Z")
-                            days_to_expiry = (expiry_dt - datetime.datetime.utcnow()).days
-                            if days_to_expiry < 30:
-                                risk_score += 15
-                                details.append({"step": "Analisis Sertifikat SSL", "finding": f"PERINGATAN: Sertifikat SSL kedaluwarsa dalam {days_to_expiry} hari. Sering digunakan oleh situs phishing sekali pakai."})
-                            else:
-                                details.append({"step": "Analisis Sertifikat SSL", "finding": f"Sertifikat valid diterbitkan oleh {domain_info['ssl_issuer']} (Sisa {days_to_expiry} hari)."})
-        except ssl.SSLCertVerificationError as e:
-            risk_score += 50
-            details.append({"step": "Analisis Sertifikat SSL", "finding": f"BAHAYA KRITIS: Sertifikat SSL tidak valid atau berbahaya ({e.verify_message}). Browser biasanya memblokir situs ini."})
-            domain_info['ssl_issuer'] = 'Invalid / Untrusted'
+            geo_req = urllib.request.Request(
+                f"http://ip-api.com/json/{ip_result}?fields=status,country,regionName,city,isp,org,as,hosting",
+                headers={'User-Agent': 'PhishDeep-Analyzer/1.0'})
+            geo_resp = urllib.request.urlopen(geo_req, timeout=5)
+            geo_data = json.loads(geo_resp.read().decode())
+            if geo_data.get('status') == 'success':
+                domain_info['geo_country'] = geo_data.get('country', 'Unknown')
+                domain_info['geo_city']    = f"{geo_data.get('city', '')}, {geo_data.get('regionName', '')}".strip(', ')
+                domain_info['geo_isp']     = geo_data.get('isp', 'Unknown')
+                domain_info['geo_as']      = geo_data.get('as', '')
+                domain_info['geo_hosting'] = geo_data.get('hosting', False)
+                hosting_flag = " (Hosting/Datacenter)" if domain_info['geo_hosting'] else ""
+                details.append({"step": "IP Geolocation", "finding": f"Server berlokasi di {domain_info['geo_city']}, {domain_info['geo_country']}{hosting_flag}. ISP: {domain_info['geo_isp']}. ASN: {domain_info['geo_as']}."})
         except Exception:
-            details.append({"step": "Analisis Sertifikat SSL", "finding": "Tidak dapat mengekstrak informasi sertifikat SSL."})
+            pass
 
-    # ====================================================
-    # DNS MX Record Lookup (Email Infrastructure)
-    # ====================================================
-    try:
-        mx_req = urllib.request.Request(
-            f'https://dns.google/resolve?name={root_domain}&type=MX',
-            headers={'Accept': 'application/json', 'User-Agent': 'PhishDeep-Analyzer/1.0'}
-        )
-        mx_resp = urllib.request.urlopen(mx_req, timeout=6)
-        mx_data = json.loads(mx_resp.read().decode())
-        mx_records = [a.get('data', '') for a in mx_data.get('Answer', [])]
-        domain_info['mx_records'] = mx_records
-        if mx_records:
-            details.append({"step": "DNS MX Record", "finding": f"Domain memiliki {len(mx_records)} MX record: {', '.join(mx_records[:3])}. Domain ini memiliki infrastruktur email aktif."})
-        else:
-            details.append({"step": "DNS MX Record", "finding": "Tidak ada MX record ditemukan. Domain tidak menggunakan email server (atau disembunyikan)."})
-    except Exception:
-        pass
+    # --- Process SSL ---
+    if 'ssl_invalid' in osint_results:
+        risk_score += 50
+        details.append({"step": "Analisis Sertifikat SSL", "finding": f"BAHAYA KRITIS: Sertifikat SSL tidak valid ({osint_results['ssl_invalid']}). Browser biasanya memblokir situs ini."})
+        domain_info['ssl_issuer'] = 'Invalid / Untrusted'
+    elif osint_results.get('ssl'):
+        cert = osint_results['ssl']
+        issuer = dict(x[0] for x in cert.get('issuer', []))
+        domain_info['ssl_issuer']      = issuer.get('organizationName', issuer.get('commonName', 'Unknown'))
+        domain_info['ssl_expiry_date'] = cert.get('notAfter', 'Unknown')
+        if cert.get('notAfter'):
+            expiry_dt = datetime.datetime.strptime(cert['notAfter'], "%b %d %H:%M:%S %Y %Z")
+            days_to_expiry = (expiry_dt - datetime.datetime.utcnow()).days
+            if days_to_expiry < 30:
+                risk_score += 15
+                details.append({"step": "Analisis Sertifikat SSL", "finding": f"PERINGATAN: Sertifikat SSL kedaluwarsa dalam {days_to_expiry} hari."})
+            else:
+                details.append({"step": "Analisis Sertifikat SSL", "finding": f"Sertifikat valid diterbitkan oleh {domain_info['ssl_issuer']} (Sisa {days_to_expiry} hari)."})
 
-    # ====================================================
-    # URLScan.io Public Search (Historical Threat Intel)
-    # ====================================================
-    try:
-        urlscan_req = urllib.request.Request(
-            f'https://urlscan.io/api/v1/search/?q=domain:{root_domain}&size=3',
-            headers={'Accept': 'application/json', 'User-Agent': 'PhishDeep-Analyzer/1.0'}
-        )
-        urlscan_resp = urllib.request.urlopen(urlscan_req, timeout=8)
-        urlscan_data = json.loads(urlscan_resp.read().decode())
+    # --- Process MX ---
+    mx_records = osint_results.get('mx', [])
+    domain_info['mx_records'] = mx_records
+    if mx_records:
+        details.append({"step": "DNS MX Record", "finding": f"Domain memiliki {len(mx_records)} MX record: {', '.join(mx_records[:3])}. Domain ini memiliki infrastruktur email aktif."})
+    else:
+        details.append({"step": "DNS MX Record", "finding": "Tidak ada MX record ditemukan. Domain tidak menggunakan email server (atau disembunyikan)."})
+
+    # --- Process URLScan ---
+    urlscan_data = osint_results.get('urlscan', {})
+    if urlscan_data:
         total_hits = urlscan_data.get('total', 0)
         results_list = urlscan_data.get('results', [])
         domain_info['urlscan_total'] = total_hits
         if total_hits > 0:
             last_scan = results_list[0].get('task', {}).get('time', 'Unknown') if results_list else 'Unknown'
-            verdicts = [r.get('verdicts', {}).get('overall', {}).get('malicious', False) for r in results_list]
-            malicious_count = sum(1 for v in verdicts if v)
+            malicious_count = sum(1 for r in results_list if r.get('verdicts', {}).get('overall', {}).get('malicious'))
             domain_info['urlscan_last_scan'] = last_scan
             domain_info['urlscan_malicious'] = malicious_count
             if malicious_count > 0:
                 risk_score += 30
-                details.append({"step": "URLScan.io Threat Intel", "finding": f"PERINGATAN: URLScan.io melaporkan {malicious_count} dari {len(results_list)} scan terakhir terindikasi BERBAHAYA. Total {total_hits} riwayat scan ditemukan untuk domain ini."})
+                details.append({"step": "URLScan.io Threat Intel", "finding": f"PERINGATAN: {malicious_count} dari {len(results_list)} scan terakhir terindikasi BERBAHAYA. Total {total_hits} riwayat scan ditemukan."})
             else:
-                details.append({"step": "URLScan.io Threat Intel", "finding": f"Domain telah dipindai {total_hits} kali di URLScan.io. Scan terakhir: {last_scan[:10]}. Tidak ada hasil malicious yang dilaporkan."})
+                details.append({"step": "URLScan.io Threat Intel", "finding": f"Domain telah dipindai {total_hits} kali di URLScan.io. Scan terakhir: {last_scan[:10]}. Tidak ada hasil malicious."})
         else:
             details.append({"step": "URLScan.io Threat Intel", "finding": "Domain belum pernah dipindai oleh komunitas URLScan.io. Domain baru atau sangat jarang diakses."})
-    except Exception:
-        pass
 
-    # ====================================================
-    # IP GEOLOCATION (ip-api.com — no key required)
-    # ====================================================
-    if domain_info.get('ip_address') and domain_info['ip_address'] != 'Unknown':
-        try:
-            geo_req = urllib.request.Request(
-                f"http://ip-api.com/json/{domain_info['ip_address']}?fields=status,country,regionName,city,isp,org,as,hosting",
-                headers={'User-Agent': 'PhishDeep-Analyzer/1.0'}
-            )
-            geo_resp = urllib.request.urlopen(geo_req, timeout=6)
-            geo_data = json.loads(geo_resp.read().decode())
-            if geo_data.get('status') == 'success':
-                domain_info['geo_country']  = geo_data.get('country', 'Unknown')
-                domain_info['geo_city']     = f"{geo_data.get('city', '')}, {geo_data.get('regionName', '')}".strip(', ')
-                domain_info['geo_isp']      = geo_data.get('isp', 'Unknown')
-                domain_info['geo_org']      = geo_data.get('org', '')
-                domain_info['geo_as']       = geo_data.get('as', '')
-                domain_info['geo_hosting']  = geo_data.get('hosting', False)
-                loc_str = f"{domain_info['geo_city']}, {domain_info['geo_country']}"
-                hosting_flag = " (Hosting/Datacenter)" if geo_data.get('hosting') else ""
-                details.append({"step": "IP Geolocation", "finding": f"Server berlokasi di {loc_str}{hosting_flag}. ISP: {domain_info['geo_isp']}. ASN: {domain_info['geo_as']}."})
-        except Exception:
-            pass
+    # --- Process SPF ---
+    txt_records = osint_results.get('spf', [])
+    spf_record = next((r for r in txt_records if 'v=spf1' in r.lower()), None)
+    domain_info['spf_record'] = spf_record or 'Tidak Ada'
+    if spf_record:
+        details.append({"step": "SPF Record (Email Auth)", "finding": f"SPF record ditemukan: {spf_record[:120]}. Email authentication terkonfigurasi."})
+    else:
+        risk_score += 5
+        details.append({"step": "SPF Record (Email Auth)", "finding": "Tidak ada SPF record. Domain rentan digunakan untuk mengirim email phishing atas nama domain ini."})
 
-    # ====================================================
-    # SPF + DMARC DNS Email Authentication Records
-    # ====================================================
-    try:
-        def dns_txt_lookup(name):
-            r = urllib.request.Request(
-                f'https://dns.google/resolve?name={name}&type=TXT',
-                headers={'Accept': 'application/json', 'User-Agent': 'PhishDeep-Analyzer/1.0'}
-            )
-            resp = urllib.request.urlopen(r, timeout=6)
-            data = json.loads(resp.read().decode())
-            return [a.get('data', '') for a in data.get('Answer', [])]
+    # --- Process DMARC ---
+    dmarc_records = osint_results.get('dmarc', [])
+    dmarc_record = next((r for r in dmarc_records if 'v=DMARC1' in r), None)
+    domain_info['dmarc_record'] = dmarc_record or 'Tidak Ada'
+    if dmarc_record:
+        details.append({"step": "DMARC Record (Email Auth)", "finding": f"DMARC record ditemukan: {dmarc_record[:120]}. Domain terlindungi dari email spoofing."})
+    else:
+        risk_score += 5
+        details.append({"step": "DMARC Record (Email Auth)", "finding": "Tidak ada DMARC record. Siapapun dapat memalsukan email seolah berasal dari domain ini."})
 
-        # SPF record
-        txt_records = dns_txt_lookup(root_domain)
-        spf_record = next((r for r in txt_records if 'v=spf1' in r.lower()), None)
-        domain_info['spf_record'] = spf_record or 'Tidak Ada'
-        if spf_record:
-            details.append({"step": "SPF Record (Email Auth)", "finding": f"SPF record ditemukan: {spf_record[:120]}. Email authentication terkonfigurasi."})
+    # --- Process TTL ---
+    ttl_value = osint_results.get('ttl')
+    if ttl_value is not None:
+        domain_info['dns_ttl'] = ttl_value
+        if ttl_value < 300:
+            risk_score += 20
+            details.append({"step": "DNS TTL (Fast-Flux)", "finding": f"PERINGATAN: TTL DNS sangat rendah ({ttl_value} detik). Indikator kuat Fast-Flux."})
         else:
-            risk_score += 5
-            details.append({"step": "SPF Record (Email Auth)", "finding": "Tidak ada SPF record. Domain rentan digunakan untuk mengirim email phishing atas nama domain ini."})
+            details.append({"step": "DNS TTL (Fast-Flux)", "finding": f"TTL DNS normal: {ttl_value} detik. Tidak ada indikasi Fast-Flux."})
 
-        # DMARC record
-        dmarc_records = dns_txt_lookup(f'_dmarc.{root_domain}')
-        dmarc_record = next((r for r in dmarc_records if 'v=DMARC1' in r), None)
-        domain_info['dmarc_record'] = dmarc_record or 'Tidak Ada'
-        if dmarc_record:
-            details.append({"step": "DMARC Record (Email Auth)", "finding": f"DMARC record ditemukan: {dmarc_record[:120]}. Domain terlindungi dari email spoofing."})
-        else:
-            risk_score += 5
-            details.append({"step": "DMARC Record (Email Auth)", "finding": "Tidak ada DMARC record. Siapapun dapat memalsukan email seolah berasal dari domain ini."})
-    except Exception:
-        pass
-
-    # ====================================================
-    # DNS TTL Analysis (Fast-Flux Detection)
-    # Phishing infra often uses very low TTL (<300s) to
-    # rotate servers rapidly and evade takedowns.
-    # ====================================================
-    try:
-        ttl_req = urllib.request.Request(
-            f'https://dns.google/resolve?name={root_domain}&type=A',
-            headers={'Accept': 'application/json', 'User-Agent': 'PhishDeep-Analyzer/1.0'}
-        )
-        ttl_resp = urllib.request.urlopen(ttl_req, timeout=6)
-        ttl_data = json.loads(ttl_resp.read().decode())
-        answers = ttl_data.get('Answer', [])
-        if answers:
-            ttl_value = answers[0].get('TTL', 0)
-            domain_info['dns_ttl'] = ttl_value
-            if ttl_value < 300:
-                risk_score += 20
-                details.append({"step": "DNS TTL (Fast-Flux)", "finding": f"PERINGATAN: TTL DNS sangat rendah ({ttl_value} detik). Indikator kuat Fast-Flux — teknik pergantian IP server cepat untuk menghindari pemblokiran."})
-            else:
-                details.append({"step": "DNS TTL (Fast-Flux)", "finding": f"TTL DNS normal: {ttl_value} detik. Tidak ada indikasi Fast-Flux."})
-    except Exception:
-        pass
-
-    # ====================================================
-    # TLD (Top-Level Domain) Risk Scoring
-    # Free/abused TLDs are massively over-represented in
-    # phishing: .tk, .ml, .ga, .cf, .gq, .xyz, .top, .icu
-    # ====================================================
+    # --- Process TLD Risk (no network, instant) ---
     high_risk_tlds = {
-        'tk': 'Freenom (gratis, tidak perlu identitas)',
-        'ml': 'Freenom (gratis, tidak perlu identitas)',
-        'ga': 'Freenom (gratis, tidak perlu identitas)',
-        'cf': 'Freenom (gratis, tidak perlu identitas)',
-        'gq': 'Freenom (gratis, tidak perlu identitas)',
-        'xyz': 'TLD sangat murah, populer untuk spam',
-        'top': 'TLD sangat murah, sering disalahgunakan',
-        'icu': 'TLD murah, tingkat penyalahgunaan tinggi',
-        'club': 'TLD murah, sering ada phishing',
-        'work': 'TLD murah, sering ada phishing',
-        'online': 'TLD murah',
-        'site': 'TLD murah',
-        'buzz': 'TLD murah, sering spam',
+        'tk': 'Freenom (gratis)', 'ml': 'Freenom (gratis)', 'ga': 'Freenom (gratis)',
+        'cf': 'Freenom (gratis)', 'gq': 'Freenom (gratis)',
+        'xyz': 'TLD sangat murah, populer spam', 'top': 'TLD murah, sering disalahgunakan',
+        'icu': 'TLD murah, penyalahgunaan tinggi', 'club': 'TLD murah',
+        'work': 'TLD murah', 'online': 'TLD murah', 'site': 'TLD murah', 'buzz': 'TLD murah, sering spam',
     }
-    tld_suffix = extracted.suffix.lower() if extracted.suffix else ''
-    final_tld = tld_suffix.split('.')[-1] if '.' in tld_suffix else tld_suffix
+    final_tld = _tld_suffix.split('.')[-1] if '.' in _tld_suffix else _tld_suffix
     if final_tld in high_risk_tlds:
         risk_score += 20
         domain_info['tld_risk'] = f"Berisiko Tinggi — {high_risk_tlds[final_tld]}"
-        details.append({"step": "Analisis TLD", "finding": f"PERINGATAN: TLD '.{final_tld}' tergolong berisiko tinggi ({high_risk_tlds[final_tld]}). Mayoritas domain phishing menggunakan TLD murah/gratis ini."})
+        details.append({"step": "Analisis TLD", "finding": f"PERINGATAN: TLD '.{final_tld}' tergolong berisiko tinggi ({high_risk_tlds[final_tld]})."})
     else:
         domain_info['tld_risk'] = 'Normal'
         details.append({"step": "Analisis TLD", "finding": f"TLD '.{final_tld}' tergolong normal dan tidak termasuk dalam daftar TLD berisiko tinggi."})
 
-    # ====================================================
-    # crt.sh Certificate Transparency Logs
-    # Many fresh phishing sites issue many certs rapidly.
-    # ====================================================
-    try:
-        crt_req = urllib.request.Request(
-            f'https://crt.sh/?q=%.{root_domain}&output=json',
-            headers={'Accept': 'application/json', 'User-Agent': 'PhishDeep-Analyzer/1.0'}
-        )
-        crt_resp = urllib.request.urlopen(crt_req, timeout=10)
-        crt_raw = crt_resp.read().decode()
-        if crt_raw and crt_raw.strip().startswith('['):
-            crt_data = json.loads(crt_raw)
-            cert_count = len(crt_data)
-            domain_info['cert_count'] = cert_count
-            unique_names = list({c.get('name_value', '') for c in crt_data[:10]})
-            if cert_count > 50:
-                risk_score += 10
-                details.append({"step": "Certificate Transparency (crt.sh)", "finding": f"PERHATIAN: {cert_count} sertifikat SSL tercatat di log transparansi. Volume tinggi dapat menandakan infrastruktur phishing yang aktif berputar."})
-            else:
-                details.append({"step": "Certificate Transparency (crt.sh)", "finding": f"{cert_count} sertifikat SSL tercatat di log transparansi publik (crt.sh). Subdomains diketahui: {', '.join(unique_names[:5])}"})
-    except Exception:
-        pass
-
-    # ====================================================
-    # Wayback Machine — First Seen Date (CDX API)
-    # Newly registered but "old-looking" domains are suspicious.
-    # ====================================================
-    try:
-        wb_req = urllib.request.Request(
-            f'https://web.archive.org/cdx/search/cdx?url={root_domain}&output=json&limit=1&fl=timestamp&filter=statuscode:200&from=19960101',
-            headers={'User-Agent': 'PhishDeep-Analyzer/1.0'}
-        )
-        wb_resp = urllib.request.urlopen(wb_req, timeout=8)
-        wb_data = json.loads(wb_resp.read().decode())
-        if wb_data and len(wb_data) > 1:
-            first_ts = wb_data[1][0]  # skip header row
-            first_seen = f"{first_ts[0:4]}-{first_ts[4:6]}-{first_ts[6:8]}"
-            domain_info['wayback_first_seen'] = first_seen
-            details.append({"step": "Wayback Machine (Archive.org)", "finding": f"Domain pertama kali terarsip oleh internet archive pada: {first_seen}. Situs ini memiliki rekam jejak online."})
+    # --- Process crt.sh ---
+    crt_data = osint_results.get('crt', [])
+    if crt_data:
+        cert_count = len(crt_data)
+        domain_info['cert_count'] = cert_count
+        unique_names = list({c.get('name_value', '') for c in crt_data[:10]})
+        if cert_count > 50:
+            risk_score += 10
+            details.append({"step": "Certificate Transparency (crt.sh)", "finding": f"PERHATIAN: {cert_count} sertifikat SSL tercatat di log transparansi. Volume tinggi dapat menandakan infrastruktur phishing aktif."})
         else:
-            domain_info['wayback_first_seen'] = 'Tidak ditemukan'
-            details.append({"step": "Wayback Machine (Archive.org)", "finding": "Domain belum pernah terarsip oleh Wayback Machine. Domain sangat baru atau tidak pernah diindeks."})
-    except Exception:
-        pass
+            details.append({"step": "Certificate Transparency (crt.sh)", "finding": f"{cert_count} sertifikat SSL tercatat di crt.sh. Subdomains: {', '.join(unique_names[:5])}"})
+
+    # --- Process Wayback ---
+    wb_data = osint_results.get('wayback', [])
+    if wb_data and len(wb_data) > 1:
+        first_ts = wb_data[1][0]
+        first_seen = f"{first_ts[0:4]}-{first_ts[4:6]}-{first_ts[6:8]}"
+        domain_info['wayback_first_seen'] = first_seen
+        details.append({"step": "Wayback Machine (Archive.org)", "finding": f"Domain pertama kali terarsip pada: {first_seen}. Situs ini memiliki rekam jejak online."})
+    else:
+        domain_info['wayback_first_seen'] = 'Tidak ditemukan'
+        details.append({"step": "Wayback Machine (Archive.org)", "finding": "Domain belum pernah terarsip oleh Wayback Machine. Domain sangat baru atau tidak pernah diindeks."})
+
 
     # Domain Patterns
     domain_lower = domain.lower()
@@ -456,7 +488,7 @@ def analyze_link(target_url):
         major_brands = ['google', 'facebook', 'instagram', 'twitter', 'youtube', 'apple', 'microsoft',
                         'amazon', 'netflix', 'paypal', 'whatsapp', 'linkedin', 'tiktok', 'spotify',
                         'tokopedia', 'shopee', 'bukalapak', 'gojek', 'grab', 'bca', 'mandiri', 'bni', 'bri']
-        extracted_domain_only = extracted.domain.lower() if extracted.domain else domain_lower
+        extracted_domain_only = _domain_only(domain)
         for brand in major_brands:
             if extracted_domain_only != brand and len(extracted_domain_only) == len(brand):
                 # Check char-by-char: if only 1 char differs
@@ -715,7 +747,7 @@ def analyze_link(target_url):
         details.append({"step": "Koneksi Jaringan", "finding": f"Target tidak dapat dijangkau ({str(e.reason)}). Kemungkinan telah di-take down."})
     except Exception as e:
         details.append({"step": "Koneksi Jaringan", "finding": f"Gagal menganalisis situs: {str(e)}"})
-    encoded = urllib.parse.quote(target_url, safe='')
+    encoded = quote(target_url, safe='')
     screenshot_url = f"https://api.microlink.io/?url={encoded}&screenshot=true&meta=false&embed=screenshot.url"
     return min(risk_score, 100), details, extracted_code, domain_info, frameworks, redirect_chain, screenshot_url
 
