@@ -6,6 +6,9 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://phishdeep.vercel.app'),
+  verification: {
+    google: '_b9NX6YFJiCTfMjqqNefgiFxu5oVMIXiDwCl_R-M9s0',
+  },
   title: {
     default: "PhishDeep - Deteksi Phishing & Malware dengan Bukti Visual",
     template: "%s | PhishDeep"
