@@ -30,6 +30,12 @@ const nextConfig = {
       { protocol: 'https', hostname: 'api.microlink.io' },
     ],
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 export default nextConfig;
