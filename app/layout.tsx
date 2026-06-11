@@ -58,9 +58,30 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'PhishDeep',
+    alternateName: 'PhishDeep - Deteksi Phishing & Malware',
+    url: 'https://phishdeep.vercel.app',
+    description: 'Platform cerdas untuk mendeteksi phishing, malware, dan ancaman siber pada link, APK, dan dokumen dengan laporan forensik visual.',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://phishdeep.vercel.app/scan',
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
   return (
     <html lang="id">
       <body className={`${inter.className} antialiased text-gray-900 bg-gray-50`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         {children}
       </body>
     </html>
