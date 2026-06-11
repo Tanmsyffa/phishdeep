@@ -1,55 +1,31 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { headers } from 'next/headers'
 
-export async function login(formData: FormData) {
+export async function signInWithGoogle() {
   const supabase = createClient()
+  const origin = headers().get('origin')
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
-  const data = {
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-  }
-
-  const { error } = await supabase.auth.signInWithPassword(data)
-
-  if (error) {
-    redirect('/login?message=Kredensial tidak valid')
-  }
-
-  revalidatePath('/', 'layout')
-  redirect('/dashboard')
-}
-
-export async function signup(formData: FormData) {
-  const supabase = createClient()
-
-  const data = {
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
     options: {
-      data: {
-        full_name: formData.get('full_name') as string,
-      }
-    }
-  }
-
-  const { error } = await supabase.auth.signUp(data)
+      redirectTo: `${origin}/auth/callback`,
+    },
+  })
 
   if (error) {
-    redirect('/register?message=Pendaftaran gagal: ' + error.message)
+    redirect('/login?message=Gagal login dengan Google')
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/dashboard')
+  if (data.url) {
+    redirect(data.url)
+  }
 }
 
 export async function logout() {
   const supabase = createClient()
   await supabase.auth.signOut()
-  revalidatePath('/', 'layout')
   redirect('/login')
 }
