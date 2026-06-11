@@ -136,6 +136,21 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     <div className="text-gray-400 text-[10px] uppercase font-semibold tracking-wide mb-0.5">Registrar</div>
                     <div className="font-medium text-gray-900 break-words leading-snug">{domainInfo.registrar || 'N/A'}</div>
                   </div>
+                  {domainInfo.ip_address && domainInfo.ip_address !== 'Unknown' && (
+                    <div className="border-b border-gray-50 pb-2">
+                      <div className="text-gray-400 text-[10px] uppercase font-semibold tracking-wide mb-0.5">Alamat IP Server</div>
+                      <div className="font-semibold text-gray-900 font-mono">{domainInfo.ip_address}</div>
+                    </div>
+                  )}
+                  {domainInfo.ssl_issuer && domainInfo.ssl_issuer !== 'Unknown' && (
+                    <div className="border-b border-gray-50 pb-2">
+                      <div className="text-gray-400 text-[10px] uppercase font-semibold tracking-wide mb-0.5">Sertifikat SSL (Issuer)</div>
+                      <div className={`font-medium ${domainInfo.ssl_issuer.includes('Invalid') ? 'text-red-600 font-bold' : 'text-gray-900'}`}>{domainInfo.ssl_issuer}</div>
+                      {domainInfo.ssl_expiry_date && domainInfo.ssl_expiry_date !== 'Unknown' && (
+                        <div className="text-[10px] text-gray-500 mt-0.5">Berlaku s/d: {domainInfo.ssl_expiry_date}</div>
+                      )}
+                    </div>
+                  )}
                   <div className="border-b border-gray-50 pb-2">
                     <div className="text-gray-400 text-[10px] uppercase font-semibold tracking-wide mb-0.5">Terdaftar Sejak</div>
                     <div className="font-medium text-gray-900">{domainInfo.creation_date || 'N/A'}</div>
@@ -165,12 +180,132 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     )}
                   </div>
                   {domainInfo.nameservers && domainInfo.nameservers.length > 0 && (
-                    <div>
+                    <div className="border-b border-gray-50 pb-2">
                       <div className="text-gray-400 text-[10px] uppercase font-semibold tracking-wide mb-1.5">Nameserver</div>
                       <div className="space-y-1">
                         {domainInfo.nameservers.map((ns: string, i: number) => (
                           <div key={i} className="text-xs font-mono text-gray-700 bg-gray-50 px-2.5 py-1 rounded-lg print:bg-gray-100">{ns}</div>
                         ))}
+                      </div>
+                    </div>
+                  )}
+                  {domainInfo.mx_records !== undefined && (
+                    <div className="border-b border-gray-50 pb-2">
+                      <div className="text-gray-400 text-[10px] uppercase font-semibold tracking-wide mb-1.5">MX Record (Email Server)</div>
+                      {domainInfo.mx_records && domainInfo.mx_records.length > 0 ? (
+                        <div className="space-y-1">
+                          {domainInfo.mx_records.slice(0, 3).map((mx: string, i: number) => (
+                            <div key={i} className="text-xs font-mono text-gray-700 bg-blue-50 px-2.5 py-1 rounded-lg">{mx}</div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-xs text-gray-500">Tidak ada MX record</div>
+                      )}
+                    </div>
+                  )}
+                  {domainInfo.urlscan_total !== undefined && (
+                    <div className="border-b border-gray-50 pb-2">
+                      <div className="text-gray-400 text-[10px] uppercase font-semibold tracking-wide mb-0.5">URLScan.io Threat Intel</div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          domainInfo.urlscan_malicious > 0 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+                        }`}>
+                          {domainInfo.urlscan_malicious > 0 ? `⚠️ ${domainInfo.urlscan_malicious} Malicious` : '✅ Bersih'}
+                        </span>
+                        <span className="text-xs text-gray-500">{domainInfo.urlscan_total} scan riwayat</span>
+                      </div>
+                      {domainInfo.urlscan_last_scan && (
+                        <div className="text-[10px] text-gray-400 mt-0.5">Scan terakhir: {domainInfo.urlscan_last_scan?.slice(0, 10)}</div>
+                      )}
+                    </div>
+                  )}
+                  {domainInfo.page_title && (
+                    <div className="border-b border-gray-50 pb-2">
+                      <div className="text-gray-400 text-[10px] uppercase font-semibold tracking-wide mb-0.5">Judul Halaman</div>
+                      <div className="font-medium text-gray-900 text-xs leading-snug">{domainInfo.page_title}</div>
+                      {domainInfo.meta_description && (
+                        <div className="text-[10px] text-gray-500 mt-1 italic line-clamp-2">{domainInfo.meta_description}</div>
+                      )}
+                    </div>
+                  )}
+                  {/* --- Email Auth Row --- */}
+                  <div className="border-b border-gray-50 pb-2">
+                    <div className="text-gray-400 text-[10px] uppercase font-semibold tracking-wide mb-1.5">Email Authentication</div>
+                    <div className="flex flex-wrap gap-2">
+                      {domainInfo.spf_record !== undefined && (
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          domainInfo.spf_record === 'Tidak Ada' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+                        }`}>SPF {domainInfo.spf_record === 'Tidak Ada' ? '✗ Tidak Ada' : '✓'}</span>
+                      )}
+                      {domainInfo.dmarc_record !== undefined && (
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          domainInfo.dmarc_record === 'Tidak Ada' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+                        }`}>DMARC {domainInfo.dmarc_record === 'Tidak Ada' ? '✗ Tidak Ada' : '✓'}</span>
+                      )}
+                    </div>
+                  </div>
+                  {/* --- TLD Risk + DNS TTL Row --- */}
+                  {domainInfo.tld_risk && (
+                    <div className="border-b border-gray-50 pb-2">
+                      <div className="text-gray-400 text-[10px] uppercase font-semibold tracking-wide mb-0.5">Risiko TLD</div>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        domainInfo.tld_risk === 'Normal' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                      }`}>{domainInfo.tld_risk}</span>
+                    </div>
+                  )}
+                  {domainInfo.dns_ttl !== undefined && (
+                    <div className="border-b border-gray-50 pb-2">
+                      <div className="text-gray-400 text-[10px] uppercase font-semibold tracking-wide mb-0.5">DNS TTL (Fast-Flux)</div>
+                      <span className={`font-bold text-sm ${
+                        domainInfo.dns_ttl < 300 ? 'text-red-600' : 'text-green-700'
+                      }`}>{domainInfo.dns_ttl}s {domainInfo.dns_ttl < 300 ? '⚠️ Sangat Rendah' : '✓ Normal'}</span>
+                    </div>
+                  )}
+                  {/* --- crt.sh + Wayback Row --- */}
+                  {domainInfo.cert_count !== undefined && (
+                    <div className="border-b border-gray-50 pb-2">
+                      <div className="text-gray-400 text-[10px] uppercase font-semibold tracking-wide mb-0.5">Certificate Transparency</div>
+                      <div className="text-xs text-gray-700 font-medium">{domainInfo.cert_count} sertifikat tercatat di crt.sh</div>
+                    </div>
+                  )}
+                  {domainInfo.wayback_first_seen && (
+                    <div className="border-b border-gray-50 pb-2">
+                      <div className="text-gray-400 text-[10px] uppercase font-semibold tracking-wide mb-0.5">Wayback Machine (Pertama Terlihat)</div>
+                      <div className={`text-xs font-medium ${
+                        domainInfo.wayback_first_seen === 'Tidak ditemukan' ? 'text-red-500' : 'text-gray-700'
+                      }`}>{domainInfo.wayback_first_seen}</div>
+                    </div>
+                  )}
+                  {/* --- Geolocation Row --- */}
+                  {domainInfo.geo_country && (
+                    <div className="border-b border-gray-50 pb-2">
+                      <div className="text-gray-400 text-[10px] uppercase font-semibold tracking-wide mb-0.5">Lokasi Server</div>
+                      <div className="font-medium text-gray-900 text-xs">{domainInfo.geo_city}, {domainInfo.geo_country}</div>
+                      <div className="text-[10px] text-gray-500">{domainInfo.geo_isp}{domainInfo.geo_as ? ` • ${domainInfo.geo_as}` : ''}</div>
+                      {domainInfo.geo_hosting && (
+                        <span className="text-[9px] font-bold bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded-full mt-1 inline-block">Datacenter/Hosting</span>
+                      )}
+                    </div>
+                  )}
+                  {/* --- Page Behavior Signals --- */}
+                  {(domainInfo.iframe_count !== undefined || domainInfo.external_links_count !== undefined) && (
+                    <div>
+                      <div className="text-gray-400 text-[10px] uppercase font-semibold tracking-wide mb-1.5">Sinyal Perilaku Halaman</div>
+                      <div className="flex flex-wrap gap-2">
+                        {domainInfo.hidden_iframe_count > 0 && (
+                          <span className="text-[10px] font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-full">🚫 {domainInfo.hidden_iframe_count} iFrame Tersembunyi</span>
+                        )}
+                        {domainInfo.iframe_count > 0 && domainInfo.hidden_iframe_count === 0 && (
+                          <span className="text-[10px] font-bold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">{domainInfo.iframe_count} iFrame</span>
+                        )}
+                        {domainInfo.external_links_count !== undefined && (
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            domainInfo.external_links_count > 20 ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'
+                          }`}>{domainInfo.external_links_count} Link Eksternal</span>
+                        )}
+                        {domainInfo.form_actions && domainInfo.form_actions.length > 0 && (
+                          <span className="text-[10px] font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-full">⚠️ Form Kirim ke Luar</span>
+                        )}
                       </div>
                     </div>
                   )}
@@ -182,30 +317,26 @@ export default async function ScanResultPage({ params, searchParams }: { params:
             {frameworks.length > 0 && (
               <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 print:border-gray-300 print:shadow-none">
                 <h3 className="font-bold text-gray-900 mb-4 text-sm flex items-center gap-2"><Server className="w-4 h-4 text-primary-500" /> Teknologi & Stack</h3>
-                <div className="space-y-1.5">
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
                   {frameworks.map((fw: string, idx: number) => {
                     const colonIdx = fw.indexOf(': ');
                     const label = colonIdx > -1 ? fw.substring(0, colonIdx) : fw;
                     const value = colonIdx > -1 ? fw.substring(colonIdx + 2) : '';
-                    const isWarning = label.toLowerCase().includes('peringatan');
+                    const isWarning = label.toLowerCase().includes('peringatan') || fw.toLowerCase().includes('peringatan');
                     
-                    let badgeColor = 'bg-blue-50 text-blue-700';
-                    if (label.includes('Web Server')) badgeColor = 'bg-slate-100 text-slate-700';
-                    else if (label.includes('CDN')) badgeColor = 'bg-orange-50 text-orange-700';
-                    else if (label.includes('Backend') || label.includes('PHP') || label.includes('Python')) badgeColor = 'bg-purple-50 text-purple-700';
-                    else if (label.includes('CMS')) badgeColor = 'bg-teal-50 text-teal-700';
-                    else if (label.includes('Analytics')) badgeColor = 'bg-green-50 text-green-700';
-                    else if (label.includes('Security') || label.includes('PERINGATAN')) badgeColor = 'bg-red-50 text-red-700';
-                    else if (label.includes('CSS')) badgeColor = 'bg-pink-50 text-pink-700';
+                    let badgeColor = 'bg-blue-50 text-blue-700 border-blue-100';
+                    if (label.includes('Web Server')) badgeColor = 'bg-slate-50 text-slate-700 border-slate-200';
+                    else if (label.includes('CDN')) badgeColor = 'bg-orange-50 text-orange-700 border-orange-100';
+                    else if (label.includes('Backend') || label.includes('PHP') || label.includes('Python')) badgeColor = 'bg-purple-50 text-purple-700 border-purple-100';
+                    else if (label.includes('CMS')) badgeColor = 'bg-teal-50 text-teal-700 border-teal-100';
+                    else if (label.includes('Analytics')) badgeColor = 'bg-green-50 text-green-700 border-green-100';
+                    else if (label.includes('Security') || label.includes('PERINGATAN')) badgeColor = 'bg-red-50 text-red-700 border-red-100';
+                    else if (label.includes('CSS') || label.includes('Library')) badgeColor = 'bg-pink-50 text-pink-700 border-pink-100';
 
                     return (
-                      <div key={idx} className="flex items-start gap-3 py-2 border-b border-gray-50 last:border-0">
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0 mt-0.5 whitespace-nowrap ${badgeColor} print:bg-gray-100 print:text-black`}>
-                          {label}
-                        </span>
-                        <span className={`text-xs leading-snug font-medium mt-0.5 ${isWarning ? 'text-red-700' : 'text-gray-700'}`}>
-                          {value || '—'}
-                        </span>
+                      <div key={idx} className={`flex flex-col p-2.5 rounded-lg border ${badgeColor} ${isWarning ? 'ring-1 ring-red-400' : ''}`}>
+                        <span className="text-[9px] uppercase tracking-wider font-bold opacity-80 mb-1">{label}</span>
+                        <span className={`text-xs font-semibold ${isWarning ? 'text-red-700' : 'text-gray-900'} leading-tight`}>{value || 'Terdeteksi'}</span>
                       </div>
                     );
                   })}

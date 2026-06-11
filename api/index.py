@@ -10,6 +10,7 @@ import tempfile
 import datetime
 from urllib.parse import urlparse
 import ipaddress
+import tldextract
 
 try:
     from bs4 import BeautifulSoup
@@ -46,7 +47,10 @@ def get_rdap_info(domain):
         'creation_date': 'Unknown',
         'expiry_date': 'Unknown',
         'age_days': None,
-        'nameservers': []
+        'nameservers': [],
+        'ip_address': 'Unknown',
+        'ssl_issuer': 'Unknown',
+        'ssl_expiry_date': 'Unknown'
     }
     try:
         bootstrap_url = f"https://rdap.org/domain/{domain}"
@@ -122,9 +126,13 @@ def analyze_link(target_url):
     parsed_url = urlparse(target_url)
     domain = parsed_url.netloc.replace('www.', '')
     
+    # Extract root domain (apex) for RDAP
+    extracted = tldextract.extract(target_url)
+    root_domain = f"{extracted.domain}.{extracted.suffix}" if extracted.suffix else domain
+
     # RDAP Domain Analysis (Modern WHOIS via HTTPS)
     try:
-        domain_info = get_rdap_info(domain)
+        domain_info = get_rdap_info(root_domain)
         if domain_info.get('age_days') is not None:
             if domain_info['age_days'] < 30:
                 risk_score += 35
@@ -136,8 +144,256 @@ def analyze_link(target_url):
                 details.append({"step": "RDAP Analisis Domain", "finding": f"Domain telah aktif selama {domain_info['age_days']} hari ({round(domain_info['age_days']/365, 1)} tahun). Relatif terpercaya dari sisi usia."})
         else:
             details.append({"step": "RDAP Analisis Domain", "finding": "Data RDAP tidak tersedia untuk domain ini. Mungkin menggunakan ccTLD privat."})
+            
+        # Registrar Reputation Check
+        bad_registrars = ['namecheap', 'freenom', 'hostinger', 'namesilo', 'godaddy', 'domain.com']
+        if any(br in domain_info.get('registrar', '').lower() for br in bad_registrars):
+            risk_score += 10
+            details.append({"step": "Reputasi Registrar", "finding": f"Domain didaftarkan melalui {domain_info['registrar']}, layanan yang sering disalahgunakan untuk hosting situs phishing secara murah/gratis."})
+            
     except Exception:
         details.append({"step": "RDAP Analisis Domain", "finding": "Tidak dapat mengambil data registrasi domain."})
+
+    # IP Address Resolution
+    try:
+        if parsed_url.hostname:
+            domain_info['ip_address'] = socket.gethostbyname(parsed_url.hostname)
+    except Exception:
+        pass
+
+    # SSL Certificate Forensics
+    if parsed_url.scheme == 'https' and parsed_url.hostname:
+        try:
+            ctx_ssl = ssl.create_default_context()
+            with socket.create_connection((parsed_url.hostname, 443), timeout=5) as sock:
+                with ctx_ssl.wrap_socket(sock, server_hostname=parsed_url.hostname) as ssock:
+                    cert = ssock.getpeercert()
+                    if cert:
+                        issuer = dict(x[0] for x in cert.get('issuer', []))
+                        domain_info['ssl_issuer'] = issuer.get('organizationName', issuer.get('commonName', 'Unknown'))
+                        domain_info['ssl_expiry_date'] = cert.get('notAfter', 'Unknown')
+                        
+                        if cert.get('notAfter'):
+                            expiry_dt = datetime.datetime.strptime(cert['notAfter'], "%b %d %H:%M:%S %Y %Z")
+                            days_to_expiry = (expiry_dt - datetime.datetime.utcnow()).days
+                            if days_to_expiry < 30:
+                                risk_score += 15
+                                details.append({"step": "Analisis Sertifikat SSL", "finding": f"PERINGATAN: Sertifikat SSL kedaluwarsa dalam {days_to_expiry} hari. Sering digunakan oleh situs phishing sekali pakai."})
+                            else:
+                                details.append({"step": "Analisis Sertifikat SSL", "finding": f"Sertifikat valid diterbitkan oleh {domain_info['ssl_issuer']} (Sisa {days_to_expiry} hari)."})
+        except ssl.SSLCertVerificationError as e:
+            risk_score += 50
+            details.append({"step": "Analisis Sertifikat SSL", "finding": f"BAHAYA KRITIS: Sertifikat SSL tidak valid atau berbahaya ({e.verify_message}). Browser biasanya memblokir situs ini."})
+            domain_info['ssl_issuer'] = 'Invalid / Untrusted'
+        except Exception:
+            details.append({"step": "Analisis Sertifikat SSL", "finding": "Tidak dapat mengekstrak informasi sertifikat SSL."})
+
+    # ====================================================
+    # DNS MX Record Lookup (Email Infrastructure)
+    # ====================================================
+    try:
+        mx_req = urllib.request.Request(
+            f'https://dns.google/resolve?name={root_domain}&type=MX',
+            headers={'Accept': 'application/json', 'User-Agent': 'PhishDeep-Analyzer/1.0'}
+        )
+        mx_resp = urllib.request.urlopen(mx_req, timeout=6)
+        mx_data = json.loads(mx_resp.read().decode())
+        mx_records = [a.get('data', '') for a in mx_data.get('Answer', [])]
+        domain_info['mx_records'] = mx_records
+        if mx_records:
+            details.append({"step": "DNS MX Record", "finding": f"Domain memiliki {len(mx_records)} MX record: {', '.join(mx_records[:3])}. Domain ini memiliki infrastruktur email aktif."})
+        else:
+            details.append({"step": "DNS MX Record", "finding": "Tidak ada MX record ditemukan. Domain tidak menggunakan email server (atau disembunyikan)."})
+    except Exception:
+        pass
+
+    # ====================================================
+    # URLScan.io Public Search (Historical Threat Intel)
+    # ====================================================
+    try:
+        urlscan_req = urllib.request.Request(
+            f'https://urlscan.io/api/v1/search/?q=domain:{root_domain}&size=3',
+            headers={'Accept': 'application/json', 'User-Agent': 'PhishDeep-Analyzer/1.0'}
+        )
+        urlscan_resp = urllib.request.urlopen(urlscan_req, timeout=8)
+        urlscan_data = json.loads(urlscan_resp.read().decode())
+        total_hits = urlscan_data.get('total', 0)
+        results_list = urlscan_data.get('results', [])
+        domain_info['urlscan_total'] = total_hits
+        if total_hits > 0:
+            last_scan = results_list[0].get('task', {}).get('time', 'Unknown') if results_list else 'Unknown'
+            verdicts = [r.get('verdicts', {}).get('overall', {}).get('malicious', False) for r in results_list]
+            malicious_count = sum(1 for v in verdicts if v)
+            domain_info['urlscan_last_scan'] = last_scan
+            domain_info['urlscan_malicious'] = malicious_count
+            if malicious_count > 0:
+                risk_score += 30
+                details.append({"step": "URLScan.io Threat Intel", "finding": f"PERINGATAN: URLScan.io melaporkan {malicious_count} dari {len(results_list)} scan terakhir terindikasi BERBAHAYA. Total {total_hits} riwayat scan ditemukan untuk domain ini."})
+            else:
+                details.append({"step": "URLScan.io Threat Intel", "finding": f"Domain telah dipindai {total_hits} kali di URLScan.io. Scan terakhir: {last_scan[:10]}. Tidak ada hasil malicious yang dilaporkan."})
+        else:
+            details.append({"step": "URLScan.io Threat Intel", "finding": "Domain belum pernah dipindai oleh komunitas URLScan.io. Domain baru atau sangat jarang diakses."})
+    except Exception:
+        pass
+
+    # ====================================================
+    # IP GEOLOCATION (ip-api.com — no key required)
+    # ====================================================
+    if domain_info.get('ip_address') and domain_info['ip_address'] != 'Unknown':
+        try:
+            geo_req = urllib.request.Request(
+                f"http://ip-api.com/json/{domain_info['ip_address']}?fields=status,country,regionName,city,isp,org,as,hosting",
+                headers={'User-Agent': 'PhishDeep-Analyzer/1.0'}
+            )
+            geo_resp = urllib.request.urlopen(geo_req, timeout=6)
+            geo_data = json.loads(geo_resp.read().decode())
+            if geo_data.get('status') == 'success':
+                domain_info['geo_country']  = geo_data.get('country', 'Unknown')
+                domain_info['geo_city']     = f"{geo_data.get('city', '')}, {geo_data.get('regionName', '')}".strip(', ')
+                domain_info['geo_isp']      = geo_data.get('isp', 'Unknown')
+                domain_info['geo_org']      = geo_data.get('org', '')
+                domain_info['geo_as']       = geo_data.get('as', '')
+                domain_info['geo_hosting']  = geo_data.get('hosting', False)
+                loc_str = f"{domain_info['geo_city']}, {domain_info['geo_country']}"
+                hosting_flag = " (Hosting/Datacenter)" if geo_data.get('hosting') else ""
+                details.append({"step": "IP Geolocation", "finding": f"Server berlokasi di {loc_str}{hosting_flag}. ISP: {domain_info['geo_isp']}. ASN: {domain_info['geo_as']}."})
+        except Exception:
+            pass
+
+    # ====================================================
+    # SPF + DMARC DNS Email Authentication Records
+    # ====================================================
+    try:
+        def dns_txt_lookup(name):
+            r = urllib.request.Request(
+                f'https://dns.google/resolve?name={name}&type=TXT',
+                headers={'Accept': 'application/json', 'User-Agent': 'PhishDeep-Analyzer/1.0'}
+            )
+            resp = urllib.request.urlopen(r, timeout=6)
+            data = json.loads(resp.read().decode())
+            return [a.get('data', '') for a in data.get('Answer', [])]
+
+        # SPF record
+        txt_records = dns_txt_lookup(root_domain)
+        spf_record = next((r for r in txt_records if 'v=spf1' in r.lower()), None)
+        domain_info['spf_record'] = spf_record or 'Tidak Ada'
+        if spf_record:
+            details.append({"step": "SPF Record (Email Auth)", "finding": f"SPF record ditemukan: {spf_record[:120]}. Email authentication terkonfigurasi."})
+        else:
+            risk_score += 5
+            details.append({"step": "SPF Record (Email Auth)", "finding": "Tidak ada SPF record. Domain rentan digunakan untuk mengirim email phishing atas nama domain ini."})
+
+        # DMARC record
+        dmarc_records = dns_txt_lookup(f'_dmarc.{root_domain}')
+        dmarc_record = next((r for r in dmarc_records if 'v=DMARC1' in r), None)
+        domain_info['dmarc_record'] = dmarc_record or 'Tidak Ada'
+        if dmarc_record:
+            details.append({"step": "DMARC Record (Email Auth)", "finding": f"DMARC record ditemukan: {dmarc_record[:120]}. Domain terlindungi dari email spoofing."})
+        else:
+            risk_score += 5
+            details.append({"step": "DMARC Record (Email Auth)", "finding": "Tidak ada DMARC record. Siapapun dapat memalsukan email seolah berasal dari domain ini."})
+    except Exception:
+        pass
+
+    # ====================================================
+    # DNS TTL Analysis (Fast-Flux Detection)
+    # Phishing infra often uses very low TTL (<300s) to
+    # rotate servers rapidly and evade takedowns.
+    # ====================================================
+    try:
+        ttl_req = urllib.request.Request(
+            f'https://dns.google/resolve?name={root_domain}&type=A',
+            headers={'Accept': 'application/json', 'User-Agent': 'PhishDeep-Analyzer/1.0'}
+        )
+        ttl_resp = urllib.request.urlopen(ttl_req, timeout=6)
+        ttl_data = json.loads(ttl_resp.read().decode())
+        answers = ttl_data.get('Answer', [])
+        if answers:
+            ttl_value = answers[0].get('TTL', 0)
+            domain_info['dns_ttl'] = ttl_value
+            if ttl_value < 300:
+                risk_score += 20
+                details.append({"step": "DNS TTL (Fast-Flux)", "finding": f"PERINGATAN: TTL DNS sangat rendah ({ttl_value} detik). Indikator kuat Fast-Flux — teknik pergantian IP server cepat untuk menghindari pemblokiran."})
+            else:
+                details.append({"step": "DNS TTL (Fast-Flux)", "finding": f"TTL DNS normal: {ttl_value} detik. Tidak ada indikasi Fast-Flux."})
+    except Exception:
+        pass
+
+    # ====================================================
+    # TLD (Top-Level Domain) Risk Scoring
+    # Free/abused TLDs are massively over-represented in
+    # phishing: .tk, .ml, .ga, .cf, .gq, .xyz, .top, .icu
+    # ====================================================
+    high_risk_tlds = {
+        'tk': 'Freenom (gratis, tidak perlu identitas)',
+        'ml': 'Freenom (gratis, tidak perlu identitas)',
+        'ga': 'Freenom (gratis, tidak perlu identitas)',
+        'cf': 'Freenom (gratis, tidak perlu identitas)',
+        'gq': 'Freenom (gratis, tidak perlu identitas)',
+        'xyz': 'TLD sangat murah, populer untuk spam',
+        'top': 'TLD sangat murah, sering disalahgunakan',
+        'icu': 'TLD murah, tingkat penyalahgunaan tinggi',
+        'club': 'TLD murah, sering ada phishing',
+        'work': 'TLD murah, sering ada phishing',
+        'online': 'TLD murah',
+        'site': 'TLD murah',
+        'buzz': 'TLD murah, sering spam',
+    }
+    tld_suffix = extracted.suffix.lower() if extracted.suffix else ''
+    final_tld = tld_suffix.split('.')[-1] if '.' in tld_suffix else tld_suffix
+    if final_tld in high_risk_tlds:
+        risk_score += 20
+        domain_info['tld_risk'] = f"Berisiko Tinggi — {high_risk_tlds[final_tld]}"
+        details.append({"step": "Analisis TLD", "finding": f"PERINGATAN: TLD '.{final_tld}' tergolong berisiko tinggi ({high_risk_tlds[final_tld]}). Mayoritas domain phishing menggunakan TLD murah/gratis ini."})
+    else:
+        domain_info['tld_risk'] = 'Normal'
+        details.append({"step": "Analisis TLD", "finding": f"TLD '.{final_tld}' tergolong normal dan tidak termasuk dalam daftar TLD berisiko tinggi."})
+
+    # ====================================================
+    # crt.sh Certificate Transparency Logs
+    # Many fresh phishing sites issue many certs rapidly.
+    # ====================================================
+    try:
+        crt_req = urllib.request.Request(
+            f'https://crt.sh/?q=%.{root_domain}&output=json',
+            headers={'Accept': 'application/json', 'User-Agent': 'PhishDeep-Analyzer/1.0'}
+        )
+        crt_resp = urllib.request.urlopen(crt_req, timeout=10)
+        crt_raw = crt_resp.read().decode()
+        if crt_raw and crt_raw.strip().startswith('['):
+            crt_data = json.loads(crt_raw)
+            cert_count = len(crt_data)
+            domain_info['cert_count'] = cert_count
+            unique_names = list({c.get('name_value', '') for c in crt_data[:10]})
+            if cert_count > 50:
+                risk_score += 10
+                details.append({"step": "Certificate Transparency (crt.sh)", "finding": f"PERHATIAN: {cert_count} sertifikat SSL tercatat di log transparansi. Volume tinggi dapat menandakan infrastruktur phishing yang aktif berputar."})
+            else:
+                details.append({"step": "Certificate Transparency (crt.sh)", "finding": f"{cert_count} sertifikat SSL tercatat di log transparansi publik (crt.sh). Subdomains diketahui: {', '.join(unique_names[:5])}"})
+    except Exception:
+        pass
+
+    # ====================================================
+    # Wayback Machine — First Seen Date (CDX API)
+    # Newly registered but "old-looking" domains are suspicious.
+    # ====================================================
+    try:
+        wb_req = urllib.request.Request(
+            f'https://web.archive.org/cdx/search/cdx?url={root_domain}&output=json&limit=1&fl=timestamp&filter=statuscode:200&from=19960101',
+            headers={'User-Agent': 'PhishDeep-Analyzer/1.0'}
+        )
+        wb_resp = urllib.request.urlopen(wb_req, timeout=8)
+        wb_data = json.loads(wb_resp.read().decode())
+        if wb_data and len(wb_data) > 1:
+            first_ts = wb_data[1][0]  # skip header row
+            first_seen = f"{first_ts[0:4]}-{first_ts[4:6]}-{first_ts[6:8]}"
+            domain_info['wayback_first_seen'] = first_seen
+            details.append({"step": "Wayback Machine (Archive.org)", "finding": f"Domain pertama kali terarsip oleh internet archive pada: {first_seen}. Situs ini memiliki rekam jejak online."})
+        else:
+            domain_info['wayback_first_seen'] = 'Tidak ditemukan'
+            details.append({"step": "Wayback Machine (Archive.org)", "finding": "Domain belum pernah terarsip oleh Wayback Machine. Domain sangat baru atau tidak pernah diindeks."})
+    except Exception:
+        pass
 
     # Domain Patterns
     domain_lower = domain.lower()
@@ -196,6 +452,20 @@ def analyze_link(target_url):
             risk_score += 55
             details.append({"step": "Analisis Obfuscation", "finding": "BAHAYA KRITIS: Ditemukan karakter '@' pada URL. Browser akan mengabaikan teks sebelum '@' (seringkali URL asli) dan mengarahkan Anda ke alamat scammer setelahnya."})
             
+        # 7. Typosquatting Detection (Levenshtein-like 1-char distance check)
+        major_brands = ['google', 'facebook', 'instagram', 'twitter', 'youtube', 'apple', 'microsoft',
+                        'amazon', 'netflix', 'paypal', 'whatsapp', 'linkedin', 'tiktok', 'spotify',
+                        'tokopedia', 'shopee', 'bukalapak', 'gojek', 'grab', 'bca', 'mandiri', 'bni', 'bri']
+        extracted_domain_only = extracted.domain.lower() if extracted.domain else domain_lower
+        for brand in major_brands:
+            if extracted_domain_only != brand and len(extracted_domain_only) == len(brand):
+                # Check char-by-char: if only 1 char differs
+                diffs = sum(1 for a, b in zip(extracted_domain_only, brand) if a != b)
+                if diffs == 1:
+                    risk_score += 40
+                    details.append({"step": "Deteksi Typosquatting", "finding": f"PERINGATAN KRITIS: Domain '{extracted_domain_only}' terdeteksi sebagai kemungkinan typosquatting dari '{brand}' (beda hanya 1 karakter). Taktik klasik penipuan identitas brand."})
+                    break
+
         if not found_keywords and not found_brands and len(subdomain_parts) <= 4 and hyphen_count < 3 and 'xn--' not in domain_lower and '@' not in parsed_url.netloc:
             details.append({"step": "Analisis Pola Domain", "finding": "Tidak ada anomali atau pola penipuan mencolok pada susunan teks domain."})
 
@@ -246,20 +516,29 @@ def analyze_link(target_url):
         else:
             details.append({"step": "Redirect Tracer", "finding": "Tidak ada pengalihan rute. Koneksi langsung ke target."})
         
-        response = urllib.request.urlopen(req, timeout=10, context=ctx)
+        try:
+            response = urllib.request.urlopen(req, timeout=10, context=ctx)
+            html_content = response.read().decode('utf-8', errors='ignore')
+            resp_headers = response.headers
+        except urllib.error.HTTPError as e:
+            if e.code in [401, 403]:
+                details.append({"step": "Koneksi Jaringan", "finding": f"Situs membatasi akses (HTTP {e.code}). Memindai halaman login/proteksi yang diberikan..."})
+                risk_score += 15
+            else:
+                details.append({"step": "Koneksi Jaringan", "finding": f"Situs mengembalikan HTTP {e.code}. Menganalisis halaman error..."})
+            html_content = e.read().decode('utf-8', errors='ignore')
+            resp_headers = e.headers
             
-        html_content = response.read().decode('utf-8', errors='ignore')
-        
         # ======================================================
         # ANALISIS MENDALAM: HEADERS + HTML FINGERPRINTING
         # ======================================================
         
         # --- Layer 1: HTTP Response Headers ---
-        server = response.headers.get('Server', '')
-        powered_by = response.headers.get('X-Powered-By', '')
-        via = response.headers.get('Via', '')
-        cf_ray = response.headers.get('CF-Ray', '')
-        content_type = response.headers.get('Content-Type', '')
+        server = resp_headers.get('Server', '')
+        powered_by = resp_headers.get('X-Powered-By', '')
+        via = resp_headers.get('Via', '')
+        cf_ray = resp_headers.get('CF-Ray', '')
+        content_type = resp_headers.get('Content-Type', '')
         
         if cf_ray or 'cloudflare' in server.lower():
             frameworks.append('CDN: Cloudflare')
@@ -278,99 +557,124 @@ def analyze_link(target_url):
         
         # Check security headers
         missing_security = []
-        if not response.headers.get('X-Frame-Options'): missing_security.append('X-Frame-Options')
-        if not response.headers.get('Content-Security-Policy'): missing_security.append('CSP')
-        if not response.headers.get('X-XSS-Protection'): missing_security.append('X-XSS-Protection')
+        if not resp_headers.get('Strict-Transport-Security'): missing_security.append('HSTS')
+        if not resp_headers.get('X-Frame-Options'): missing_security.append('X-Frame-Options')
+        if not resp_headers.get('Content-Security-Policy'): missing_security.append('CSP')
+        if not resp_headers.get('X-XSS-Protection'): missing_security.append('X-XSS-Protection')
         if missing_security:
             frameworks.append(f'PERINGATAN - Header Tidak Ada: {", ".join(missing_security)}')
         
         # --- Layer 2: HTML Source Fingerprinting ---
         try:
-            html_lower = html_content.lower()
-
-            # Script and link tag sources via regex (works without bs4)
-            script_srcs = ' '.join(re.findall(r'<script[^>]+src=["\']([^"\']+)["\']', html_content, re.IGNORECASE)).lower()
-            link_hrefs = ' '.join(re.findall(r'<link[^>]+href=["\']([^"\']+)["\']', html_content, re.IGNORECASE)).lower()
-
             if BeautifulSoup:
                 soup = BeautifulSoup(html_content, 'html.parser')
-                if soup.find(id='__next') or '_next' in html_content:
+                
+                # Check meta generator
+                generator = soup.find('meta', attrs={'name': 'generator'})
+                if generator and generator.get('content'):
+                    gen_content = generator.get('content')
+                    frameworks.append(f'Generator: {gen_content}')
+                    if 'WordPress' in gen_content:
+                        frameworks.append('CMS: WordPress')
+                    elif 'Joomla' in gen_content:
+                        frameworks.append('CMS: Joomla')
+                    elif 'Drupal' in gen_content:
+                        frameworks.append('CMS: Drupal')
+
+                # Exact script and link paths (more accurate than loose string matching)
+                script_srcs = [script.get('src', '') for script in soup.find_all('script') if script.get('src')]
+                link_hrefs = [link.get('href', '') for link in soup.find_all('link') if link.get('href')]
+                all_urls = ' '.join(script_srcs + link_hrefs).lower()
+
+                # JS Frameworks (Deterministic)
+                if soup.find(id='__next') or '/_next/static/' in all_urls:
                     frameworks.append('JS Framework: Next.js')
-                elif 'data-reactroot' in html_content or ('react' in html_lower and 'react' in script_srcs):
+                if soup.find(id='__nuxt') or '/_nuxt/' in all_urls:
+                    frameworks.append('JS Framework: Nuxt.js')
+                if 'data-reactroot' in html_content or any('react' in src for src in script_srcs):
                     frameworks.append('JS Framework: React')
-                if 'vue' in html_lower and ('v-app' in html_content or '__vue' in html_content):
+                if 'v-app' in html_content or 'data-v-' in html_content or any('vue' in src for src in script_srcs):
                     frameworks.append('JS Framework: Vue.js')
-                if 'ng-version' in html_content or ('angular' in html_lower and 'angular' in script_srcs):
+                if 'ng-version' in html_content or any('angular' in src for src in script_srcs):
                     frameworks.append('JS Framework: Angular')
-                if 'svelte' in html_lower and 'svelte' in script_srcs:
+                if any('svelte' in src for src in script_srcs):
                     frameworks.append('JS Framework: Svelte')
-            else:
-                # Regex-based JS framework detection
-                if '_next' in html_lower or '__next' in html_lower:
-                    frameworks.append('JS Framework: Next.js')
-                elif 'data-reactroot' in html_lower or 'react' in script_srcs:
-                    frameworks.append('JS Framework: React')
-                if 'vue' in script_srcs or '__vue' in html_lower:
-                    frameworks.append('JS Framework: Vue.js')
-                if 'angular' in script_srcs or 'ng-version' in html_lower:
-                    frameworks.append('JS Framework: Angular')
 
-            # CMS & Platforms (regex, works without bs4)
-            if 'wp-content' in html_lower or 'wordpress' in html_lower:
-                frameworks.append('CMS: WordPress')
-            if 'joomla' in html_lower or '/media/jui/' in html_lower:
-                frameworks.append('CMS: Joomla')
-            if 'drupal' in html_lower:
-                frameworks.append('CMS: Drupal')
-            if 'shopify' in html_lower:
-                frameworks.append('Platform: Shopify')
-            if 'woocommerce' in html_lower:
-                frameworks.append('Plugin: WooCommerce')
+                # CMS and Platforms (Deterministic)
+                if '/wp-content/' in all_urls or '/wp-includes/' in all_urls:
+                    frameworks.append('CMS: WordPress')
+                if '/media/jui/' in all_urls or '/components/com_' in all_urls:
+                    frameworks.append('CMS: Joomla')
+                if '/sites/default/files/' in all_urls:
+                    frameworks.append('CMS: Drupal')
+                if 'cdn.shopify.com' in all_urls:
+                    frameworks.append('Platform: Shopify')
 
-            # Backend Frameworks
-            if 'laravel' in html_lower:
-                frameworks.append('Backend: Laravel (PHP)')
-            if 'codeigniter' in html_lower:
-                frameworks.append('Backend: CodeIgniter (PHP)')
-            if 'django' in html_lower:
-                frameworks.append('Backend: Django (Python)')
-            if 'rails' in html_lower:
-                frameworks.append('Backend: Ruby on Rails')
+                # Libraries & CSS
+                if any('bootstrap' in src for src in all_urls.split()):
+                    frameworks.append('CSS Framework: Bootstrap')
+                if any('tailwind' in src for src in all_urls.split()):
+                    frameworks.append('CSS Framework: Tailwind CSS')
+                if any('jquery' in src for src in script_srcs):
+                    frameworks.append('Library: jQuery')
 
-            # JS Libraries (via script src)
-            all_srcs = script_srcs + ' ' + link_hrefs
-            if 'jquery' in all_srcs or 'jquery' in html_lower:
-                frameworks.append('Library: jQuery')
-            if 'bootstrap' in all_srcs or 'bootstrap' in html_lower:
-                frameworks.append('CSS Framework: Bootstrap')
-            if 'tailwind' in all_srcs or 'tailwind' in html_lower:
-                frameworks.append('CSS Framework: Tailwind CSS')
-            if 'font-awesome' in all_srcs or 'fontawesome' in all_srcs:
-                frameworks.append('Icon Library: Font Awesome')
-            if 'google-analytics' in html_lower or 'gtag' in html_lower:
-                frameworks.append('Analytics: Google Analytics')
-            if 'gtm.js' in html_lower:
-                frameworks.append('Analytics: Google Tag Manager')
-            if 'facebook.net/en_us/fbevents' in html_lower:
-                frameworks.append('Analytics: Facebook Pixel')
-            if 'recaptcha' in html_lower:
-                frameworks.append('Security Plugin: Google reCAPTCHA')
+                # ============================================
+                # Form Action Analysis — Where does it submit?
+                # ============================================
+                forms = soup.find_all('form')
+                external_form_actions = []
+                for form in forms:
+                    action = form.get('action', '')
+                    if action and action.startswith('http') and parsed_url.hostname and parsed_url.hostname not in action:
+                        external_form_actions.append(action)
+                    elif action and ('http' not in action) and '.php' not in action and action.strip() not in ['', '#', '/']:
+                        external_form_actions.append(action)
+                domain_info['form_actions'] = external_form_actions
+                if external_form_actions:
+                    risk_score += 25
+                    details.append({"step": "Analisis Form Action", "finding": f"PERINGATAN: Form pada halaman ini mengirim data ke {len(external_form_actions)} alamat eksternal/mencurigakan: {', '.join(external_form_actions[:3])}. Kemungkinan kuat phishing harvester."})
 
-            # CDNs
-            if 'cdn.jsdelivr.net' in html_lower:
-                frameworks.append('CDN: jsDelivr')
-            if 'cdnjs.cloudflare.com' in html_lower:
-                frameworks.append('CDN: cdnjs (Cloudflare)')
-            if 'cdn.bootstrapcdn.com' in html_lower:
-                frameworks.append('CDN: Bootstrap CDN')
-            if 'unpkg.com' in html_lower:
-                frameworks.append('CDN: unpkg')
+                # ============================================
+                # External Link + Hidden Element Analysis
+                # ============================================
+                all_links = [a.get('href', '') for a in soup.find_all('a', href=True)]
+                external_links = [l for l in all_links if l.startswith('http') and parsed_url.hostname and parsed_url.hostname not in l]
+                iframes = soup.find_all('iframe')
+                hidden_iframes = [f for f in iframes if 'display:none' in (f.get('style','').replace(' ','').lower()) or f.get('width') == '0' or f.get('height') == '0']
+                domain_info['external_links_count'] = len(external_links)
+                domain_info['iframe_count'] = len(iframes)
+                domain_info['hidden_iframe_count'] = len(hidden_iframes)
+
+                if hidden_iframes:
+                    risk_score += 30
+                    details.append({"step": "Deteksi iFrame Tersembunyi", "finding": f"BAHAYA: Ditemukan {len(hidden_iframes)} iFrame tersembunyi (width/height=0 atau display:none). Taktik klasik untuk memuat konten jahat di balik layar."})
+                elif iframes:
+                    details.append({"step": "Deteksi iFrame", "finding": f"Ditemukan {len(iframes)} iFrame pada halaman. Periksa sumbernya untuk memastikan keamanan."})
+
+                if len(external_links) > 20:
+                    details.append({"step": "Analisis Link Eksternal", "finding": f"Halaman memiliki {len(external_links)} link ke domain eksternal. Volume tinggi bisa mengindikasikan situs spam/link farm."})
+                    
+
+            # Check Set-Cookie headers for backend frameworks
+            set_cookie = resp_headers.get('Set-Cookie', '')
+            if set_cookie:
+                if 'laravel_session' in set_cookie or 'XSRF-TOKEN' in set_cookie:
+                    frameworks.append('Backend: Laravel (PHP)')
+                if 'csrftoken' in set_cookie and 'django' in set_cookie.lower():
+                    frameworks.append('Backend: Django (Python)')
+                if 'ci_session' in set_cookie:
+                    frameworks.append('Backend: CodeIgniter (PHP)')
+                if 'PHPSESSID' in set_cookie:
+                    frameworks.append('Backend: PHP')
+
+            # Ensure uniqueness
+            frameworks = list(dict.fromkeys(frameworks))
 
         except Exception:
             pass
 
         if not frameworks:
-            frameworks.append('Web Stack: Custom / Static HTML')
+            frameworks.append('Web Stack: Custom / Static HTML / Unknown')
 
         if "<input type=\"password\"" in html_content.lower() or "type='password'" in html_content.lower():
             risk_score += 30
@@ -378,6 +682,33 @@ def analyze_link(target_url):
             match = re.search(r'(?i)<form.*?>.*?</form>', html_content, re.DOTALL)
             if match:
                 extracted_code = match.group(0)[:400] + "\n...[truncated]"
+
+        # ====================================================
+        # Page Content Intelligence: Title + Meta Analysis
+        # ====================================================
+        if BeautifulSoup and html_content:
+            try:
+                content_soup = BeautifulSoup(html_content, 'html.parser')
+                page_title = content_soup.title.string.strip() if content_soup.title and content_soup.title.string else ''
+                meta_desc_tag = content_soup.find('meta', attrs={'name': 'description'})
+                meta_desc = meta_desc_tag.get('content', '').strip() if meta_desc_tag else ''
+                domain_info['page_title'] = page_title
+                domain_info['meta_description'] = meta_desc
+
+                # Check if page title spoofs a known brand
+                brand_spoof_list = ['google', 'facebook', 'bca', 'mandiri', 'bni', 'bri', 'dana', 'ovo',
+                                    'shopee', 'tokopedia', 'netflix', 'paypal', 'apple', 'microsoft']
+                title_lower = page_title.lower()
+                for brand in brand_spoof_list:
+                    if brand in title_lower and brand not in root_domain.lower():
+                        risk_score += 25
+                        details.append({"step": "Analisis Konten Halaman", "finding": f"PERINGATAN: Judul halaman menyebut brand '{brand.upper()}' namun domain bukan milik brand tersebut. Kemungkinan kuat spoofing."})
+                        break
+
+                if page_title:
+                    details.append({"step": "Page Intelligence", "finding": f"Judul halaman: '{page_title}'" + (f" | Deskripsi: '{meta_desc[:120]}...'" if len(meta_desc) > 120 else (f" | Deskripsi: '{meta_desc}'" if meta_desc else ""))})
+            except Exception:
+                pass
 
     except urllib.error.URLError as e:
         risk_score += 40
