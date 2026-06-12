@@ -142,58 +142,84 @@ export default async function DashboardPage() {
         {/* Trend Chart (7 Hari Terakhir) */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-6">
           <h2 className="font-bold text-gray-900 text-sm sm:text-base mb-1">Tren Analisis (7 Hari)</h2>
-          <p className="text-xs text-gray-500 mb-6">Perbandingan total scan vs ancaman berbahaya.</p>
+          <p className="text-xs text-gray-500 mb-4">Perbandingan total scan vs ancaman berbahaya harian.</p>
           
-          <div className="flex items-end gap-2 h-40 mt-4 relative">
-            {/* Y-axis labels (rough) */}
-            <div className="absolute left-0 top-0 bottom-0 w-8 flex flex-col justify-between text-[10px] text-gray-400 font-medium">
-              <span>{Math.max(...trendData.map(t => t.total), 5)}</span>
-              <span>0</span>
-            </div>
-            
-            <div className="ml-8 flex-1 flex items-end justify-between h-full relative">
-              {/* Horizontal Grid lines */}
-              <div className="absolute inset-0 flex flex-col justify-between border-l border-b border-gray-100 pointer-events-none">
-                <div className="w-full border-t border-gray-100 border-dashed"></div>
-                <div className="w-full border-t border-gray-100 border-dashed"></div>
-                <div className="w-full border-t border-gray-100 border-dashed"></div>
-              </div>
-
-              {trendData.map((t, idx) => {
-                const maxVal = Math.max(...trendData.map(t => t.total), 5);
-                const totalHeight = (t.total / maxVal) * 100;
-                const dangHeight = (t.bahaya / maxVal) * 100;
-                
-                return (
-                  <div key={idx} className="flex flex-col items-center flex-1 group z-10">
-                    <div className="w-full px-1 sm:px-3 h-full flex items-end justify-center relative">
-                      {/* Total Bar */}
-                      <div 
-                        className="w-full max-w-[32px] bg-blue-100 rounded-t-sm relative transition-all duration-500 hover:bg-blue-200"
-                        style={{ height: `${totalHeight}%` }}
-                      >
-                        {/* Threat Inner Bar */}
-                        <div 
-                          className="absolute bottom-0 left-0 right-0 bg-red-400 rounded-t-sm"
-                          style={{ height: `${(t.bahaya / (t.total || 1)) * 100}%` }}
-                        />
-                        
-                        {/* Tooltip on hover */}
-                        <div className="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] py-1 px-2 rounded-lg pointer-events-none whitespace-nowrap transition-opacity shadow-lg z-20">
-                          {t.total} Scan ({t.bahaya} Bahaya)
-                        </div>
-                      </div>
-                    </div>
-                    <span className="text-[10px] text-gray-500 mt-2 font-medium">{t.dayName}</span>
+          {(() => {
+            const CHART_H = 120; // fixed pixel height for the bar area
+            const maxVal = Math.max(...trendData.map(t => t.total), 1);
+            return (
+              <>
+                {/* Chart wrapper: Y-axis + bars */}
+                <div className="flex gap-2">
+                  {/* Y-axis */}
+                  <div className="w-6 shrink-0 flex flex-col justify-between items-end text-[9px] text-gray-400 font-medium" style={{ height: `${CHART_H}px` }}>
+                    <span>{maxVal}</span>
+                    <span>{Math.round(maxVal / 2)}</span>
+                    <span>0</span>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-          <div className="flex gap-4 mt-4 text-[10px] font-medium justify-center border-t border-gray-100 pt-3">
-            <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-blue-100 rounded-sm"></span> Total Scan</div>
-            <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-red-400 rounded-sm"></span> Bahaya Terdeteksi</div>
-          </div>
+                  
+                  {/* Bars area */}
+                  <div className="flex-1 relative border-l border-b border-gray-100" style={{ height: `${CHART_H}px` }}>
+                    {/* Horizontal dashed grid lines */}
+                    <div className="absolute left-0 right-0 border-t border-dashed border-gray-100" style={{ top: '0%' }} />
+                    <div className="absolute left-0 right-0 border-t border-dashed border-gray-100" style={{ top: '50%' }} />
+
+                    {/* Bars */}
+                    <div className="absolute inset-0 flex items-end justify-around px-1 pb-0">
+                      {trendData.map((t, idx) => {
+                        const barH = maxVal > 0 ? Math.max(Math.round((t.total / maxVal) * CHART_H), t.total > 0 ? 4 : 0) : 0;
+                        const dangH = t.total > 0 && t.bahaya > 0 ? Math.round((t.bahaya / t.total) * barH) : 0;
+                        return (
+                          <div
+                            key={idx}
+                            className="flex flex-col items-center justify-end group"
+                            style={{ height: `${CHART_H}px`, minWidth: '12px', flex: 1 }}
+                          >
+                            <div className="w-full flex justify-center">
+                              {barH > 0 ? (
+                                <div
+                                  className="w-4 sm:w-5 lg:w-6 rounded-t-sm relative overflow-hidden bg-blue-200 group-hover:bg-blue-300 transition-colors cursor-default"
+                                  style={{ height: `${barH}px` }}
+                                >
+                                  {dangH > 0 && (
+                                    <div
+                                      className="absolute bottom-0 left-0 right-0 bg-red-400"
+                                      style={{ height: `${dangH}px` }}
+                                    />
+                                  )}
+                                  {/* Tooltip */}
+                                  <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[9px] py-1 px-1.5 rounded pointer-events-none whitespace-nowrap transition-opacity shadow-lg z-20">
+                                    {t.total}S / {t.bahaya}B
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="w-4 sm:w-5 lg:w-6 h-0.5 bg-gray-100 rounded-sm" />
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Day labels */}
+                <div className="flex justify-around pl-8 mt-1.5">
+                  {trendData.map((t, idx) => (
+                    <div key={idx} className="flex-1 text-center">
+                      <span className="text-[10px] text-gray-500 font-medium">{t.dayName}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Legend */}
+                <div className="flex gap-4 mt-3 text-[10px] font-medium justify-center border-t border-gray-100 pt-3">
+                  <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-blue-200 rounded-sm inline-block"></span> Total Scan</div>
+                  <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-red-400 rounded-sm inline-block"></span> Bahaya Terdeteksi</div>
+                </div>
+              </>
+            );
+          })()}
         </div>
 
         {/* Distribution & Limit */}
@@ -219,26 +245,43 @@ export default async function DashboardPage() {
           </div>
 
           <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-            <h3 className="font-bold text-gray-900 mb-4 text-sm">Sebaran Target (All Time)</h3>
-            <div className="flex h-4 rounded-full overflow-hidden mb-4">
-              <div style={{ width: `${Math.max((allScansForTrend.filter(s => s.target_type === 'Link').length / (allScansForTrend.length || 1)) * 100, 5)}%` }} className="bg-blue-500"></div>
-              <div style={{ width: `${Math.max((allScansForTrend.filter(s => s.target_type === 'APK').length / (allScansForTrend.length || 1)) * 100, 5)}%` }} className="bg-purple-500"></div>
-              <div style={{ width: `${Math.max((allScansForTrend.filter(s => s.target_type === 'Dokumen').length / (allScansForTrend.length || 1)) * 100, 5)}%` }} className="bg-orange-500"></div>
-            </div>
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between">
-                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-500"></span> Link</span>
-                <span className="font-bold text-gray-700">{allScansForTrend.filter(s => s.target_type === 'Link').length}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-purple-500"></span> APK</span>
-                <span className="font-bold text-gray-700">{allScansForTrend.filter(s => s.target_type === 'APK').length}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-orange-500"></span> Dokumen</span>
-                <span className="font-bold text-gray-700">{allScansForTrend.filter(s => s.target_type === 'Dokumen').length}</span>
-              </div>
-            </div>
+            <h3 className="font-bold text-gray-900 mb-4 text-sm">Sebaran Target (7 Hari)</h3>
+            {(() => {
+              const linkCount = allScansForTrend.filter(s => s.target_type === 'Link').length;
+              const apkCount  = allScansForTrend.filter(s => s.target_type === 'APK').length;
+              const dokCount  = allScansForTrend.filter(s => s.target_type === 'Dokumen').length;
+              const total = linkCount + apkCount + dokCount;
+              // Proportional percentages — always sum to 100
+              const lPct = total > 0 ? (linkCount / total) * 100 : 0;
+              const aPct = total > 0 ? (apkCount / total) * 100 : 0;
+              const dPct = total > 0 ? (dokCount / total) * 100 : 0;
+              return (
+                <>
+                  <div className="flex h-3 rounded-full overflow-hidden mb-4 bg-gray-100">
+                    {lPct > 0 && <div style={{ width: `${lPct}%` }} className="bg-blue-500 transition-all" />}
+                    {aPct > 0 && <div style={{ width: `${aPct}%` }} className="bg-purple-500 transition-all" />}
+                    {dPct > 0 && <div style={{ width: `${dPct}%` }} className="bg-orange-500 transition-all" />}
+                  </div>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex justify-between items-center">
+                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-500 inline-block"></span> Link</span>
+                      <span className="font-bold text-gray-700">{linkCount}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-purple-500 inline-block"></span> APK</span>
+                      <span className="font-bold text-gray-700">{apkCount}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-orange-500 inline-block"></span> Dokumen</span>
+                      <span className="font-bold text-gray-700">{dokCount}</span>
+                    </div>
+                    {total === 0 && (
+                      <p className="text-gray-400 text-center pt-1 text-[10px]">Belum ada data scan dalam 7 hari terakhir.</p>
+                    )}
+                  </div>
+                </>
+              );
+            })()}
           </div>
         </div>
       </div>
