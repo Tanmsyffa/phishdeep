@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -55,35 +55,45 @@ export default function SearchFilter({
       
       <div className="flex flex-row gap-3 w-full sm:w-auto">
         {showType && (
-          <select 
-            value={type}
-            onChange={(e) => {
-              setType(e.target.value);
-              handleUpdate(query, e.target.value, status);
-            }}
-            className="flex-1 sm:flex-none border border-gray-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow cursor-pointer"
-          >
-            <option value="all">Semua Jenis</option>
-            <option value="Link">Link</option>
-            <option value="APK">APK</option>
-            <option value="Dokumen">Dokumen</option>
-          </select>
+          <div className="relative flex-1 sm:flex-none">
+            <select 
+              value={type}
+              onChange={(e) => {
+                setType(e.target.value);
+                handleUpdate(query, e.target.value, status);
+              }}
+              className="w-full appearance-none border border-gray-200 rounded-xl pl-3 pr-8 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow cursor-pointer"
+            >
+              <option value="all">Semua Jenis</option>
+              <option value="Link">Link</option>
+              <option value="APK">APK</option>
+              <option value="Dokumen">Dokumen</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-2.5 pointer-events-none text-gray-400">
+              <ChevronDown className="w-4 h-4" />
+            </div>
+          </div>
         )}
         
         {showStatus && (
-          <select
-            value={status}
-            onChange={(e) => {
-              setStatus(e.target.value);
-              handleUpdate(query, type, e.target.value);
-            }}
-            className="flex-1 sm:flex-none border border-gray-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow cursor-pointer"
-          >
-            <option value="all">Semua Hasil</option>
-            <option value="Aman">Aman</option>
-            <option value="Mencurigakan">Mencurigakan</option>
-            <option value="Berbahaya">Berbahaya</option>
-          </select>
+          <div className="relative flex-1 sm:flex-none">
+            <select
+              value={status}
+              onChange={(e) => {
+                setStatus(e.target.value);
+                handleUpdate(query, type, e.target.value);
+              }}
+              className="w-full appearance-none border border-gray-200 rounded-xl pl-3 pr-8 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow cursor-pointer"
+            >
+              <option value="all">Semua Hasil</option>
+              <option value="Aman">Aman</option>
+              <option value="Mencurigakan">Mencurigakan</option>
+              <option value="Berbahaya">Berbahaya</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-2.5 pointer-events-none text-gray-400">
+              <ChevronDown className="w-4 h-4" />
+            </div>
+          </div>
         )}
       </div>
     </div>
