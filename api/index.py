@@ -374,7 +374,15 @@ def analyze_link(target_url):
                 risk_score += 10
                 details.append({"step": "RDAP Analisis Domain", "finding": f"Domain berumur {domain_info['age_days']} hari (< 6 bulan). Relatif baru, perlu perhatian lebih."})
             else:
-                details.append({"step": "RDAP Analisis Domain", "finding": f"Domain telah aktif selama {domain_info['age_days']} hari ({round(domain_info['age_days']/365, 1)} tahun). Terdaftar sejak {domain_info.get('creation_date', 'Unknown')}."})
+                # Mitigasi Skor: Domain berumur > 5 tahun mengurangi skor 20, > 10 tahun mengurangi 40.
+                if domain_info['age_days'] >= 3650:
+                    risk_score -= 40
+                    details.append({"step": "RDAP Analisis Domain", "finding": f"SANGAT AMAN: Domain telah aktif selama > 10 tahun ({round(domain_info['age_days']/365, 1)} tahun). Skor risiko diturunkan drastis."})
+                elif domain_info['age_days'] >= 1825:
+                    risk_score -= 20
+                    details.append({"step": "RDAP Analisis Domain", "finding": f"AMAN: Domain telah aktif selama > 5 tahun ({round(domain_info['age_days']/365, 1)} tahun). Skor risiko dikurangi."})
+                else:
+                    details.append({"step": "RDAP Analisis Domain", "finding": f"Domain telah aktif selama {domain_info['age_days']} hari ({round(domain_info['age_days']/365, 1)} tahun). Terdaftar sejak {domain_info.get('creation_date', 'Unknown')}."})
         else:
             details.append({"step": "RDAP Analisis Domain", "finding": "Data RDAP tidak tersedia untuk domain ini. Mungkin menggunakan ccTLD privat."})
         
@@ -663,10 +671,19 @@ def analyze_link(target_url):
         if not is_safe_url(target_url):
             raise ValueError("Target URL dilarang karena merujuk pada jaringan internal/lokal (Potensi SSRF diblokir).")
 
-        req = urllib.request.Request(
-            target_url, 
-            headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/114.0.0.0 Safari/537.36'}
-        )
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none'
+        }
+
+        req = urllib.request.Request(target_url, headers=headers)
+        
         # Create unverified SSL context to analyze sites with broken/phishing certs
         ctx = ssl.create_default_context()
         ctx.check_hostname = False
@@ -681,10 +698,8 @@ def analyze_link(target_url):
                 break
             visited.add(check_url)
             try:
-                hop_req = urllib.request.Request(
-                    check_url,
-                    headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/114.0.0.0 Safari/537.36'}
-                )
+                hop_req = urllib.request.Request(check_url, headers=headers)
+                # Gunakan redirect handler default untuk tracing cepat
                 opener = urllib.request.build_opener(
                     urllib.request.HTTPRedirectHandler(),
                     urllib.request.HTTPSHandler(context=ctx)
@@ -705,16 +720,27 @@ def analyze_link(target_url):
         else:
             details.append({"step": "Redirect Tracer", "finding": "Tidak ada pengalihan rute. Koneksi langsung ke target."})
         
+        import time
+        start_time = time.time()
         try:
             response = urllib.request.urlopen(req, timeout=10, context=ctx)
             html_content = response.read().decode('utf-8', errors='ignore')
             resp_headers = response.headers
+            status_code = response.getcode()
+            latency = int((time.time() - start_time) * 1000)
+            details.append({"step": "Koneksi Jaringan", "finding": f"Koneksi berhasil (HTTP {status_code}). Waktu respons: {latency}ms."})
         except urllib.error.HTTPError as e:
-            if e.code in [401, 403]:
-                details.append({"step": "Koneksi Jaringan", "finding": f"Situs membatasi akses (HTTP {e.code}). Memindai halaman login/proteksi yang diberikan..."})
-                risk_score += 15
+            latency = int((time.time() - start_time) * 1000)
+            status_code = e.code
+            if status_code in [401, 403]:
+                details.append({"step": "Koneksi Jaringan", "finding": f"Situs membatasi akses (HTTP {status_code} Forbidden/Unauthorized). Latensi: {latency}ms. Mengindikasikan WAF atau halaman login proteksi."})
+                risk_score += 5  # Reduced risk for 403s
+            elif status_code == 404:
+                details.append({"step": "Koneksi Jaringan", "finding": f"Halaman tidak ditemukan (HTTP 404). Latensi: {latency}ms."})
+            elif status_code >= 500:
+                details.append({"step": "Koneksi Jaringan", "finding": f"Server Error (HTTP {status_code}). Latensi: {latency}ms."})
             else:
-                details.append({"step": "Koneksi Jaringan", "finding": f"Situs mengembalikan HTTP {e.code}. Menganalisis halaman error..."})
+                details.append({"step": "Koneksi Jaringan", "finding": f"Situs mengembalikan HTTP {status_code}. Latensi: {latency}ms."})
             html_content = e.read().decode('utf-8', errors='ignore')
             resp_headers = e.headers
             
@@ -762,13 +788,16 @@ def analyze_link(target_url):
                 generator = soup.find('meta', attrs={'name': 'generator'})
                 if generator and generator.get('content'):
                     gen_content = generator.get('content')
-                    frameworks.append(f'Generator: {gen_content}')
                     if 'WordPress' in gen_content:
                         frameworks.append('CMS: WordPress')
                     elif 'Joomla' in gen_content:
                         frameworks.append('CMS: Joomla')
                     elif 'Drupal' in gen_content:
                         frameworks.append('CMS: Drupal')
+                    elif 'Wix' in gen_content:
+                        frameworks.append('Platform: Wix')
+                    else:
+                        frameworks.append(f'Generator: {gen_content}')
 
                 # Exact script and link paths (more accurate than loose string matching)
                 script_srcs = [script.get('src', '') for script in soup.find_all('script') if script.get('src')]
@@ -780,14 +809,32 @@ def analyze_link(target_url):
                     frameworks.append('JS Framework: Next.js')
                 if soup.find(id='__nuxt') or '/_nuxt/' in all_urls:
                     frameworks.append('JS Framework: Nuxt.js')
-                if 'data-reactroot' in html_content or any('react' in src for src in script_srcs):
-                    frameworks.append('JS Framework: React')
+                if 'data-reactroot' in html_content or any('react' in src for src in script_srcs) or 'react.production.min.js' in all_urls:
+                    frameworks.append('JS Library: React')
                 if 'v-app' in html_content or 'data-v-' in html_content or any('vue' in src for src in script_srcs):
-                    frameworks.append('JS Framework: Vue.js')
+                    frameworks.append('JS Library: Vue.js')
                 if 'ng-version' in html_content or any('angular' in src for src in script_srcs):
                     frameworks.append('JS Framework: Angular')
                 if any('svelte' in src for src in script_srcs):
                     frameworks.append('JS Framework: Svelte')
+                if 'jquery' in all_urls:
+                    frameworks.append('JS Library: jQuery')
+
+                # CSS Frameworks
+                if 'tailwindcss' in html_content or 'tailwind.min.css' in all_urls:
+                    frameworks.append('CSS: Tailwind CSS')
+                elif 'class="flex ' in html_content and 'justify-' in html_content:
+                    frameworks.append('CSS: Tailwind CSS (Terindikasi)')
+                if 'bootstrap' in all_urls or 'class="container-fluid"' in html_content:
+                    frameworks.append('CSS: Bootstrap')
+                
+                # Analytics
+                if 'googletagmanager.com/gtm.js' in html_content:
+                    frameworks.append('Analytics: Google Tag Manager')
+                if 'google-analytics.com/analytics.js' in html_content or 'gtag(' in html_content:
+                    frameworks.append('Analytics: Google Analytics')
+                if 'fbq(' in html_content or 'connect.facebook.net/en_us/fbevents.js' in html_content.lower():
+                    frameworks.append('Analytics: Facebook Pixel')
 
                 # CMS and Platforms (Deterministic)
                 if '/wp-content/' in all_urls or '/wp-includes/' in all_urls:
@@ -799,36 +846,22 @@ def analyze_link(target_url):
                 if 'cdn.shopify.com' in all_urls:
                     frameworks.append('Platform: Shopify')
 
-                # Libraries & CSS
-                if any('bootstrap' in src for src in all_urls.split()):
-                    frameworks.append('CSS Framework: Bootstrap')
-                if any('tailwind' in src for src in all_urls.split()):
-                    frameworks.append('CSS Framework: Tailwind CSS')
-                if any('jquery' in src for src in script_srcs):
-                    frameworks.append('Library: jQuery')
-
-                # ============================================
-                # Form Action Analysis — Where does it submit?
-                # ============================================
+                # Extract forms to check for external POST actions
                 forms = soup.find_all('form')
-                external_form_actions = []
+                form_actions = []
+                root_domain = parsed_url.hostname.split('.')[-2] + '.' + parsed_url.hostname.split('.')[-1]
                 for form in forms:
-                    action = form.get('action', '')
-                    if action and action.startswith('http') and parsed_url.hostname and parsed_url.hostname not in action:
-                        external_form_actions.append(action)
-                    elif action and ('http' not in action) and '.php' not in action and action.strip() not in ['', '#', '/']:
-                        external_form_actions.append(action)
-                domain_info['form_actions'] = external_form_actions
-                if external_form_actions:
-                    risk_score += 25
-                    details.append({"step": "Analisis Form Action", "finding": f"PERINGATAN: Form pada halaman ini mengirim data ke {len(external_form_actions)} alamat eksternal/mencurigakan: {', '.join(external_form_actions[:3])}. Kemungkinan kuat phishing harvester."})
+                    action = form.get('action')
+                    if action and action.startswith('http') and root_domain not in action.lower():
+                        form_actions.append(action)
+                if form_actions:
+                    domain_info['form_actions'] = form_actions
+                    risk_score += 40
+                    details.append({"step": "Deteksi Form Eksternal", "finding": f"BAHAYA: Formulir di halaman ini mengirimkan data (seperti sandi) ke server luar yang tidak terkait: {form_actions[0]}"})
 
-                # ============================================
-                # External Link + Hidden Element Analysis
-                # ============================================
-                all_links = [a.get('href', '') for a in soup.find_all('a', href=True)]
-                external_links = [l for l in all_links if l.startswith('http') and parsed_url.hostname and parsed_url.hostname not in l]
+                # Extract iframes and links
                 iframes = soup.find_all('iframe')
+                external_links = [link.get('href') for link in soup.find_all('a') if link.get('href') and link.get('href').startswith('http') and root_domain not in link.get('href').lower()]
                 hidden_iframes = [f for f in iframes if 'display:none' in (f.get('style','').replace(' ','').lower()) or f.get('width') == '0' or f.get('height') == '0']
                 domain_info['external_links_count'] = len(external_links)
                 domain_info['iframe_count'] = len(iframes)
@@ -895,7 +928,13 @@ def analyze_link(target_url):
                         break
 
                 if page_title:
-                    details.append({"step": "Page Intelligence", "finding": f"Judul halaman: '{page_title}'" + (f" | Deskripsi: '{meta_desc[:120]}...'" if len(meta_desc) > 120 else (f" | Deskripsi: '{meta_desc}'" if meta_desc else ""))})
+                    finding_str = f"Judul: '{page_title}'"
+                    if status_code != 200:
+                        finding_str = f"[HTTP {status_code}] " + finding_str
+                    if meta_desc:
+                        desc_text = f" | Deskripsi: '{meta_desc[:120]}...'" if len(meta_desc) > 120 else f" | Deskripsi: '{meta_desc}'"
+                        finding_str += desc_text
+                    details.append({"step": "Page Intelligence", "finding": finding_str})
             except Exception:
                 pass
 
@@ -937,7 +976,10 @@ def analyze_link(target_url):
         details.append({"step": "Koneksi Jaringan", "finding": f"Gagal menganalisis situs: {str(e)[:200]}"})
     encoded = quote(target_url, safe='')
     screenshot_url = f"https://api.microlink.io/?url={encoded}&screenshot=true&meta=false&embed=screenshot.url"
-    return min(risk_score, 100), details, extracted_code, domain_info, frameworks, redirect_chain, screenshot_url
+    
+    # Final max bounds for score
+    final_score = max(0, min(100, risk_score))
+    return final_score, details, extracted_code, domain_info, frameworks, redirect_chain, screenshot_url
 
 def analyze_file(file_url, file_type):
     details = []
