@@ -335,38 +335,39 @@ export default async function ScanResultPage({ params, searchParams }: { params:
           )}
 
           {/* Details Log Section */}
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden print:border-gray-300 print:shadow-none">
-            <div className="p-5 sm:p-6 border-b border-gray-200">
-              <h2 className="font-bold text-gray-900 text-sm sm:text-base">Log Audit Keamanan</h2>
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden print:border-gray-300 print:shadow-none print:break-inside-avoid">
+            <div className="p-4 sm:p-5 border-b border-gray-200 bg-gray-50/50 print:bg-white">
+              <h2 className="font-bold text-gray-900 text-sm flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 text-primary-500" /> Log Audit Keamanan
+              </h2>
             </div>
             
-            <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+            <div className="p-4 sm:p-5">
               {details.length > 0 ? (
-                <ul className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2">
                   {details.map((item: any, idx: number) => (
-                    <li key={idx} className="flex items-start gap-3 border-b border-gray-50 pb-4 last:border-0 last:pb-0 print:border-gray-200">
-                      <div className="w-6 h-6 rounded-full bg-blue-50 text-primary-600 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 print:bg-white print:border print:border-gray-300 print:text-black">
+                    <div key={idx} className="flex items-start gap-2.5 p-3 bg-gray-50 rounded-xl border border-gray-100 print:border-gray-300 print:bg-white">
+                      <div className="w-5 h-5 rounded-full bg-blue-100 text-primary-700 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 print:border print:border-gray-300">
                         {idx + 1}
                       </div>
-                      <div>
-                        <div className="font-semibold text-gray-900 text-sm">{item.step}</div>
-                        <div className="text-sm text-gray-600 mt-1 leading-relaxed print:text-black">{item.finding}</div>
+                      <div className="min-w-0">
+                        <div className="font-semibold text-gray-900 text-xs truncate">{item.step}</div>
+                        <div className="text-[11px] text-gray-600 mt-0.5 leading-snug print:text-black line-clamp-3" title={item.finding}>{item.finding}</div>
                       </div>
-                    </li>
+                    </div>
                   ))}
-                </ul>
+                </div>
               ) : (
-                <p className="text-sm text-gray-500">Tidak ada detail langkah analisis yang tersedia.</p>
+                <p className="text-xs text-gray-500 italic">Tidak ada detail langkah analisis yang tersedia.</p>
               )}
 
               {extractedCode && (
-                <div className="mt-6 print:mt-8">
-                  <h3 className="font-bold text-sm text-gray-900 mb-3 flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-red-500 print:text-black" /> Cuplikan Kode / Anotasi Ekstraksi
+                <div className="mt-4 pt-4 border-t border-gray-100 print:border-gray-300">
+                  <h3 className="font-bold text-xs text-gray-900 mb-2 flex items-center gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5 text-red-500 print:text-black" /> Anotasi Ekstraksi Kode
                   </h3>
-                  {/* Tailwind print classes for code block: white bg, black text, wrap text so it doesn't overflow paper */}
-                  <div className="bg-gray-900 rounded-xl p-4 overflow-x-auto text-xs sm:text-sm text-green-400 font-mono print:bg-white print:border print:border-gray-300 print:text-black print:whitespace-pre-wrap print:overflow-hidden print:break-inside-avoid">
-                    <pre className="print:whitespace-pre-wrap"><code>{extractedCode}</code></pre>
+                  <div className="bg-gray-900 rounded-xl p-3 overflow-y-auto max-h-[200px] text-[10px] sm:text-xs text-green-400 font-mono print:bg-white print:border print:border-gray-300 print:text-black print:max-h-none print:whitespace-pre-wrap print:overflow-hidden">
+                    <pre className="print:whitespace-pre-wrap whitespace-pre-wrap break-all leading-relaxed"><code>{extractedCode}</code></pre>
                   </div>
                 </div>
               )}
