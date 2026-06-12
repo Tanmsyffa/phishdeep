@@ -7,6 +7,8 @@ import { blogArticles } from "@/lib/data/blog";
 
 export default function BlogPage() {
   const articles = blogArticles;
+  const featuredArticle = articles[0];
+  const regularArticles = articles.slice(1);
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
@@ -16,29 +18,70 @@ export default function BlogPage() {
           <div className="mb-4">
             <BackButton />
           </div>
-          <div className="text-center mb-10">
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3 leading-tight">Blog Keamanan Siber</h1>
+          <div className="text-center mb-10 sm:mb-16">
+            <h1 className="text-3xl sm:text-5xl font-extrabold text-gray-900 mb-4 leading-tight tracking-tight">Blog Keamanan Siber</h1>
             <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">Tingkatkan kesadaran keamanan digital Anda dengan artikel, tips, dan update terbaru seputar ancaman siber.</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
-            {articles.map(article => (
-              <article key={article.id} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-shadow flex flex-col">
-                <div className="h-44 sm:h-48 bg-gray-200 overflow-hidden relative">
-                  <img src={article.image} alt={article.title} className="w-full h-full object-cover" />
-                  <div className="absolute top-3 left-3 bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+          {/* Featured Article */}
+          {featuredArticle && (
+            <div className="mb-10 sm:mb-16">
+              <article className="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-xl transition-all group flex flex-col md:flex-row">
+                <div className="md:w-1/2 h-64 md:h-auto bg-gray-200 relative overflow-hidden">
+                  <img src={featuredArticle.image} alt={featuredArticle.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute top-4 left-4 bg-primary-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+                    {featuredArticle.category}
+                  </div>
+                </div>
+                <div className="md:w-1/2 p-6 sm:p-10 flex flex-col justify-center">
+                  <div className="flex items-center gap-3 text-xs sm:text-sm text-gray-500 mb-4 font-medium">
+                    <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4 shrink-0" /> {featuredArticle.date}</span>
+                    <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                    <span>{featuredArticle.readTime}</span>
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 leading-tight group-hover:text-primary-600 transition-colors">{featuredArticle.title}</h2>
+                  <p className="text-sm sm:text-base text-gray-600 mb-6 leading-relaxed line-clamp-3">{featuredArticle.excerpt}</p>
+                  <div className="flex items-center justify-between mt-auto">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs">
+                        {featuredArticle.author.charAt(0)}
+                      </div>
+                      <span className="text-sm font-semibold text-gray-700">{featuredArticle.author}</span>
+                    </div>
+                    <Link href={`/blog/${featuredArticle.id}`} className="inline-flex items-center gap-2 text-primary-600 font-semibold text-sm hover:text-primary-700 transition-colors bg-blue-50 px-4 py-2 rounded-xl hover:bg-blue-100">
+                      Baca <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            </div>
+          )}
+
+          {/* Regular Articles Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {regularArticles.map(article => (
+              <article key={article.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-lg transition-all flex flex-col group">
+                <div className="h-48 bg-gray-200 overflow-hidden relative">
+                  <img src={article.image} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-gray-900 text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-md shadow-sm">
                     {article.category}
                   </div>
                 </div>
                 <div className="p-5 sm:p-6 flex flex-col flex-grow">
-                  <div className="flex items-center gap-2 text-xs text-gray-500 mb-2.5">
-                    <Calendar className="w-3.5 h-3.5 shrink-0" /> {article.date}
+                  <div className="flex items-center gap-3 text-[11px] sm:text-xs text-gray-500 mb-3 font-medium">
+                    <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 shrink-0" /> {article.date}</span>
+                    <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                    <span>{article.readTime}</span>
                   </div>
-                  <h2 className="text-base sm:text-xl font-bold text-gray-900 mb-2.5 leading-snug">{article.title}</h2>
-                  <p className="text-xs sm:text-sm text-gray-600 mb-5 flex-grow leading-relaxed">{article.excerpt}</p>
-                  <Link href={`/blog/${article.id}`} className="inline-flex items-center gap-2 text-primary-600 font-semibold text-sm hover:text-primary-700 transition-colors group">
-                    Baca Selengkapnya <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 leading-snug group-hover:text-primary-600 transition-colors">{article.title}</h2>
+                  <p className="text-sm text-gray-600 mb-6 flex-grow leading-relaxed line-clamp-3">{article.excerpt}</p>
+                  
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <span className="text-xs font-semibold text-gray-700">{article.author}</span>
+                    <Link href={`/blog/${article.id}`} className="inline-flex items-center gap-1 text-primary-600 font-semibold text-xs hover:text-primary-700 transition-colors">
+                      Baca <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
                 </div>
               </article>
             ))}
