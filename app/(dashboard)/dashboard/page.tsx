@@ -36,7 +36,9 @@ export default async function DashboardPage() {
   }
 
   const todayScanCount = scans.length;
-  const displayScans = scans.slice(0, 5).map(s => {
+  // Filter for display only (exclude deleted)
+  const activeScans = scans.filter(s => s.status !== 'deleted');
+  const displayScans = activeScans.slice(0, 5).map(s => {
     const status = getStatusColor(s.risk_score);
     return {
       id: s.id, jenis: s.target_type, target: s.target_url,

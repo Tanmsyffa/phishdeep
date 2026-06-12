@@ -23,6 +23,7 @@ export default async function HistoryPage({
     try {
       const { data, error } = await supabase
         .from('scans').select('*').eq('user_id', user.id)
+        .neq('status', 'deleted')
         .order('created_at', { ascending: false });
       if (!error && data) scans = data;
     } catch (err) {
