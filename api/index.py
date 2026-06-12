@@ -355,12 +355,15 @@ def analyze_link(target_url):
     osint_results = {}
     with ThreadPoolExecutor(max_workers=10) as executor:
         futures = {executor.submit(fn): fn.__name__ for fn in osint_tasks}
-        for future in as_completed(futures, timeout=10):
-            try:
-                key, val = future.result(timeout=1)
-                osint_results[key] = val
-            except Exception:
-                pass
+        try:
+            for future in as_completed(futures, timeout=5):
+                try:
+                    key, val = future.result(timeout=1)
+                    osint_results[key] = val
+                except Exception:
+                    pass
+        except Exception:
+            pass # Catch concurrent.futures.TimeoutError if tasks take too long
 
     # --- Process RDAP ---
     rdap_data = osint_results.get('rdap', {})
@@ -704,7 +707,7 @@ def analyze_link(target_url):
                     urllib.request.HTTPRedirectHandler(),
                     urllib.request.HTTPSHandler(context=ctx)
                 )
-                hop_response = opener.open(hop_req, timeout=5)
+                hop_response = opener.open(hop_req, timeout=2)
                 final_url = hop_response.url if hasattr(hop_response, 'url') else check_url
                 if final_url and final_url != check_url and final_url not in redirect_chain:
                     redirect_chain.append(final_url)
@@ -723,7 +726,7 @@ def analyze_link(target_url):
         import time
         start_time = time.time()
         try:
-            response = urllib.request.urlopen(req, timeout=10, context=ctx)
+            response = urllib.request.urlopen(req, timeout=4, context=ctx)
             html_content = response.read().decode('utf-8', errors='ignore')
             resp_headers = response.headers
             status_code = response.getcode()
@@ -962,7 +965,7 @@ def analyze_link(target_url):
         # Port check even on failure
         try:
             host = parsed_url.hostname or domain
-            socket.setdefaulttimeout(3) # Set a 3-second timeout for socket operations
+            socket.setdefaulttimeout(1) # Set a 1-second timeout for socket operations
             port80 = socket.connect_ex((host, 80))
             port443 = socket.connect_ex((host, 443))
             port_status = f"Port 80 (HTTP): {'Terbuka' if port80 == 0 else 'Tertutup'} | Port 443 (HTTPS): {'Terbuka' if port443 == 0 else 'Tertutup'}"
