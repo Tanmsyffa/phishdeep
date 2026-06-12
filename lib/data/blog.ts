@@ -8,7 +8,7 @@ export const blogArticles = [
     category: "Edukasi",
     author: "Budi Santoso",
     readTime: "4 min read",
-    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800"
+    image: "https://picsum.photos/seed/phishing1/800/600"
   },
   {
     id: "2",
@@ -19,7 +19,7 @@ export const blogArticles = [
     category: "Malware",
     author: "Siti Aminah",
     readTime: "3 min read",
-    image: "https://images.unsplash.com/photo-1563206767-5b18f218e8de?auto=format&fit=crop&q=80&w=800"
+    image: "https://picsum.photos/seed/malware2/800/600"
   },
   {
     id: "3",
@@ -30,7 +30,7 @@ export const blogArticles = [
     category: "Produk",
     author: "Tim PhishDeep",
     readTime: "5 min read",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800"
+    image: "https://picsum.photos/seed/security3/800/600"
   },
   {
     id: "4",
@@ -41,7 +41,7 @@ export const blogArticles = [
     category: "Panduan",
     author: "Arif Rahman",
     readTime: "6 min read",
-    image: "https://images.unsplash.com/photo-1614064641913-a5323ea1f22b?auto=format&fit=crop&q=80&w=800"
+    image: "https://picsum.photos/seed/hacker4/800/600"
   },
   {
     id: "5",
@@ -52,6 +52,6 @@ export const blogArticles = [
     category: "Edukasi",
     author: "Budi Santoso",
     readTime: "4 min read",
-    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800"
+    image: "https://picsum.photos/seed/cyber5/800/600"
   }
 ];
