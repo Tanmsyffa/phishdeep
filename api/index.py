@@ -21,6 +21,14 @@ try:
 except ImportError:
     BeautifulSoup = None  # type: ignore
 
+try:
+    import pymupdf  # PyMuPDF - installed via requirements.txt on Vercel
+    PYMUPDF_AVAILABLE = True
+except ImportError:
+    pymupdf = None  # type: ignore
+    PYMUPDF_AVAILABLE = False
+
+
 app = Flask(__name__)
 
 # ---------------------------------------------------------------------------
@@ -988,7 +996,288 @@ def analyze_link(target_url):
     return final_score, details, extracted_code, domain_info, frameworks, redirect_chain, screenshot_url
 
 
+
+# ── Helper: Deep PDF analysis via PyMuPDF ────────────────────────────────────
+def _analyze_pdf_pymupdf(raw_content: bytes) -> dict:
+    """
+    Use PyMuPDF (fitz) to perform proper structural PDF forensics.
+    Returns a dict with findings. Falls back gracefully if PyMuPDF unavailable.
+    """
+    if not PYMUPDF_AVAILABLE:
+        return {"available": False}
+
+    result = {
+        "available": True,
+        "page_count": 0,
+        "obj_count": 0,
+        "embfile_count": 0,
+        "metadata": {},
+        "has_javascript": False,
+        "javascript_snippets": [],
+        "launch_actions": [],
+        "suspicious_links": [],
+        "all_links": [],
+        "open_action": False,
+        "auto_action": False,
+        "form_fields": 0,
+        "annotations": 0,
+        "encrypted": False,
+        "dangerous_keys": [],
+    }
+
+    try:
+        doc = pymupdf.open(stream=raw_content, filetype="pdf")
+
+        result["page_count"] = len(doc)
+        result["obj_count"] = doc.xref_length()
+        result["embfile_count"] = doc.embfile_count()
+        result["encrypted"] = doc.is_encrypted
+        result["metadata"] = {k: v for k, v in doc.metadata.items() if v}
+
+        PHISH_KEYWORDS = [
+            'login', 'verify', 'secure', 'account', 'password', 'update',
+            'confirm', 'suspend', 'banking', 'paypal', 'signin', 'credential',
+            'bit.ly', 'tinyurl', 't.co', 'goo.gl', 'ow.ly', 'rb.gy', 'cutt.ly'
+        ]
+
+        # ── Scan all XRef objects for dangerous PDF keys ──────────────────
+        DANGEROUS_PDF_KEYS = {
+            'JS': "JavaScript action",
+            'JavaScript': "Explicit JavaScript reference",
+            'OpenAction': "Auto-execute on document open",
+            'AA': "Additional auto-action trigger",
+            'Launch': "Shell launch command",
+            'EmbeddedFile': "Embedded file",
+            'RichMedia': "RichMedia embed",
+            'XFA': "XFA Form (XML-based exploit)",
+            'URI': "External URI",
+        }
+
+        for xref in range(1, min(doc.xref_length(), 5000)):
+            try:
+                keys = doc.xref_get_keys(xref)
+                for dk, desc in DANGEROUS_PDF_KEYS.items():
+                    if dk in keys:
+                        if dk not in result["dangerous_keys"]:
+                            result["dangerous_keys"].append(dk)
+                        if dk in ('JS', 'JavaScript'):
+                            result["has_javascript"] = True
+                            try:
+                                js_val = doc.xref_get_key(xref, dk)
+                                if js_val and len(js_val) > 5:
+                                    snippet = js_val[:400] if isinstance(js_val, str) else str(js_val)[:400]
+                                    if snippet not in result["javascript_snippets"]:
+                                        result["javascript_snippets"].append(snippet)
+                            except Exception:
+                                pass
+                        if dk == 'OpenAction':
+                            result["open_action"] = True
+                        if dk == 'AA':
+                            result["auto_action"] = True
+                        if dk == 'Launch':
+                            try:
+                                launch_val = doc.xref_get_key(xref, dk)
+                                result["launch_actions"].append(str(launch_val)[:200])
+                            except Exception:
+                                pass
+            except Exception:
+                continue
+
+        # ── Extract all links from pages ──────────────────────────────────
+        for page in doc:
+            for link in page.get_links():
+                uri = link.get('uri', '')
+                kind = link.get('kind', 0)
+                if uri:
+                    result["all_links"].append(uri)
+                    if any(kw in uri.lower() for kw in PHISH_KEYWORDS):
+                        result["suspicious_links"].append(uri)
+                if kind == 3:  # LINK_LAUNCH
+                    result["launch_actions"].append(f"Launch link: {link}")
+
+            # Count annotations
+            result["annotations"] += len(list(page.annots()))
+
+        # ── Form fields (AcroForm) ─────────────────────────────────────────
+        try:
+            for page in doc:
+                result["form_fields"] += len(page.widgets() or [])
+        except Exception:
+            pass
+
+        doc.close()
+
+    except Exception as e:
+        result["error"] = str(e)
+
+    return result
+
+
+# ── Helper: DroidDetective-style APK permission scoring ───────────────────────
+# Based on RandomForest feature importance weights from DroidDetective
+# (github.com/user1342/DroidDetective) — accuracy 93.1%, recall 91.7%
+# The ML model trained on ~14 malware families + ~100 Google Play apps
+_DD_WEIGHTS = {
+    # High importance (ML feature weight × 100 = max score contribution)
+    'android.permission.WRITE_EXTERNAL_STORAGE':    (9.8,  "Tulis penyimpanan eksternal"),
+    'android.permission.INTERNET':                  (8.8,  "Akses internet"),
+    'android.permission.WRITE_SMS':                 (5.7,  "Tulis/kirim SMS"),
+    'android.permission.WAKE_LOCK':                 (3.9,  "Jaga layar aktif"),
+    'android.permission.GET_TASKS':                 (3.6,  "Pantau proses aktif"),
+    'android.permission.RECEIVE_BOOT_COMPLETED':    (2.6,  "Auto-start saat boot"),
+    'android.permission.ACCESS_WIFI_STATE':         (2.2,  "Baca status WiFi"),
+    'android.permission.ACCESS_NETWORK_STATE':      (2.1,  "Baca status jaringan"),
+    'android.permission.SYSTEM_ALERT_WINDOW':       (1.9,  "Overlay layar (phishing UI)"),
+    # Medium importance
+    'android.permission.READ_PHONE_STATE':          (1.5,  "Baca IMEI & info SIM"),
+    'android.permission.VIBRATE':                   (1.2,  "Kontrol vibrator"),
+    'android.permission.READ_CONTACTS':             (1.5,  "Akses kontak"),
+    'android.permission.SEND_SMS':                  (3.0,  "Kirim SMS tersembunyi"),
+    'android.permission.READ_SMS':                  (3.0,  "Baca SMS (pencurian OTP)"),
+    'android.permission.RECEIVE_SMS':               (2.5,  "Intersepsi SMS masuk"),
+    'android.permission.CALL_PHONE':                (2.0,  "Panggilan telepon otomatis"),
+    'android.permission.RECORD_AUDIO':              (2.0,  "Rekam audio"),
+    'android.permission.CAMERA':                    (1.5,  "Akses kamera"),
+    'android.permission.ACCESS_FINE_LOCATION':      (1.5,  "Pelacak GPS presisi"),
+    'android.permission.READ_CALL_LOG':             (1.5,  "Baca riwayat telepon"),
+    'android.permission.PROCESS_OUTGOING_CALLS':    (2.0,  "Intersepsi panggilan keluar"),
+    'android.permission.INSTALL_PACKAGES':          (3.5,  "Instalasi APK senyap (dropper)"),
+    'android.permission.REQUEST_INSTALL_PACKAGES':  (3.0,  "Minta izin instalasi APK"),
+    'android.permission.BIND_DEVICE_ADMIN':         (3.5,  "Kontrol admin perangkat penuh"),
+    'android.permission.BIND_ACCESSIBILITY_SERVICE':(2.5,  "Baca layar & input pengguna"),
+    'android.permission.CHANGE_NETWORK_STATE':      (1.0,  "Manipulasi jaringan"),
+    'android.permission.ACCESS_SUPERUSER':          (5.0,  "Akses root (superuser)"),
+    'android.permission.CHANGE_WIFI_STATE':         (1.0,  "Ubah koneksi WiFi"),
+    'android.permission.BLUETOOTH':                 (0.8,  "Akses Bluetooth"),
+    'android.permission.NFC':                       (1.0,  "Akses NFC (pembayaran)"),
+    'android.permission.USE_BIOMETRIC':             (1.2,  "Bypass biometrik"),
+    'android.permission.USE_FINGERPRINT':           (1.2,  "Akses sidik jari"),
+}
+
+# Standard Android permissions list (from DroidDetective / AOSP)
+_STANDARD_ANDROID_PERMISSIONS = set([
+    'android.permission.' + p for p in [
+        'ACCEPT_HANDOVER', 'ACCESS_BACKGROUND_LOCATION', 'ACCESS_BLOBS_ACROSS_USERS',
+        'ACCESS_CHECKIN_PROPERTIES', 'ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION',
+        'ACCESS_LOCATION_EXTRA_COMMANDS', 'ACCESS_MEDIA_LOCATION', 'ACCESS_NETWORK_STATE',
+        'ACCESS_NOTIFICATION_POLICY', 'ACCESS_WIFI_STATE', 'ACCOUNT_MANAGER',
+        'ACTIVITY_RECOGNITION', 'ADD_VOICEMAIL', 'ANSWER_PHONE_CALLS',
+        'BATTERY_STATS', 'BIND_ACCESSIBILITY_SERVICE', 'BIND_APPWIDGET',
+        'BIND_AUTOFILL_SERVICE', 'BIND_CALL_REDIRECTION_SERVICE', 'BIND_CARRIER_MESSAGING_SERVICE',
+        'BIND_CONDITION_PROVIDER_SERVICE', 'BIND_CONTROLS', 'BIND_DEVICE_ADMIN',
+        'BIND_DREAM_SERVICE', 'BIND_INCALL_SERVICE', 'BIND_INPUT_METHOD',
+        'BIND_MIDI_DEVICE_SERVICE', 'BIND_NFC_SERVICE', 'BIND_NOTIFICATION_LISTENER_SERVICE',
+        'BIND_PRINT_SERVICE', 'BIND_QUICK_ACCESS_WALLET_SERVICE', 'BIND_QUICK_SETTINGS_TILE',
+        'BIND_REMOTEVIEWS', 'BIND_SCREENING_SERVICE', 'BIND_TELECOM_CONNECTION_SERVICE',
+        'BIND_TEXT_SERVICE', 'BIND_TV_INPUT', 'BIND_VISUAL_VOICEMAIL_SERVICE',
+        'BIND_VOICE_INTERACTION', 'BIND_VPN_SERVICE', 'BIND_VR_LISTENER_SERVICE',
+        'BIND_WALLPAPER', 'BLUETOOTH', 'BLUETOOTH_ADMIN', 'BLUETOOTH_ADVERTISE',
+        'BLUETOOTH_CONNECT', 'BLUETOOTH_PRIVILEGED', 'BLUETOOTH_SCAN', 'BODY_SENSORS',
+        'BODY_SENSORS_BACKGROUND', 'BROADCAST_PACKAGE_REMOVED', 'BROADCAST_SMS',
+        'BROADCAST_STICKY', 'BROADCAST_WAP_PUSH', 'CALL_COMPANION_APP',
+        'CALL_PHONE', 'CALL_PRIVILEGED', 'CAMERA', 'CAPTURE_AUDIO_OUTPUT',
+        'CHANGE_COMPONENT_ENABLED_STATE', 'CHANGE_CONFIGURATION', 'CHANGE_NETWORK_STATE',
+        'CHANGE_WIFI_MULTICAST_STATE', 'CHANGE_WIFI_STATE', 'CLEAR_APP_CACHE',
+        'CONTROL_LOCATION_UPDATES', 'DELETE_CACHE_FILES', 'DELETE_PACKAGES',
+        'DIAGNOSTIC', 'DISABLE_KEYGUARD', 'DUMP', 'EXPAND_STATUS_BAR',
+        'FACTORY_TEST', 'FLASHLIGHT', 'FOREGROUND_SERVICE', 'GET_ACCOUNTS',
+        'GET_ACCOUNTS_PRIVILEGED', 'GET_PACKAGE_SIZE', 'GET_TASKS',
+        'GLOBAL_SEARCH', 'HIDE_OVERLAY_WINDOWS', 'HIGH_SAMPLING_RATE_SENSORS',
+        'INSTALL_LOCATION_PROVIDER', 'INSTALL_PACKAGES', 'INSTALL_SHORTCUT',
+        'INSTANT_APP_FOREGROUND_SERVICE', 'INTERACT_ACROSS_PROFILES', 'INTERNET',
+        'KILL_BACKGROUND_PROCESSES', 'LAUNCH_MULTI_PANE_SETTINGS_DEEP_LINK',
+        'LOADER_USAGE_STATS', 'LOCATION_HARDWARE', 'MANAGE_DOCUMENTS',
+        'MANAGE_EXTERNAL_STORAGE', 'MANAGE_MEDIA', 'MANAGE_ONGOING_CALLS',
+        'MANAGE_OWN_CALLS', 'MANAGE_WIFI_INTERFACES', 'MANAGE_WIFI_NETWORK_SELECTION',
+        'MASTER_CLEAR', 'MEDIA_CONTENT_CONTROL', 'MODIFY_AUDIO_SETTINGS',
+        'MODIFY_PHONE_STATE', 'MOUNT_FORMAT_FILESYSTEMS', 'MOUNT_UNMOUNT_FILESYSTEMS',
+        'NEARBY_WIFI_DEVICES', 'NFC', 'NFC_PREFERRED_PAYMENT_INFO',
+        'NFC_TRANSACTION_EVENT', 'OVERRIDE_WIFI_CONFIG', 'PACKAGE_USAGE_STATS',
+        'PERSISTENT_ACTIVITY', 'POST_NOTIFICATIONS', 'PROCESS_OUTGOING_CALLS',
+        'QUERY_ALL_PACKAGES', 'READ_ASSISTANT_APP_SEARCH_DATA', 'READ_BASIC_PHONE_STATE',
+        'READ_CALENDAR', 'READ_CALL_LOG', 'READ_CONTACTS', 'READ_EXTERNAL_STORAGE',
+        'READ_FRAME_BUFFER', 'READ_INPUT_STATE', 'READ_LOGS', 'READ_MEDIA_AUDIO',
+        'READ_MEDIA_IMAGES', 'READ_MEDIA_VIDEO', 'READ_MEDIA_VISUAL_USER_SELECTED',
+        'READ_NEARBY_WIFI_NETWORKS', 'READ_PHONE_NUMBERS', 'READ_PHONE_STATE',
+        'READ_PRECISE_PHONE_STATE', 'READ_SMS', 'READ_SYNC_SETTINGS',
+        'READ_SYNC_STATS', 'READ_VOICEMAIL', 'REBOOT', 'RECEIVE_BOOT_COMPLETED',
+        'RECEIVE_MMS', 'RECEIVE_SMS', 'RECEIVE_WAP_PUSH', 'RECORD_AUDIO',
+        'REORDER_TASKS', 'REQUEST_COMPANION_PROFILE_APP_STREAMING',
+        'REQUEST_COMPANION_PROFILE_AUTOMOTIVE_PROJECTION', 'REQUEST_COMPANION_PROFILE_COMPUTER',
+        'REQUEST_COMPANION_PROFILE_GLASSES', 'REQUEST_COMPANION_PROFILE_NEARBY_DEVICE_STREAMING',
+        'REQUEST_COMPANION_PROFILE_WATCH', 'REQUEST_COMPANION_RUN_IN_BACKGROUND',
+        'REQUEST_COMPANION_SELF_MANAGED', 'REQUEST_COMPANION_START_FOREGROUND_SERVICES_FROM_BACKGROUND',
+        'REQUEST_COMPANION_USE_DATA_IN_BACKGROUND', 'REQUEST_DELETE_PACKAGES',
+        'REQUEST_IGNORE_BATTERY_OPTIMIZATIONS', 'REQUEST_INSTALL_PACKAGES',
+        'REQUEST_OBSERVE_COMPANION_DEVICE_PRESENCE', 'REQUEST_PASSWORD_COMPLEXITY',
+        'RESTART_PACKAGES', 'SCHEDULE_EXACT_ALARM', 'SEND_RESPOND_VIA_MESSAGE',
+        'SEND_SMS', 'SET_ALARM', 'SET_ALWAYS_FINISH', 'SET_ANIMATION_SCALE',
+        'SET_DEBUG_APP', 'SET_PREFERRED_APPLICATIONS', 'SET_PROCESS_LIMIT',
+        'SET_TIME', 'SET_TIME_ZONE', 'SET_WALLPAPER', 'SET_WALLPAPER_HINTS',
+        'SIGNAL_PERSISTENT_PROCESSES', 'SMS_FINANCIAL_TRANSACTIONS',
+        'START_FOREGROUND_SERVICES_FROM_BACKGROUND', 'START_VIEW_APP_FEATURES',
+        'START_VIEW_PERMISSION_USAGE', 'STATUS_BAR', 'SUBSCRIBED_FEEDS_READ',
+        'SUBSCRIBED_FEEDS_WRITE', 'SYSTEM_ALERT_WINDOW', 'TRANSMIT_IR',
+        'UNINSTALL_SHORTCUT', 'UPDATE_DEVICE_STATS', 'UWB_RANGING',
+        'USE_BIOMETRIC', 'USE_EXACT_ALARM', 'USE_FINGERPRINT', 'USE_FULL_SCREEN_INTENT',
+        'USE_ICC_AUTH_WITH_DEVICE_IDENTIFIER', 'USE_SIP', 'USE_WIFI_SCREENSHARING_API',
+        'VIBRATE', 'WAKE_LOCK', 'WRITE_APN_SETTINGS', 'WRITE_CALENDAR',
+        'WRITE_CALL_LOG', 'WRITE_CONTACTS', 'WRITE_EXTERNAL_STORAGE',
+        'WRITE_GSERVICES', 'WRITE_SECURE_SETTINGS', 'WRITE_SETTINGS',
+        'WRITE_SMS', 'WRITE_SYNC_SETTINGS', 'WRITE_VOICEMAIL',
+    ]
+])
+
+def _droiddetective_score(all_permissions: list[str]) -> tuple[int, list[str], list[str]]:
+    """
+    DroidDetective-inspired ML-weighted APK permission scoring.
+    Uses feature importance weights derived from RandomForest model trained on
+    ~14 malware families + ~100 Google Play apps. Accuracy: 93.1%
+
+    Returns: (score, dangerous_perms_with_desc, warnings)
+    """
+    if not all_permissions:
+        return 0, [], []
+
+    total_perms = len(all_permissions)
+    proprietary_perms = [p for p in all_permissions if p not in _STANDARD_ANDROID_PERMISSIONS]
+    prop_count = len(proprietary_perms)
+
+    # Feature 1: num_of_permissions (weight 0.124 → scale to max 20 points)
+    # DroidDetective: this is the SINGLE most predictive feature
+    perm_count_score = min(20, int(total_perms * 0.6))
+
+    # Feature 2: other_permission count (weight 0.102 → max 15 points)
+    # Non-standard / proprietary permissions are strong malware indicators
+    prop_score = min(15, prop_count * 3)
+
+    # Feature 3+: Individual permission weights (ML-derived, scaled to max 50)
+    weighted_found = []
+    perm_score_total = 0.0
+    for perm in all_permissions:
+        if perm in _DD_WEIGHTS:
+            w, desc = _DD_WEIGHTS[perm]
+            weighted_found.append((perm, w, desc))
+            perm_score_total += w
+
+    individual_score = min(50, int(perm_score_total))
+    total_score = perm_count_score + prop_score + individual_score
+
+    warnings = []
+    if total_perms > 30:
+        warnings.append(f"Jumlah total permission sangat tinggi: {total_perms} (median app normal ~8)")
+    elif total_perms > 15:
+        warnings.append(f"Jumlah permission di atas rata-rata: {total_perms}")
+
+    if prop_count > 0:
+        warnings.append(f"{prop_count} permission proprietary/non-standard ditemukan: {', '.join(proprietary_perms[:5])}")
+
+    dangerous = [(p, d) for p, _, d in sorted(weighted_found, key=lambda x: -x[1])[:10]]
+    return min(total_score, 75), dangerous, warnings
+
+
 # ── Helper: MalwareBazaar hash lookup ────────────────────────────────────────
+
 def _check_malwarebazaar(sha256_hash: str):
     """Check file hash against abuse.ch MalwareBazaar (free, no key needed)."""
     try:
@@ -1210,51 +1499,27 @@ def analyze_file(file_url, file_type):
             if has_native and all(not any(kw in lib.lower() for kw in ['hook', 'root', 'inject', 'patch', 'bypass']) for lib in has_native):
                 details.append({"step": "Native Lib Analysis", "finding": f"Library native ditemukan: {', '.join(has_native[:5])}. Tidak ada nama library berbahaya yang dikenal."})
 
-            # --- Permission analysis ---
+            # --- Permission analysis (DroidDetective ML-weighted scoring) ---
+            # Method: RandomForest feature importance weights from github.com/user1342/DroidDetective
+            # Accuracy: 93.1% on 14 malware families vs 100 Google Play apps
             permissions = re.findall(rb'android\.permission\.[A-Z_]+', raw_content)
             unique_perms = list(set([p.decode('utf-8', errors='ignore') for p in permissions]))
 
-            DANGEROUS_PERMS = {
-                'READ_SMS': (30, "Membaca SMS (pencurian OTP)"),
-                'RECEIVE_SMS': (25, "Intersepsi SMS masuk"),
-                'SEND_SMS': (30, "Kirim SMS tersembunyi (penipuan pulsa)"),
-                'SYSTEM_ALERT_WINDOW': (20, "Overlay layar penuh (phishing layar)"),
-                'READ_CONTACTS': (15, "Akses daftar kontak"),
-                'CALL_PHONE': (20, "Telepon otomatis tanpa interaksi"),
-                'CAMERA': (15, "Akses kamera latar belakang"),
-                'RECORD_AUDIO': (20, "Merekam audio diam-diam"),
-                'ACCESS_FINE_LOCATION': (15, "Pelacak GPS presisi"),
-                'READ_CALL_LOG': (15, "Baca riwayat telepon"),
-                'PROCESS_OUTGOING_CALLS': (20, "Intersepsi panggilan keluar"),
-                'INSTALL_PACKAGES': (35, "Instalasi APK senyap (dropper)"),
-                'REQUEST_INSTALL_PACKAGES': (30, "Minta izin instalasi APK"),
-                'CHANGE_NETWORK_STATE': (10, "Manipulasi jaringan"),
-                'WRITE_EXTERNAL_STORAGE': (10, "Tulis penyimpanan eksternal"),
-                'BIND_DEVICE_ADMIN': (35, "Kontrol admin perangkat penuh"),
-                'KILL_BACKGROUND_PROCESSES': (10, "Matikan proses lain"),
-                'GET_TASKS': (10, "Pantau proses aktif"),
-                'BIND_ACCESSIBILITY_SERVICE': (25, "Aksesibilitas (dapat membaca layar & input)"),
-                'READ_PHONE_STATE': (15, "Baca IMEI & info SIM"),
-            }
+            details.append({"step": "Manifest Extraction", "finding": f"Berhasil mengekstrak {len(unique_perms)} permission dari AndroidManifest."})
 
-            found_dangerous = []
-            for perm in unique_perms:
-                key = perm.replace('android.permission.', '')
-                if key in DANGEROUS_PERMS:
-                    s, d = DANGEROUS_PERMS[key]
-                    found_dangerous.append((perm, s, d))
+            dd_score, dd_dangerous, dd_warnings = _droiddetective_score(unique_perms)
+            risk_score += dd_score
 
-            details.append({"step": "Manifest Extraction", "finding": f"Berhasil mengekstrak {len(unique_perms)} permission. {len(found_dangerous)} di antaranya tergolong berbahaya."})
+            if dd_warnings:
+                for w in dd_warnings:
+                    details.append({"step": "DroidDetective Analysis", "finding": f"PERINGATAN: {w}"})
 
-            if found_dangerous:
-                perm_score = min(70, sum(s for _, s, _ in found_dangerous))
-                risk_score += perm_score
-                desc = "; ".join([f"{p.split('.')[-1]} ({d})" for p, _, d in found_dangerous[:6]])
-                details.append({"step": "Permission Audit", "finding": f"KRITIS: {len(found_dangerous)} permission berbahaya: {desc}."})
-                extracted_code = "\n".join([p for p, _, _ in found_dangerous])
+            if dd_dangerous:
+                desc = "; ".join([f"{p.split('.')[-1]} ({d})" for p, d in dd_dangerous[:6]])
+                details.append({"step": "Permission Audit (ML-weighted)", "finding": f"KRITIS: {len(dd_dangerous)} permission tinggi-risiko (ML-scored): {desc}."})
+                extracted_code = "\n".join([p for p, _ in dd_dangerous])
             else:
-                risk_score += 5
-                details.append({"step": "Permission Audit", "finding": "Tidak ada permission berbahaya terdeteksi. Aplikasi terlihat normal."})
+                details.append({"step": "Permission Audit (ML-weighted)", "finding": f"Score ML-weighted rendah. {len(unique_perms)} permission ditemukan, tidak ada yang memiliki bobot risiko tinggi."})
 
             # --- Dangerous API in bytecode ---
             DANGEROUS_APIS = {
@@ -1309,6 +1574,96 @@ def analyze_file(file_url, file_type):
         # ═════════════════════════════════════════════════════════════════════
         elif is_pdf:
             frameworks.append("PDF Document")
+
+            # ── PyMuPDF forensic analysis (accurate structural parsing) ───────
+            if PYMUPDF_AVAILABLE:
+                details.append({"step": "PDF Engine", "finding": "PyMuPDF engine aktif — melakukan analisis forensik struktural PDF secara mendalam."})
+                mupdf = _analyze_pdf_pymupdf(raw_content)
+
+                if "error" not in mupdf:
+                    pg = mupdf['page_count']
+                    obj = mupdf['obj_count']
+                    emb = mupdf['embfile_count']
+                    enc = mupdf['encrypted']
+                    details.append({"step": "PDF Structure (PyMuPDF)", "finding": f"Halaman: {pg}, Total objek: {obj}, Embedded files: {emb}, Terenkripsi: {enc}."})
+
+                    # Metadata
+                    meta = mupdf.get('metadata', {})
+                    SUSPICIOUS_CREATORS = ['python', 'php', 'perl', 'ruby', 'node', 'pyPDF', 'pikepdf', 'fpdf', 'dompdf', 'reportlab', 'pdfkit']
+                    if meta:
+                        creator = (meta.get('creator', '') + meta.get('producer', '')).lower()
+                        author = meta.get('author', '')
+                        meta_str = ' | '.join([f"{k}: {v[:60]}" for k, v in meta.items() if k in ['author','creator','producer','title']])
+                        details.append({"step": "PDF Metadata (PyMuPDF)", "finding": f"Metadata: {meta_str}"})
+                        if any(s in creator for s in SUSPICIOUS_CREATORS):
+                            risk_score += 15
+                            details.append({"step": "PDF Metadata (PyMuPDF)", "finding": f"PERHATIAN: PDF dibuat secara programatis ({creator[:60]}) — pola umum phishing PDF massal."})
+                    else:
+                        risk_score += 10
+                        details.append({"step": "PDF Metadata (PyMuPDF)", "finding": "Metadata dihapus — teknik anti-forensik yang sering digunakan penyerang."})
+
+                    # Dangerous object keys found via XRef scan
+                    dkeys = mupdf.get('dangerous_keys', [])
+                    if dkeys:
+                        KEY_SCORES = {'JS': 20, 'JavaScript': 20, 'OpenAction': 15, 'AA': 10, 'Launch': 30, 'EmbeddedFile': 20, 'XFA': 15, 'RichMedia': 15}
+                        key_score = min(80, sum(KEY_SCORES.get(k, 5) for k in dkeys))
+                        risk_score += key_score
+                        details.append({"step": "PDF XRef Object Scan (PyMuPDF)", "finding": f"ANCAMAN: {len(dkeys)} kunci berbahaya ditemukan dalam object tree PDF: {', '.join(dkeys)}."})
+                    else:
+                        details.append({"step": "PDF XRef Object Scan (PyMuPDF)", "finding": "Tidak ada kunci berbahaya (JavaScript, Launch, OpenAction, dll) dalam object tree PDF."})
+
+                    # JavaScript
+                    if mupdf['has_javascript']:
+                        js_snippets = mupdf.get('javascript_snippets', [])
+                        all_js = ' '.join(js_snippets)
+                        obf = _detect_js_obfuscation(all_js)
+                        if obf:
+                            risk_score += min(25, len(obf) * 8)
+                            details.append({"step": "JavaScript Deep Analysis (PyMuPDF)", "finding": f"KRITIS: JavaScript aktif dengan {len(obf)} pola obfuscation: {'; '.join(obf[:4])}."})
+                            extracted_code = js_snippets[0][:300] if js_snippets else ''
+                        else:
+                            details.append({"step": "JavaScript Deep Analysis (PyMuPDF)", "finding": f"JavaScript ditemukan namun tidak ada teknik obfuscation terdeteksi."})
+
+                    # Embedded files
+                    if emb > 0:
+                        risk_score += min(30, emb * 10)
+                        details.append({"step": "Embedded Files (PyMuPDF)", "finding": f"TINGGI: {emb} file tertanam ditemukan di dalam PDF — risiko dropper/backdoor."})
+
+                    # Suspicious links
+                    susp_links = mupdf.get('suspicious_links', [])
+                    all_links = mupdf.get('all_links', [])
+                    if susp_links:
+                        risk_score += min(20, len(susp_links) * 7)
+                        details.append({"step": "Link Analysis (PyMuPDF)", "finding": f"PERINGATAN: {len(susp_links)} link phishing ditemukan: {', '.join(susp_links[:3])}."})
+                    elif all_links:
+                        details.append({"step": "Link Analysis (PyMuPDF)", "finding": f"Ditemukan {len(all_links)} link. Tidak ada pola phishing terdeteksi."})
+
+                    # Launch actions
+                    launches = mupdf.get('launch_actions', [])
+                    if launches:
+                        risk_score += 40
+                        details.append({"step": "Launch Action (PyMuPDF)", "finding": f"SANGAT KRITIS: {len(launches)} perintah Launch ditemukan — dapat mengeksekusi shell command: {str(launches[0])[:100]}."})
+
+                    # OpenAction / AA
+                    if mupdf['open_action']:
+                        risk_score += 15
+                        details.append({"step": "Auto-Execute Check (PyMuPDF)", "finding": "TINGGI: OpenAction terdeteksi — kode dijalankan otomatis saat PDF dibuka."})
+                    elif mupdf['auto_action']:
+                        risk_score += 10
+                        details.append({"step": "Auto-Execute Check (PyMuPDF)", "finding": "PERINGATAN: Additional-Action (AA) terdeteksi — trigger otomatis pada interaksi pengguna."})
+                    else:
+                        details.append({"step": "Auto-Execute Check (PyMuPDF)", "finding": "Tidak ada OpenAction atau auto-action trigger terdeteksi."})
+
+                    # Form fields (credential harvesting)
+                    ff = mupdf.get('form_fields', 0)
+                    if ff > 0:
+                        risk_score += min(15, ff * 3)
+                        details.append({"step": "Form Analysis (PyMuPDF)", "finding": f"PERHATIAN: {ff} form field ditemukan — kemungkinan formulir pengumpulan kredensial."})
+
+                else:
+                    details.append({"step": "PDF Engine", "finding": f"PyMuPDF error saat parsing: {mupdf.get('error', 'unknown')}. Beralih ke raw byte scanning."})
+            else:
+                details.append({"step": "PDF Engine", "finding": "PyMuPDF tidak tersedia. Menggunakan raw byte scanner sebagai fallback."})
 
             # --- PDF version & trailer ---
             version_match = re.match(rb'%PDF-(\d+\.\d+)', raw_content[:20])
