@@ -162,7 +162,12 @@ export default function NewScanPage() {
             </div>
 
             <div className="p-4 sm:p-8">
-              {!limitCheck.loading && !limitCheck.allowed ? (
+              {limitCheck.loading ? (
+                <div className="py-12 text-center">
+                  <Loader2 className="w-8 h-8 animate-spin text-gray-300 mx-auto mb-3" />
+                  <p className="text-sm text-gray-500 font-medium">Memeriksa kuota...</p>
+                </div>
+              ) : !limitCheck.allowed ? (
                 <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl p-6 text-center">
                   <ShieldAlert className="w-12 h-12 mx-auto mb-3 text-red-500" />
                   <h3 className="font-bold text-lg mb-1">Batas Scan Tercapai</h3>
