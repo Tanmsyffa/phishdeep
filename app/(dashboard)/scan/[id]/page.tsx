@@ -214,6 +214,11 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
                 {/* Row 4 — Security signals as badges */}
                 <div className="flex flex-wrap gap-1.5 mt-1">
+                  {domainInfo.safe_browsing && domainInfo.safe_browsing !== 'Unchecked' && (
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${domainInfo.safe_browsing === 'Clean' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
+                      Safe Browsing: {domainInfo.safe_browsing === 'Clean' ? '✓ Clean' : '🚫 MALICIOUS'}
+                    </span>
+                  )}
                   {domainInfo.tld_risk && (
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${domainInfo.tld_risk === 'Normal' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
                       TLD: {domainInfo.tld_risk === 'Normal' ? '✓ Normal' : `⚠️ ${domainInfo.tld_risk.split('—')[0].trim()}`}
@@ -345,17 +350,31 @@ export default async function ScanResultPage({ params, searchParams }: { params:
             <div className="p-4 sm:p-5">
               {details.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2">
-                  {details.map((item: any, idx: number) => (
-                    <div key={idx} className="flex items-start gap-2.5 p-3 bg-gray-50 rounded-xl border border-gray-100 print:border-gray-300 print:bg-white">
-                      <div className="w-5 h-5 rounded-full bg-blue-100 text-primary-700 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 print:border print:border-gray-300">
-                        {idx + 1}
+                  {details.map((item: any, idx: number) => {
+                    // Extract MITRE ATT&CK tag if present (e.g., [T1566] or [T1566.002])
+                    const tagMatch = item.step.match(/\[([A-Z0-9.:-]+)\]/);
+                    const tag = tagMatch ? tagMatch[1] : null;
+                    const cleanStep = item.step.replace(/\[([A-Z0-9.:-]+)\]/, '').trim();
+
+                    return (
+                      <div key={idx} className="flex items-start gap-2.5 p-3 bg-gray-50 rounded-xl border border-gray-100 print:border-gray-300 print:bg-white relative">
+                        <div className="w-5 h-5 rounded-full bg-blue-100 text-primary-700 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 print:border print:border-gray-300">
+                          {idx + 1}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="font-semibold text-gray-900 text-xs truncate flex items-center gap-2">
+                            {cleanStep}
+                            {tag && (
+                              <span className="text-[8px] bg-purple-100 text-purple-700 border border-purple-200 px-1.5 py-0.5 rounded-md tracking-widest font-mono">
+                                {tag}
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-gray-600 mt-0.5 leading-snug print:text-black line-clamp-3" title={item.finding}>{item.finding}</div>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <div className="font-semibold text-gray-900 text-xs truncate">{item.step}</div>
-                        <div className="text-[11px] text-gray-600 mt-0.5 leading-snug print:text-black line-clamp-3" title={item.finding}>{item.finding}</div>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="text-xs text-gray-500 italic">Tidak ada detail langkah analisis yang tersedia.</p>

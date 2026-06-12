@@ -10,6 +10,7 @@ import tempfile
 import datetime
 from urllib.parse import urlparse, quote
 import ipaddress
+import math
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 try:
@@ -51,6 +52,50 @@ def _get_root_domain(hostname: str) -> tuple[str, str]:
     if len(parts) >= 2:
         return f"{parts[-2]}.{parts[-1]}", parts[-1]
     return hostname, ''
+
+def calculate_entropy(text: str) -> float:
+    if not text:
+        return 0.0
+    entropy = 0.0
+    for x in set(text):
+        p_x = float(text.count(x)) / len(text)
+        entropy += - p_x * math.log(p_x, 2)
+    return entropy
+
+def detect_homograph(domain: str) -> tuple[bool, str]:
+    try:
+        if 'xn--' in domain.lower():
+            decoded = domain.encode('ascii').decode('idna')
+            return True, f"Terdeteksi Punycode (Homograph Attack). Nama tersembunyi: {decoded}"
+        if not all(ord(c) < 128 for c in domain):
+            return True, "Domain mengandung karakter non-standar (Unicode) yang berpotensi menipu mata."
+        return False, ""
+    except Exception:
+        return False, ""
+
+def check_safe_browsing(url: str):
+    api_key = os.environ.get('GOOGLE_SAFE_BROWSING_API_KEY')
+    if not api_key:
+        return None
+    endpoint = f"https://safebrowsing.googleapis.com/v4/threatMatches:find?key={api_key}"
+    payload = {
+        "client": {"clientId": "phishdeep-analyzer", "clientVersion": "1.0"},
+        "threatInfo": {
+            "threatTypes": ["MALWARE", "SOCIAL_ENGINEERING", "UNWANTED_SOFTWARE", "POTENTIALLY_HARMFUL_APPLICATION"],
+            "platformTypes": ["ANY_PLATFORM"],
+            "threatEntryTypes": ["URL"],
+            "threatEntries": [{"url": url}]
+        }
+    }
+    try:
+        req = urllib.request.Request(endpoint, data=json.dumps(payload).encode('utf-8'), headers={'Content-Type': 'application/json'})
+        response = urllib.request.urlopen(req, timeout=5)
+        result = json.loads(response.read().decode('utf-8'))
+        if 'matches' in result and len(result['matches']) > 0:
+            return True # Malicious
+        return False # Clean
+    except Exception:
+        return None
 
 def _domain_only(hostname: str) -> str:
     """Extract just the second-level name (e.g. 'google' from 'google.com')."""
@@ -168,6 +213,20 @@ def analyze_link(target_url):
     root_domain, _tld_suffix = _get_root_domain(domain)
     extracted_domain_only = _domain_only(domain)
 
+    # Heuristics: Shannon Entropy & Punycode (MITRE T1566.002, T1190)
+    entropy = calculate_entropy(extracted_domain_only)
+    is_homograph, homograph_msg = detect_homograph(domain)
+    
+    if is_homograph:
+        risk_score += 40
+        details.append({"step": "Heuristik Domain [T1566.002]", "finding": f"BAHAYA: {homograph_msg}"})
+    
+    if entropy > 4.0:
+        risk_score += 15
+        details.append({"step": "Analisis Shannon Entropy [T1568]", "finding": f"PERINGATAN: Nama domain sangat acak (Entropy: {round(entropy, 2)}). Pola ini sering digunakan oleh DGA (Domain Generation Algorithms) untuk malware."})
+    else:
+        details.append({"step": "Analisis Shannon Entropy", "finding": f"Nama domain wajar (Entropy: {round(entropy, 2)}). Tidak terdeteksi algoritma pengacak (DGA)."})
+
     # ================================================================
     # ALL OSINT LOOKUPS — run in parallel (ThreadPoolExecutor)
     # Max wall-clock time = slowest individual call (~5s) not sum of all.
@@ -250,11 +309,14 @@ def analyze_link(target_url):
         resp = urllib.request.urlopen(r, timeout=5)
         return ('wayback', json.loads(resp.read().decode()))
 
+    def _task_safebrowsing():
+        return ('safebrowsing', check_safe_browsing(target_url))
+
     osint_tasks = [
         _task_rdap, _task_ip, _task_ssl,
         _task_mx, _task_urlscan,
         _task_spf, _task_dmarc, _task_ttl,
-        _task_crt, _task_wayback,
+        _task_crt, _task_wayback, _task_safebrowsing,
     ]
     osint_results = {}
     with ThreadPoolExecutor(max_workers=10) as executor:
@@ -426,6 +488,19 @@ def analyze_link(target_url):
         domain_info['wayback_first_seen'] = 'Tidak ditemukan'
         details.append({"step": "Wayback Machine (Archive.org)", "finding": "Domain belum pernah terarsip oleh Wayback Machine. Domain sangat baru atau tidak pernah diindeks."})
 
+    # --- Process Google Safe Browsing ---
+    sb_result = osint_results.get('safebrowsing')
+    if sb_result is True:
+        risk_score += 100
+        domain_info['safe_browsing'] = 'Malicious'
+        details.append({"step": "Google Safe Browsing [T1566]", "finding": "BAHAYA KRITIS: Domain ini resmi terdaftar di database Google Safe Browsing sebagai ancaman siber (Phishing/Malware)."})
+    elif sb_result is False:
+        domain_info['safe_browsing'] = 'Clean'
+        details.append({"step": "Google Safe Browsing", "finding": "Domain tidak ditemukan dalam database Google Safe Browsing (Status Bersih)."})
+    else:
+        domain_info['safe_browsing'] = 'Unchecked'
+        # Silent fail if API key is not configured
+
 
     # Domain Patterns
     domain_lower = domain.lower()
@@ -434,7 +509,7 @@ def analyze_link(target_url):
     is_ip = re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', domain_lower)
     if is_ip:
         risk_score += 40
-        details.append({"step": "Analisis Pola Domain", "finding": "PERINGATAN: Menggunakan alamat IP langsung (bukan nama domain). Taktik ini sangat sering digunakan scammer untuk menyembunyikan identitas."})
+        details.append({"step": "Analisis Pola Domain [T1566]", "finding": "PERINGATAN: Menggunakan alamat IP langsung (bukan nama domain). Taktik ini sangat sering digunakan scammer untuk menyembunyikan identitas."})
     else:
         # 2. Suspicious keywords (General Phishing terms)
         suspicious_keywords = [
@@ -454,7 +529,7 @@ def analyze_link(target_url):
         
         if found_brands and found_keywords:
             risk_score += 45
-            details.append({"step": "Analisis Pola Domain", "finding": f"SANGAT MENCURIGAKAN: Kombinasi pencatutan brand ('{', '.join(found_brands)}') dengan kata manipulatif ('{', '.join(found_keywords)}'). Indikator kuat situs Phishing/Spoofing."})
+            details.append({"step": "Analisis Keyword Domain [T1566.002]", "finding": f"SANGAT MENCURIGAKAN: Kombinasi pencatutan brand ('{', '.join(found_brands)}') dengan kata manipulatif ('{', '.join(found_keywords)}'). Indikator kuat situs Phishing/Spoofing."})
         elif found_keywords:
             risk_score += 15
             details.append({"step": "Analisis Pola Domain", "finding": f"Terdeteksi kata kunci yang sering digunakan untuk memanipulasi korban: {', '.join(found_keywords)}"})
