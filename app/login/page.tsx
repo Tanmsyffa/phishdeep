@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { signInWithGoogle } from '@/app/auth-actions'
-import { ShieldCheck, AlertCircle } from 'lucide-react'
+import { ShieldCheck, AlertCircle, ArrowLeft, Lock, Fingerprint, ShieldAlert } from 'lucide-react'
 import BackButton from '@/components/ui/BackButton'
 
 export default function LoginPage({
@@ -9,31 +9,89 @@ export default function LoginPage({
   searchParams: { message: string }
 }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 relative">
-      <div className="absolute top-4 left-4 sm:top-8 sm:left-8">
-        <BackButton label="Kembali ke Beranda" />
+    <div className="min-h-screen flex bg-gray-50">
+      
+      {/* Left Side - Visual Banner (Hidden on Mobile) */}
+      <div className="hidden lg:flex w-1/2 bg-gray-900 relative overflow-hidden flex-col justify-between">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/90 to-gray-900 z-10" />
+        <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-10" />
+        
+        {/* Abstract Glowing Shapes */}
+        <div className="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] rounded-full bg-blue-600/30 blur-[120px] z-0" />
+        <div className="absolute bottom-[10%] -right-[20%] w-[60%] h-[60%] rounded-full bg-indigo-600/20 blur-[100px] z-0" />
+        
+        <div className="relative z-20 p-12">
+          <Link href="/" className="flex items-center gap-2 text-white hover:opacity-80 transition-opacity">
+            <ShieldCheck className="h-8 w-8 text-blue-400" />
+            <span className="font-bold text-xl tracking-tight">PhishDeep</span>
+          </Link>
+        </div>
+
+        <div className="relative z-20 p-12 mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold tracking-wide mb-6">
+            <Lock className="w-3.5 h-3.5" /> Platform Analisis Forensik
+          </div>
+          <h1 className="text-4xl xl:text-5xl font-bold text-white leading-tight mb-6">
+            Standar Siber <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Internasional.</span>
+          </h1>
+          <p className="text-gray-300 text-lg leading-relaxed max-w-md">
+            Lindungi identitas dan perangkat Anda dari ancaman malware, zero-day exploits, dan phishing canggih menggunakan teknologi heuristik kelas enterprise.
+          </p>
+
+          <div className="grid grid-cols-2 gap-6 mt-12">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gray-800/50 border border-gray-700 flex items-center justify-center shrink-0">
+                <Fingerprint className="w-5 h-5 text-blue-400" />
+              </div>
+              <div>
+                <h4 className="text-white font-semibold text-sm mb-1">Privasi Terjamin</h4>
+                <p className="text-gray-400 text-xs leading-relaxed">Seluruh file akan langsung dihapus setelah analisis selesai secara otomatis.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gray-800/50 border border-gray-700 flex items-center justify-center shrink-0">
+                <ShieldAlert className="w-5 h-5 text-indigo-400" />
+              </div>
+              <div>
+                <h4 className="text-white font-semibold text-sm mb-1">Cerdas & Presisi</h4>
+                <p className="text-gray-400 text-xs leading-relaxed">Didukung MITRE ATT&CK Framework dan Google Safe Browsing Intelligence.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-        <div className="p-8">
-          {/* Logo */}
-          <div className="flex justify-center mb-6">
-            <Link href="/" className="flex items-center gap-2">
-              <ShieldCheck className="h-10 w-10 text-primary-600" />
-              <span className="font-bold text-2xl tracking-tight text-primary-900">PhishDeep</span>
-            </Link>
+      {/* Right Side - Login Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative bg-white">
+        
+        {/* Mobile Back Button */}
+        <div className="absolute top-6 left-6 lg:hidden">
+           <Link href="/" className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Kembali
+          </Link>
+        </div>
+
+        <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-8 duration-700">
+          
+          <div className="lg:hidden flex justify-center mb-10">
+            <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100">
+              <ShieldCheck className="h-8 w-8 text-primary-600" />
+            </div>
           </div>
 
-          <h2 className="text-2xl font-bold text-center text-gray-900 mb-2">Selamat Datang Kembali</h2>
-          <p className="text-center text-gray-500 mb-8 text-sm">
-            Masuk untuk melihat riwayat scan dan laporan Anda.
-          </p>
+          <div className="mb-10 text-center lg:text-left">
+            <h2 className="text-3xl font-bold text-gray-900 mb-3 tracking-tight">Selamat Datang</h2>
+            <p className="text-gray-500 text-sm leading-relaxed">
+              Masuk ke akun Anda untuk mengakses fitur analitik mendalam dan melihat riwayat ancaman yang terdeteksi.
+            </p>
+          </div>
 
           {/* Error Message */}
           {searchParams?.message && (
-            <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-lg mb-6 flex items-start gap-2 text-sm">
-              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-              <span>{searchParams.message}</span>
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3.5 rounded-xl mb-8 flex items-start gap-3 text-sm animate-in zoom-in-95">
+              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-red-500" />
+              <span className="font-medium">{searchParams.message}</span>
             </div>
           )}
 
@@ -41,44 +99,46 @@ export default function LoginPage({
           <form action={signInWithGoogle}>
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-200 text-gray-700 font-semibold py-3.5 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md group"
+              className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm transition-all duration-200 group relative overflow-hidden"
             >
+              <div className="absolute inset-0 bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity" />
               {/* Google Icon SVG */}
-              <svg className="w-5 h-5 shrink-0" viewBox="0 0 48 48">
+              <svg className="w-5 h-5 shrink-0 relative z-10" viewBox="0 0 48 48">
                 <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
                 <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
                 <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
                 <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
                 <path fill="none" d="M0 0h48v48H0z"/>
               </svg>
-              <span>Lanjutkan dengan Google</span>
+              <span className="relative z-10">Lanjutkan dengan Google</span>
             </button>
           </form>
 
           {/* Divider */}
-          <div className="relative my-6">
+          <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-100"></div>
             </div>
-            <div className="relative flex justify-center text-xs text-gray-400">
-              <span className="bg-white px-3">Aman & Terenkripsi</span>
+            <div className="relative flex justify-center text-xs text-gray-400 font-medium">
+              <span className="bg-white px-4">AMAN & TERENKRIPSI</span>
             </div>
           </div>
 
           {/* Trust badges */}
-          <p className="text-center text-xs text-gray-400 leading-relaxed">
+          <p className="text-center text-xs text-gray-400 leading-relaxed mb-8">
             Dengan masuk, Anda menyetujui{' '}
-            <Link href="/terms" className="underline hover:text-gray-600">Syarat & Ketentuan</Link>
+            <Link href="/terms" className="text-gray-600 font-semibold hover:text-gray-900 transition-colors">Syarat & Ketentuan</Link>
             {' '}dan{' '}
-            <Link href="/privacy" className="underline hover:text-gray-600">Kebijakan Privasi</Link>{' '}kami.
+            <Link href="/privacy" className="text-gray-600 font-semibold hover:text-gray-900 transition-colors">Kebijakan Privasi</Link>{' '}kami.
           </p>
 
-          <div className="mt-6 text-center text-sm text-gray-600">
+          <div className="text-center text-sm text-gray-500 bg-gray-50 rounded-xl py-4 border border-gray-100">
             Belum punya akun?{' '}
-            <Link href="/register" className="text-primary-600 font-semibold hover:underline">
-              Daftar Gratis
+            <Link href="/register" className="text-primary-600 font-bold hover:text-primary-700 transition-colors">
+              Daftar Gratis Sekarang
             </Link>
           </div>
+          
         </div>
       </div>
     </div>

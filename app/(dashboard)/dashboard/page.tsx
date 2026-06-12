@@ -13,6 +13,7 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser();
 
   let scans: any[] = [];
+  let allScansForTrend: any[] = [];
   if (user) {
     const formatter = new Intl.DateTimeFormat('en-US', {
       timeZone: 'Asia/Jakarta',
@@ -24,12 +25,22 @@ export default async function DashboardPage() {
     const day = parts.find(p => p.type === 'day')?.value;
     const todayISO = `${year}-${month}-${day}T00:00:00.000+07:00`;
 
+    // Untuk grafik 7 hari, kita fetch data sejak 7 hari lalu
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+    sevenDaysAgo.setHours(0, 0, 0, 0);
+    const sevenDaysAgoISO = sevenDaysAgo.toISOString();
+
     try {
-      await supabase.from('scans').delete().eq('user_id', user.id).lt('created_at', todayISO);
+      // DONT delete old scans so history is preserved
       const { data, error } = await supabase
         .from('scans').select('*').eq('user_id', user.id)
-        .gte('created_at', todayISO).order('created_at', { ascending: false });
-      if (!error && data && data.length > 0) scans = data;
+        .gte('created_at', sevenDaysAgoISO).order('created_at', { ascending: false });
+      if (!error && data) {
+        allScansForTrend = data;
+        // Scans untuk perhitungan hari ini
+        scans = data.filter(s => new Date(s.created_at) >= new Date(todayISO));
+      }
     } catch (err) {
       console.error("Scans table not ready or error:", err);
     }
@@ -46,6 +57,23 @@ export default async function DashboardPage() {
       tanggal: new Date(s.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
     };
   });
+
+  // Calculate 7-day trend data
+  const trendData = [];
+  const now = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const dayName = d.toLocaleDateString('id-ID', { weekday: 'short' });
+    const dateStr = d.toISOString().split('T')[0];
+    
+    // Filter out deleted items from trend stats
+    const validScans = allScansForTrend.filter(s => s.status !== 'deleted');
+    const dayScans = validScans.filter(s => s.created_at.startsWith(dateStr));
+    const total = dayScans.length;
+    const bahaya = dayScans.filter(s => s.risk_score > 70).length;
+    trendData.push({ dayName, dateStr, total, bahaya });
+  }
 
   const categories = [
     { type: 'Link', title: 'Statistik Link', icon: <LinkIcon className="w-4 h-4 text-blue-600"/>, bg: 'bg-blue-50' },
@@ -108,7 +136,114 @@ export default async function DashboardPage() {
         })}
       </div>
 
-      {/* Main Grid */}
+      {/* Analytical Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        
+        {/* Trend Chart (7 Hari Terakhir) */}
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-6">
+          <h2 className="font-bold text-gray-900 text-sm sm:text-base mb-1">Tren Analisis (7 Hari)</h2>
+          <p className="text-xs text-gray-500 mb-6">Perbandingan total scan vs ancaman berbahaya.</p>
+          
+          <div className="flex items-end gap-2 h-40 mt-4 relative">
+            {/* Y-axis labels (rough) */}
+            <div className="absolute left-0 top-0 bottom-0 w-8 flex flex-col justify-between text-[10px] text-gray-400 font-medium">
+              <span>{Math.max(...trendData.map(t => t.total), 5)}</span>
+              <span>0</span>
+            </div>
+            
+            <div className="ml-8 flex-1 flex items-end justify-between h-full relative">
+              {/* Horizontal Grid lines */}
+              <div className="absolute inset-0 flex flex-col justify-between border-l border-b border-gray-100 pointer-events-none">
+                <div className="w-full border-t border-gray-100 border-dashed"></div>
+                <div className="w-full border-t border-gray-100 border-dashed"></div>
+                <div className="w-full border-t border-gray-100 border-dashed"></div>
+              </div>
+
+              {trendData.map((t, idx) => {
+                const maxVal = Math.max(...trendData.map(t => t.total), 5);
+                const totalHeight = (t.total / maxVal) * 100;
+                const dangHeight = (t.bahaya / maxVal) * 100;
+                
+                return (
+                  <div key={idx} className="flex flex-col items-center flex-1 group z-10">
+                    <div className="w-full px-1 sm:px-3 h-full flex items-end justify-center relative">
+                      {/* Total Bar */}
+                      <div 
+                        className="w-full max-w-[32px] bg-blue-100 rounded-t-sm relative transition-all duration-500 hover:bg-blue-200"
+                        style={{ height: `${totalHeight}%` }}
+                      >
+                        {/* Threat Inner Bar */}
+                        <div 
+                          className="absolute bottom-0 left-0 right-0 bg-red-400 rounded-t-sm"
+                          style={{ height: `${(t.bahaya / (t.total || 1)) * 100}%` }}
+                        />
+                        
+                        {/* Tooltip on hover */}
+                        <div className="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] py-1 px-2 rounded-lg pointer-events-none whitespace-nowrap transition-opacity shadow-lg z-20">
+                          {t.total} Scan ({t.bahaya} Bahaya)
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-[10px] text-gray-500 mt-2 font-medium">{t.dayName}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="flex gap-4 mt-4 text-[10px] font-medium justify-center border-t border-gray-100 pt-3">
+            <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-blue-100 rounded-sm"></span> Total Scan</div>
+            <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-red-400 rounded-sm"></span> Bahaya Terdeteksi</div>
+          </div>
+        </div>
+
+        {/* Distribution & Limit */}
+        <div className="space-y-4">
+          <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+            <h3 className="font-bold text-gray-900 mb-4 text-sm">Batas Scan Harian</h3>
+            <div className="flex justify-between text-xs mb-2">
+              <span className="text-gray-500">Terpakai</span>
+              <span className="font-bold text-gray-900">{todayScanCount} / 10</span>
+            </div>
+            <div className="w-full bg-gray-100 rounded-full h-2 mb-3 overflow-hidden">
+              <div
+                className={`h-2 rounded-full transition-all ${todayScanCount >= 10 ? 'bg-red-500' : todayScanCount >= 7 ? 'bg-yellow-500' : 'bg-blue-500'}`}
+                style={{ width: `${Math.min((todayScanCount / 10) * 100, 100)}%` }}
+              />
+            </div>
+            <p className="text-xs text-gray-400">Reset setiap tengah malam (00:00 WIB).</p>
+            {todayScanCount >= 10 && (
+              <div className="mt-3 text-xs bg-red-50 text-red-600 rounded-lg p-2.5 border border-red-100">
+                Batas harian tercapai. Kembali lagi besok!
+              </div>
+            )}
+          </div>
+
+          <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+            <h3 className="font-bold text-gray-900 mb-4 text-sm">Sebaran Target (All Time)</h3>
+            <div className="flex h-4 rounded-full overflow-hidden mb-4">
+              <div style={{ width: `${Math.max((allScansForTrend.filter(s => s.target_type === 'Link').length / (allScansForTrend.length || 1)) * 100, 5)}%` }} className="bg-blue-500"></div>
+              <div style={{ width: `${Math.max((allScansForTrend.filter(s => s.target_type === 'APK').length / (allScansForTrend.length || 1)) * 100, 5)}%` }} className="bg-purple-500"></div>
+              <div style={{ width: `${Math.max((allScansForTrend.filter(s => s.target_type === 'Dokumen').length / (allScansForTrend.length || 1)) * 100, 5)}%` }} className="bg-orange-500"></div>
+            </div>
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between">
+                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-500"></span> Link</span>
+                <span className="font-bold text-gray-700">{allScansForTrend.filter(s => s.target_type === 'Link').length}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-purple-500"></span> APK</span>
+                <span className="font-bold text-gray-700">{allScansForTrend.filter(s => s.target_type === 'APK').length}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-orange-500"></span> Dokumen</span>
+                <span className="font-bold text-gray-700">{allScansForTrend.filter(s => s.target_type === 'Dokumen').length}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Grid for History Table */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Activity Table */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
@@ -166,26 +301,6 @@ export default async function DashboardPage() {
 
         {/* Side Panel */}
         <div className="space-y-4">
-          <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-            <h3 className="font-bold text-gray-900 mb-4 text-sm">Batas Scan Harian</h3>
-            <div className="flex justify-between text-xs mb-2">
-              <span className="text-gray-500">Terpakai</span>
-              <span className="font-bold text-gray-900">{todayScanCount} / 10</span>
-            </div>
-            <div className="w-full bg-gray-100 rounded-full h-2 mb-3 overflow-hidden">
-              <div
-                className={`h-2 rounded-full transition-all ${todayScanCount >= 10 ? 'bg-red-500' : todayScanCount >= 7 ? 'bg-yellow-500' : 'bg-blue-500'}`}
-                style={{ width: `${Math.min((todayScanCount / 10) * 100, 100)}%` }}
-              />
-            </div>
-            <p className="text-xs text-gray-400">Reset setiap tengah malam (00:00 WIB).</p>
-            {todayScanCount >= 10 && (
-              <div className="mt-3 text-xs bg-red-50 text-red-600 rounded-lg p-2.5 border border-red-100">
-                Batas harian tercapai. Kembali lagi besok!
-              </div>
-            )}
-          </div>
-
           <div className="bg-gradient-to-br from-blue-600 to-blue-700 p-5 rounded-2xl text-white">
             <h3 className="font-bold mb-1 text-sm">Mulai Scan Baru</h3>
             <p className="text-xs text-blue-200 mb-4 leading-relaxed">Analisis link, APK, atau dokumen mencurigakan sekarang.</p>

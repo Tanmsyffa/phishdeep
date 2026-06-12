@@ -18,12 +18,7 @@ export async function checkScanLimit() {
   const day = parts.find(p => p.type === 'day')?.value;
   const todayISO = `${year}-${month}-${day}T00:00:00.000+07:00`;
   
-  // Hapus semua data yang usianya lebih tua dari tengah malam hari ini (Garbage Collection)
-  await supabase
-    .from('scans')
-    .delete()
-    .eq('user_id', user.id)
-    .lt('created_at', todayISO)
+  // Removed GC hard delete to preserve scan history for 7-day analytics
 
   const { data: todayScans, error } = await supabase
     .from('scans')
