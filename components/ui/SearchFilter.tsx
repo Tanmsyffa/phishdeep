@@ -55,7 +55,7 @@ export default function SearchFilter({
       
       <div className="flex flex-row gap-3 w-full sm:w-auto">
         {showType && (
-          <div className="relative flex-1 sm:flex-none">
+          <div className="relative flex-1 sm:w-[140px]">
             <select 
               value={type}
               onChange={(e) => {
@@ -76,7 +76,7 @@ export default function SearchFilter({
         )}
         
         {showStatus && (
-          <div className="relative flex-1 sm:flex-none">
+          <div className="relative flex-1 sm:w-[140px]">
             <select
               value={status}
               onChange={(e) => {
