@@ -65,5 +65,10 @@ public/reports/
 *.jpg
 *.jpeg
 
+# Exception: Blog images are part of the project and must be committed
+!public/blog/*.jpg
+!public/blog/*.jpeg
+!public/blog/*.png
+
 # Log Tambahan
 *.log
