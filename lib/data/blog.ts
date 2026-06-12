@@ -8,7 +8,7 @@ export const blogArticles = [
     category: "Berita",
     author: "Redaksi DetikInet",
     readTime: "3 min read",
-    image: "https://asset.kompas.com/crops/n2rh4Ah73ud3DgaeMylFt9GrhWg=/0x0:1155x770/800x533/data/photo/2026/06/12/6a2b77a1b080f.png"
+    image: "/blog/1.jpg"
   },
   {
     id: "2",
@@ -19,7 +19,7 @@ export const blogArticles = [
     category: "Laporan",
     author: "Redaksi Kompas",
     readTime: "4 min read",
-    image: "https://asset.kompas.com/crops/zfBuBu220jVTLxbnurG1vi9y_nA=/154x331:4002x2896/800x533/data/photo/2026/06/12/6a2b49ab4e0cb.jpeg"
+    image: "/blog/2.jpg"
   },
   {
     id: "3",
@@ -30,7 +30,7 @@ export const blogArticles = [
     category: "Malware",
     author: "CNBC Tech",
     readTime: "5 min read",
-    image: "https://asset.kompas.com/crops/VjI7Fa7TBWn5w4moJpRRtKzzZos=/0x0:1200x800/800x533/data/photo/2026/06/09/6a27dee805997.png"
+    image: "/blog/3.jpg"
   },
   {
     id: "4",
@@ -41,7 +41,7 @@ export const blogArticles = [
     category: "Phishing",
     author: "Tim PhishDeep",
     readTime: "4 min read",
-    image: "https://asset.kompas.com/crops/X6vgy5CgaWwKiAo-UOkhdAM2_U8=/174x45:1072x644/800x533/data/photo/2026/06/10/6a290aa66e7eb.png"
+    image: "/blog/4.jpg"
   },
   {
     id: "5",
@@ -52,6 +52,6 @@ export const blogArticles = [
     category: "Berita",
     author: "Redaksi Kompas",
     readTime: "5 min read",
-    image: "https://asset.kompas.com/crops/zfBuBu220jVTLxbnurG1vi9y_nA=/154x331:4002x2896/800x533/data/photo/2026/06/12/6a2b49ab4e0cb.jpeg"
+    image: "/blog/5.jpg"
   }
 ];
