@@ -129,6 +129,8 @@ def get_rdap_info(domain):
         'registrar': 'Unknown',
         'creation_date': 'Unknown',
         'expiry_date': 'Unknown',
+        'last_updated': 'Unknown',
+        'domain_status': [],
         'age_days': None,
         'nameservers': [],
         'ip_address': 'Unknown',
@@ -157,6 +159,10 @@ def get_rdap_info(domain):
                 ns_list.append(ns_name.lower())
         domain_info['nameservers'] = ns_list
 
+        # -- Domain Status (e.g. clientTransferProhibited) --
+        statuses = rdap_data.get('status', [])
+        domain_info['domain_status'] = statuses
+
         # -- Registrar: walk entities recursively --
         def find_registrar(entities):
             for entity in entities:
@@ -177,7 +183,7 @@ def get_rdap_info(domain):
         if registrar:
             domain_info['registrar'] = registrar
 
-        # -- Parse events: registration, expiration --
+        # -- Parse events: registration, expiration, last changed --
         for event in rdap_data.get('events', []):
             action = event.get('eventAction', '')
             raw_date = event.get('eventDate', '')
@@ -186,10 +192,12 @@ def get_rdap_info(domain):
             try:
                 dt = datetime.datetime.fromisoformat(raw_date.replace('Z', '+00:00')).replace(tzinfo=None)
                 if action == 'registration':
-                    domain_info['creation_date'] = dt.strftime("%d %B %Y")
+                    domain_info['creation_date'] = dt.strftime("%d %b %Y")
                     domain_info['age_days'] = (datetime.datetime.now() - dt).days
                 elif action == 'expiration':
-                    domain_info['expiry_date'] = dt.strftime("%d %B %Y")
+                    domain_info['expiry_date'] = dt.strftime("%d %b %Y")
+                elif action in ('last changed', 'last update of RDAP database'):
+                    domain_info['last_updated'] = dt.strftime("%d %b %Y")
             except Exception:
                 continue
                 
@@ -303,11 +311,37 @@ def analyze_link(target_url):
         return ('crt', [])
 
     def _task_wayback():
-        r = urllib.request.Request(
-            f'https://web.archive.org/cdx/search/cdx?url={root_domain}&output=json&limit=1&fl=timestamp&filter=statuscode:200&from=19960101',
+        # Get earliest snapshot
+        r1 = urllib.request.Request(
+            f'https://web.archive.org/cdx/search/cdx?url={root_domain}/*&output=json&limit=1&fl=timestamp&filter=statuscode:200&from=19960101&fastLatest=true',
             headers={'User-Agent': 'PhishDeep-Analyzer/1.0'})
-        resp = urllib.request.urlopen(r, timeout=5)
-        return ('wayback', json.loads(resp.read().decode()))
+        earliest = []
+        try:
+            resp1 = urllib.request.urlopen(r1, timeout=6)
+            earliest = json.loads(resp1.read().decode())
+        except Exception:
+            pass
+        # Get latest snapshot count
+        r2 = urllib.request.Request(
+            f'https://web.archive.org/cdx/search/cdx?url={root_domain}/*&output=json&limit=1&fl=timestamp&filter=statuscode:200&fastLatest=true',
+            headers={'User-Agent': 'PhishDeep-Analyzer/1.0'})
+        latest = []
+        try:
+            resp2 = urllib.request.urlopen(r2, timeout=6)
+            latest = json.loads(resp2.read().decode())
+        except Exception:
+            pass
+        # Get total count via availability API
+        r3 = urllib.request.Request(
+            f'https://archive.org/wayback/available?url={root_domain}',
+            headers={'User-Agent': 'PhishDeep-Analyzer/1.0'})
+        total_data = {}
+        try:
+            resp3 = urllib.request.urlopen(r3, timeout=5)
+            total_data = json.loads(resp3.read().decode())
+        except Exception:
+            pass
+        return ('wayback', {'earliest': earliest, 'latest': latest, 'available': total_data})
 
     def _task_safebrowsing():
         return ('safebrowsing', check_safe_browsing(target_url))
@@ -340,13 +374,33 @@ def analyze_link(target_url):
                 risk_score += 10
                 details.append({"step": "RDAP Analisis Domain", "finding": f"Domain berumur {domain_info['age_days']} hari (< 6 bulan). Relatif baru, perlu perhatian lebih."})
             else:
-                details.append({"step": "RDAP Analisis Domain", "finding": f"Domain telah aktif selama {domain_info['age_days']} hari ({round(domain_info['age_days']/365, 1)} tahun). Relatif terpercaya dari sisi usia."})
+                details.append({"step": "RDAP Analisis Domain", "finding": f"Domain telah aktif selama {domain_info['age_days']} hari ({round(domain_info['age_days']/365, 1)} tahun). Terdaftar sejak {domain_info.get('creation_date', 'Unknown')}."})
         else:
             details.append({"step": "RDAP Analisis Domain", "finding": "Data RDAP tidak tersedia untuk domain ini. Mungkin menggunakan ccTLD privat."})
+        
+        # Check registrar for risk
         bad_registrars = ['namecheap', 'freenom', 'hostinger', 'namesilo', 'godaddy', 'domain.com']
-        if any(br in domain_info.get('registrar', '').lower() for br in bad_registrars):
+        privacy_registrars = ['domains by proxy', 'whoisguard', 'privacyprotect', 'perfect privacy', 'redacted for privacy']
+        registrar_lower = domain_info.get('registrar', '').lower()
+        if any(pr in registrar_lower for pr in privacy_registrars):
+            risk_score += 10
+            details.append({"step": "Reputasi Registrar", "finding": f"Registrar menggunakan WHOIS privacy proxy ({domain_info['registrar']}). Identitas pemilik domain disembunyikan — umum digunakan pelaku phishing."})
+        elif any(br in registrar_lower for br in bad_registrars):
             risk_score += 10
             details.append({"step": "Reputasi Registrar", "finding": f"Domain didaftarkan melalui {domain_info['registrar']}, layanan yang sering disalahgunakan untuk hosting situs phishing secara murah/gratis."})
+        else:
+            details.append({"step": "Reputasi Registrar", "finding": f"Registrar: {domain_info.get('registrar', 'Unknown')}. Kadaluarsa: {domain_info.get('expiry_date', 'Unknown')}. Diperbarui: {domain_info.get('last_updated', 'Unknown')}."})
+        
+        # Nameserver analysis
+        ns = domain_info.get('nameservers', [])
+        if ns:
+            ns_str = ', '.join(ns[:4])
+            # Check for privacy/proxy NS
+            privacy_ns = ['cloudflare', 'domaincontrol', 'ui-dns', 'privatedns']
+            if any(p in ' '.join(ns).lower() for p in privacy_ns):
+                details.append({"step": "Analisis Nameserver", "finding": f"Menggunakan nameserver pihak ketiga/CDN: {ns_str}. Pemilik domain bisa bersembunyi di balik layanan ini."})
+            else:
+                details.append({"step": "Analisis Nameserver", "finding": f"Nameserver: {ns_str}."})
     else:
         details.append({"step": "RDAP Analisis Domain", "finding": "Tidak dapat mengambil data registrasi domain."})
 
@@ -478,15 +532,43 @@ def analyze_link(target_url):
             details.append({"step": "Certificate Transparency (crt.sh)", "finding": f"{cert_count} sertifikat SSL tercatat di crt.sh. Subdomains: {', '.join(unique_names[:5])}"})
 
     # --- Process Wayback ---
-    wb_data = osint_results.get('wayback', [])
-    if wb_data and len(wb_data) > 1:
-        first_ts = wb_data[1][0]
-        first_seen = f"{first_ts[0:4]}-{first_ts[4:6]}-{first_ts[6:8]}"
-        domain_info['wayback_first_seen'] = first_seen
-        details.append({"step": "Wayback Machine (Archive.org)", "finding": f"Domain pertama kali terarsip pada: {first_seen}. Situs ini memiliki rekam jejak online."})
+    wb_data = osint_results.get('wayback', {})
+    if isinstance(wb_data, dict):
+        earliest_list = wb_data.get('earliest', [])
+        latest_list = wb_data.get('latest', [])
+        avail_data = wb_data.get('available', {})
+        
+        if earliest_list and len(earliest_list) > 1:
+            first_ts = earliest_list[1][0]
+            first_seen = f"{first_ts[6:8]}/{first_ts[4:6]}/{first_ts[0:4]}"
+            domain_info['wayback_first_seen'] = first_seen
+
+            # Check latest seen
+            if latest_list and len(latest_list) > 1:
+                last_ts = latest_list[1][0]
+                last_seen = f"{last_ts[6:8]}/{last_ts[4:6]}/{last_ts[0:4]}"
+                domain_info['wayback_last_seen'] = last_seen
+            
+            # Check if available (most recent snapshot URL)
+            snapshot_url = avail_data.get('archived_snapshots', {}).get('closest', {}).get('url', '')
+            if snapshot_url:
+                domain_info['wayback_snapshot_url'] = snapshot_url
+
+            details.append({"step": "Wayback Machine (Archive.org)", "finding": f"Domain pertama kali terarsip: {first_seen}. Terakhir terindeks: {domain_info.get('wayback_last_seen', 'N/A')}. Situs ini memiliki rekam jejak online yang dapat diverifikasi."})
+        else:
+            domain_info['wayback_first_seen'] = 'Tidak ditemukan'
+            risk_score += 5
+            details.append({"step": "Wayback Machine (Archive.org)", "finding": "Domain TIDAK ditemukan di Wayback Machine (Archive.org). Domain sangat baru, belum pernah diindeks, atau menggunakan robots.txt untuk memblokir crawler — perlu kewaspadaan lebih."})
     else:
-        domain_info['wayback_first_seen'] = 'Tidak ditemukan'
-        details.append({"step": "Wayback Machine (Archive.org)", "finding": "Domain belum pernah terarsip oleh Wayback Machine. Domain sangat baru atau tidak pernah diindeks."})
+        # Fallback for old list-format
+        if wb_data and len(wb_data) > 1:
+            first_ts = wb_data[1][0]
+            first_seen = f"{first_ts[6:8]}/{first_ts[4:6]}/{first_ts[0:4]}"
+            domain_info['wayback_first_seen'] = first_seen
+            details.append({"step": "Wayback Machine (Archive.org)", "finding": f"Domain pertama kali terarsip: {first_seen}."})
+        else:
+            domain_info['wayback_first_seen'] = 'Tidak ditemukan'
+            details.append({"step": "Wayback Machine (Archive.org)", "finding": "Domain belum pernah terarsip oleh Wayback Machine."})
 
     # --- Process Google Safe Browsing ---
     sb_result = osint_results.get('safebrowsing')
@@ -819,9 +901,36 @@ def analyze_link(target_url):
 
     except urllib.error.URLError as e:
         risk_score += 40
-        details.append({"step": "Koneksi Jaringan", "finding": f"Target tidak dapat dijangkau ({str(e.reason)}). Kemungkinan telah di-take down."})
+        reason_str = str(e.reason)
+        # Enhanced network error classification
+        if 'SSL' in reason_str or 'certificate' in reason_str.lower():
+            error_type = "SSL/TLS Error"
+            error_hint = "Sertifikat TLS bermasalah atau cipher tidak kompatibel."
+        elif 'timed out' in reason_str.lower() or 'timeout' in reason_str.lower():
+            error_type = "Timeout"
+            error_hint = "Server tidak merespons dalam batas waktu — mungkin diblokir atau down."
+        elif 'refused' in reason_str.lower():
+            error_type = "Koneksi Ditolak"
+            error_hint = "Port HTTP/HTTPS diblokir atau service tidak berjalan."
+        elif 'not found' in reason_str.lower() or 'no address' in reason_str.lower():
+            error_type = "DNS Tidak Ditemukan"
+            error_hint = "Domain tidak dapat di-resolve — mungkin tidak aktif atau salah tulis."
+        else:
+            error_type = "Koneksi Gagal"
+            error_hint = "Kemungkinan telah di-takedown, diblokir, atau tidak dapat dijangkau."
+        details.append({"step": "Koneksi Jaringan", "finding": f"[{error_type}] {reason_str[:150]}. {error_hint}"})
+        
+        # Port check even on failure
+        try:
+            host = parsed_url.hostname or domain
+            port80 = socket.connect_ex((host, 80))
+            port443 = socket.connect_ex((host, 443))
+            port_status = f"Port 80 (HTTP): {'Terbuka' if port80 == 0 else 'Tertutup'} | Port 443 (HTTPS): {'Terbuka' if port443 == 0 else 'Tertutup'}"
+            details.append({"step": "Port Reachability", "finding": port_status + ". Meski HTTPS gagal, port dasar tetap dicek untuk menilai apakah server masih aktif."})
+        except Exception:
+            pass
     except Exception as e:
-        details.append({"step": "Koneksi Jaringan", "finding": f"Gagal menganalisis situs: {str(e)}"})
+        details.append({"step": "Koneksi Jaringan", "finding": f"Gagal menganalisis situs: {str(e)[:200]}"})
     encoded = quote(target_url, safe='')
     screenshot_url = f"https://api.microlink.io/?url={encoded}&screenshot=true&meta=false&embed=screenshot.url"
     return min(risk_score, 100), details, extracted_code, domain_info, frameworks, redirect_chain, screenshot_url

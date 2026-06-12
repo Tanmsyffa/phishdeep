@@ -153,7 +153,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                   </div>
                 </div>
 
-                {/* Row 2 — Dates & SSL */}
+                {/* Row 2 — Dates, SSL, Wayback */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
                   <div className="bg-gray-50 rounded-lg p-2.5 print:border print:border-gray-200">
                     <div className="text-gray-400 text-[9px] uppercase font-bold tracking-wide mb-0.5">Terdaftar</div>
@@ -165,6 +165,12 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                       <div className="text-xs font-medium text-gray-900">{domainInfo.expiry_date}</div>
                     </div>
                   )}
+                  {domainInfo.last_updated && domainInfo.last_updated !== 'Unknown' && (
+                    <div className="bg-gray-50 rounded-lg p-2.5 print:border print:border-gray-200">
+                      <div className="text-gray-400 text-[9px] uppercase font-bold tracking-wide mb-0.5">Diperbarui</div>
+                      <div className="text-xs font-medium text-gray-900">{domainInfo.last_updated}</div>
+                    </div>
+                  )}
                   {domainInfo.ssl_issuer && domainInfo.ssl_issuer !== 'Unknown' && (
                     <div className={`rounded-lg p-2.5 print:border ${domainInfo.ssl_issuer.includes('Invalid') ? 'bg-red-50 print:border-red-300' : 'bg-gray-50 print:border-gray-200'}`}>
                       <div className="text-gray-400 text-[9px] uppercase font-bold tracking-wide mb-0.5">SSL Issuer</div>
@@ -173,8 +179,14 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                   )}
                   {domainInfo.wayback_first_seen && (
                     <div className="bg-gray-50 rounded-lg p-2.5 print:border print:border-gray-200">
-                      <div className="text-gray-400 text-[9px] uppercase font-bold tracking-wide mb-0.5">Wayback (Pertama)</div>
+                      <div className="text-gray-400 text-[9px] uppercase font-bold tracking-wide mb-0.5">Wayback Pertama</div>
                       <div className={`text-xs font-medium ${domainInfo.wayback_first_seen === 'Tidak ditemukan' ? 'text-red-500' : 'text-gray-900'}`}>{domainInfo.wayback_first_seen}</div>
+                    </div>
+                  )}
+                  {domainInfo.wayback_last_seen && (
+                    <div className="bg-gray-50 rounded-lg p-2.5 print:border print:border-gray-200">
+                      <div className="text-gray-400 text-[9px] uppercase font-bold tracking-wide mb-0.5">Wayback Terakhir</div>
+                      <div className="text-xs font-medium text-gray-900">{domainInfo.wayback_last_seen}</div>
                     </div>
                   )}
                 </div>
@@ -247,6 +259,16 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                   )}
                   {domainInfo.mx_records?.length > 0 && (
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-blue-50 text-blue-700 border-blue-100">✉️ {domainInfo.mx_records.length} MX Record</span>
+                  )}
+                  {domainInfo.domain_status?.length > 0 && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-gray-50 text-gray-700 border-gray-200" title={domainInfo.domain_status.join(', ')}>
+                      🔒 {domainInfo.domain_status.length} Status Lock
+                    </span>
+                  )}
+                  {domainInfo.wayback_snapshot_url && (
+                    <a href={domainInfo.wayback_snapshot_url} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100 transition-colors">
+                      🕒 Lihat Snapshot
+                    </a>
                   )}
                   {domainInfo.page_title && (
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-gray-50 text-gray-700 border-gray-200 max-w-[200px] truncate" title={domainInfo.page_title}>
@@ -362,15 +384,15 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                           {idx + 1}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <div className="font-semibold text-gray-900 text-xs truncate flex items-center gap-2">
-                            {cleanStep}
+                          <div className="font-semibold text-gray-900 text-xs flex items-center gap-2 flex-wrap">
+                            <span className="leading-snug">{cleanStep}</span>
                             {tag && (
-                              <span className="text-[8px] bg-purple-100 text-purple-700 border border-purple-200 px-1.5 py-0.5 rounded-md tracking-widest font-mono">
+                              <span className="text-[8px] bg-purple-100 text-purple-700 border border-purple-200 px-1.5 py-0.5 rounded-md tracking-widest font-mono shrink-0">
                                 {tag}
                               </span>
                             )}
                           </div>
-                          <div className="text-[11px] text-gray-600 mt-0.5 leading-snug print:text-black line-clamp-3" title={item.finding}>{item.finding}</div>
+                          <div className="text-[11px] text-gray-600 mt-1 leading-relaxed print:text-black">{item.finding}</div>
                         </div>
                       </div>
                     );
