@@ -1665,80 +1665,81 @@ def analyze_file(file_url, file_type):
             else:
                 details.append({"step": "PDF Engine", "finding": "PyMuPDF tidak tersedia. Menggunakan raw byte scanner sebagai fallback."})
 
-            # --- PDF version & trailer ---
-            version_match = re.match(rb'%PDF-(\d+\.\d+)', raw_content[:20])
-            pdf_version = version_match.group(1).decode() if version_match else 'unknown'
-            obj_count = len(re.findall(rb'\d+ \d+ obj', raw_content))
-            details.append({"step": "PDF Structure Analysis", "finding": f"Versi PDF: {pdf_version}. Total objek: {obj_count}."})
+            # ── Raw PDF scanner (FALLBACK only when PyMuPDF is unavailable) ─────
+            # When PyMuPDF runs successfully, its XRef scan is FAR more accurate.
+            # Raw byte scanning of a compressed PDF causes many false positives:
+            # /ObjStm (PDF 1.5 compression) /XObject (images) /Annot (links) are all normal.
+            pymupdf_succeeded = PYMUPDF_AVAILABLE and 'mupdf' in dir() and 'error' not in mupdf
 
-            # --- PDF metadata forensics ---
-            meta_fields = {
-                b'/Author': 'Author', b'/Creator': 'Creator', b'/Producer': 'Producer',
-                b'/Title': 'Title', b'/Subject': 'Subject', b'/Keywords': 'Keywords'
-            }
-            meta_values = {}
-            for field, label in meta_fields.items():
-                m = re.search(field + rb'\s*\(([^)]{1,200})\)', raw_content)
-                if m:
-                    meta_values[label] = m.group(1).decode('utf-8', errors='ignore')
+            if not pymupdf_succeeded:
+                # ── Version + structure ────────────────────────────────────────
+                version_match = re.match(rb'%PDF-(\d+\.\d+)', raw_content[:20])
+                pdf_version = version_match.group(1).decode() if version_match else 'unknown'
+                obj_count = len(re.findall(rb'\d+ \d+ obj', raw_content))
+                details.append({"step": "PDF Structure Analysis", "finding": f"Versi PDF: {pdf_version}. Total objek: {obj_count}."})
 
-            KNOWN_MALICIOUS_CREATORS = ['fpdf', 'dompdf', 'fpdi', 'mPDF', 'tcpdf', 'reportlab', 'pdfkit', 'ghostscript', 'cairo', 'libreoffice', 'openoffice', 'microsoft word', 'nitro']
-            SUSPICIOUS_CREATORS = ['python', 'php', 'perl', 'ruby', 'node', 'javascript', 'pyPDF', 'pikepdf']
+                # ── Metadata ──────────────────────────────────────────────────
+                meta_fields = {
+                    b'/Author': 'Author', b'/Creator': 'Creator', b'/Producer': 'Producer',
+                    b'/Title': 'Title',
+                }
+                meta_values = {}
+                for field, label in meta_fields.items():
+                    m = re.search(field + rb'\s*\(([^)]{1,200})\)', raw_content)
+                    if m:
+                        meta_values[label] = m.group(1).decode('utf-8', errors='ignore')
 
-            if meta_values:
-                meta_str = " | ".join([f"{k}: {v[:50]}" for k, v in meta_values.items()])
-                details.append({"step": "PDF Metadata Forensics", "finding": f"Metadata: {meta_str}"})
-                creator = meta_values.get('Creator', '').lower() + meta_values.get('Producer', '').lower()
-                if any(s in creator for s in SUSPICIOUS_CREATORS):
-                    risk_score += 15
-                    details.append({"step": "PDF Metadata Forensics", "finding": f"PERHATIAN: PDF dibuat oleh tool skrip/programmatis ({creator[:50]}) — bukan authoring tool standar. Sering digunakan untuk generate phishing PDF massal."})
-            else:
-                risk_score += 10
-                details.append({"step": "PDF Metadata Forensics", "finding": "PERHATIAN: Tidak ada metadata ditemukan. Metadata dihapus — teknik yang digunakan penyerang untuk menghilangkan jejak."})
+                # Tools that are used to mass-generate phishing PDFs (NOT legitimate office apps)
+                SCRIPTING_CREATORS = ['fpdf', 'dompdf', 'fpdi', 'mpdf', 'tcpdf', 'reportlab',
+                                       'pdfkit', 'python', 'php', 'perl', 'ruby', 'node',
+                                       'javascript', 'pypdf', 'pikepdf']
+                if meta_values:
+                    meta_str = " | ".join([f"{k}: {v[:50]}" for k, v in meta_values.items()])
+                    details.append({"step": "PDF Metadata (Raw)", "finding": f"Metadata: {meta_str}"})
+                    creator = meta_values.get('Creator', '').lower() + meta_values.get('Producer', '').lower()
+                    if any(s in creator for s in SCRIPTING_CREATORS):
+                        risk_score += 15
+                        details.append({"step": "PDF Metadata (Raw)", "finding": f"PERHATIAN: PDF dibuat secara programatis ({creator[:60]}) — alat scripting, bukan aplikasi office standar."})
+                else:
+                    risk_score += 8
+                    details.append({"step": "PDF Metadata (Raw)", "finding": "Metadata dihapus — teknik anti-forensik."})
 
-            # --- Structural threat indicators ---
-            PDF_THREATS = {
-                b'/JS':                   (20, 40, "JavaScript action stream"),
-                b'/JavaScript':           (20, 40, "JavaScript action (explicit)"),
-                b'/OpenAction':           (15, 30, "Auto-open action saat dibuka"),
-                b'/AA':                   (10, 20, "Additional-Action (trigger otomatis)"),
-                b'/Launch':               (25, 50, "Shell Launch command"),
-                b'/EmbeddedFile':         (20, 40, "File tersembunyi dalam PDF"),
-                b'/RichMedia':            (15, 30, "RichMedia embed (aktivasi eksternal)"),
-                b'/JBIG2Decode':          (15, 15, "Decoder exploit (CVE-2009-0658)"),
-                b'/XFA':                  (10, 20, "XFA Form (eksekusi XML berbahaya)"),
-                b'eval(':                 (20, 40, "eval() JavaScript"),
-                b'this.exportDataObject':(30, 30, "exportDataObject (exfiltrate embedded)"),
-                b'util.printf':           (15, 15, "util.printf (buffer overflow exploit)"),
-                b'Collab.collectEmailInfo':(25, 25, "collectEmailInfo (harvesting)"),
-                b'app.alert':             (5,  10, "app.alert (social engineering)"),
-                b'/URI':                  (3,  12, "External URI hyperlink"),
-                b'/AcroForm':             (5,  10, "AcroForm (data collection form)"),
-                b'/Encrypt':             (8,  16, "Encrypted stream"),
-                b'/ObjStm':              (5,  15, "Object stream (obfuscation layer)"),
-                b'/XObject':             (3,   9, "External object reference"),
-                b'/Annot':               (2,   6, "Annotation (potential clickjack)"),
-            }
+                # ── Structural threat indicators (ONLY real threats, not normal PDF features) ──
+                # Removed: /ObjStm (normal), /XObject (normal), /Annot (normal), /URI (normal), /AcroForm (normal)
+                PDF_THREATS_REAL = {
+                    b'/JS':                   (20, 40, "JavaScript action stream"),
+                    b'/JavaScript':           (20, 40, "JavaScript action (explicit)"),
+                    b'/OpenAction':           (15, 30, "Auto-open action saat dibuka"),
+                    b'/AA':                   (10, 20, "Additional-Action trigger"),
+                    b'/Launch':               (25, 50, "Shell Launch command"),
+                    b'/EmbeddedFile':         (20, 40, "File tersembunyi dalam PDF"),
+                    b'/RichMedia':            (15, 30, "RichMedia embed"),
+                    b'/JBIG2Decode':          (15, 15, "Decoder exploit (CVE-2009-0658)"),
+                    b'/XFA':                  (10, 20, "XFA Form (XML exploit)"),
+                    b'eval(':                 (20, 40, "eval() JavaScript"),
+                    b'this.exportDataObject':(30, 30, "exportDataObject (exfiltrate)"),
+                    b'util.printf':           (15, 15, "util.printf (buffer overflow)"),
+                    b'Collab.collectEmailInfo':(25, 25, "collectEmailInfo (harvesting)"),
+                }
 
-            found_pdf_threats = []
-            for pattern, (score, max_s, desc) in PDF_THREATS.items():
-                count = raw_content.count(pattern)
-                if count > 0:
-                    actual = min(max_s, score * count)
-                    found_pdf_threats.append((pattern.decode('utf-8', errors='ignore'), count, actual, desc))
+                found_pdf_threats = []
+                for pattern, (score, max_s, desc) in PDF_THREATS_REAL.items():
+                    count = raw_content.count(pattern)
+                    if count > 0:
+                        actual = min(max_s, score * count)
+                        found_pdf_threats.append((pattern.decode('utf-8', errors='ignore'), count, actual, desc))
 
-            if found_pdf_threats:
-                total_pdf_score = min(85, sum(s for _, _, s, _ in found_pdf_threats))
-                risk_score += total_pdf_score
-                threat_summary = "; ".join([f"'{p}'×{c} ({d})" for p, c, _, d in found_pdf_threats[:7]])
-                details.append({"step": "PDF Structure Threat Scan", "finding": f"ANCAMAN: {len(found_pdf_threats)} indikator berbahaya: {threat_summary}."})
-                extracted_code = "\n".join([f"{p} (×{c}): {d}" for p, c, _, d in found_pdf_threats])
-            else:
-                details.append({"step": "PDF Structure Threat Scan", "finding": "Tidak ada indikator action berbahaya dalam struktur PDF. Dokumen terlihat pasif."})
+                if found_pdf_threats:
+                    total_pdf_score = min(85, sum(s for _, _, s, _ in found_pdf_threats))
+                    risk_score += total_pdf_score
+                    threat_summary = "; ".join([f"'{p}'×{c} ({d})" for p, c, _, d in found_pdf_threats[:7]])
+                    details.append({"step": "PDF Structure Threat Scan", "finding": f"ANCAMAN: {len(found_pdf_threats)} indikator: {threat_summary}."})
+                    extracted_code = "\n".join([f"{p} (×{c}): {d}" for p, c, _, d in found_pdf_threats])
+                else:
+                    details.append({"step": "PDF Structure Threat Scan", "finding": "Tidak ada indikator berbahaya. Dokumen terlihat pasif."})
 
-            # --- Deep stream decoding + JS analysis ---
+            # ── Stream JS analysis (runs regardless — complements PyMuPDF) ────
             decoded_streams = _decode_pdf_streams(raw_content)
-            all_stream_text = " ".join(decoded_streams)
             if decoded_streams:
                 js_snippets = []
                 for stream in decoded_streams:
@@ -1749,44 +1750,36 @@ def analyze_file(file_url, file_type):
                     obf_patterns = _detect_js_obfuscation(" ".join(js_snippets))
                     if obf_patterns:
                         risk_score += min(30, len(obf_patterns) * 10)
-                        details.append({"step": "JavaScript Deep Analysis", "finding": f"KRITIS: Ditemukan JavaScript dalam stream dengan {len(obf_patterns)} pola obfuscation aktif: {'; '.join(obf_patterns[:4])}."})
+                        details.append({"step": "JavaScript Stream Analysis", "finding": f"KRITIS: JavaScript dengan {len(obf_patterns)} pola obfuscation: {'; '.join(obf_patterns[:4])}."})
                         if not extracted_code:
                             extracted_code = js_snippets[0][:300]
                     else:
-                        details.append({"step": "JavaScript Deep Analysis", "finding": f"Ditemukan {len(js_snippets)} stream JavaScript. Tidak ada teknik obfuscation terdeteksi."})
+                        details.append({"step": "JavaScript Stream Analysis", "finding": f"Ditemukan {len(js_snippets)} stream JS. Tidak ada obfuscation terdeteksi."})
                 else:
-                    details.append({"step": "JavaScript Deep Analysis", "finding": f"Berhasil mendekripsi {len(decoded_streams)} stream. Tidak ditemukan kode JavaScript aktif."})
+                    details.append({"step": "JavaScript Stream Analysis", "finding": f"{len(decoded_streams)} stream dianalisis. Tidak ada JavaScript aktif."})
 
-                # Entropy of decoded content
-                joined_bytes = all_stream_text.encode('utf-8', errors='ignore')
-                stream_entropy = _byte_entropy(joined_bytes)
-                if stream_entropy > 7.2:
-                    risk_score += 10
-                    details.append({"step": "Stream Entropy", "finding": f"Entropi stream tinggi ({stream_entropy:.3f}/8.0) — kemungkinan encrypted payload dalam stream."})
-                else:
-                    details.append({"step": "Stream Entropy", "finding": f"Entropi stream normal ({stream_entropy:.3f}/8.0)."})
-
-            # --- Embedded URL extraction ---
+            # ── Embedded URL extraction ────────────────────────────────────────
+            # Note: PDFs from Word/Office can have many internal hyperlinks — normal
             embedded_urls = re.findall(rb'https?://[^\s\)\]>"\'<\x00-\x1f]{10,200}', raw_content)
             if embedded_urls:
-                unique_urls = list(set([u.decode('utf-8', errors='ignore') for u in embedded_urls]))[:15]
-                PHISH_KEYWORDS = ['bit.ly', 'tinyurl', 't.co', 'goo.gl', 'ow.ly', 'rb.gy', 'cutt.ly', 'login', 'verify', 'secure', 'account', 'password', 'update', 'confirm', 'suspend', 'verify', 'banking', 'paypal', 'signin', 'credential']
+                unique_urls = list(set([u.decode('utf-8', errors='ignore') for u in embedded_urls]))[:20]
+                PHISH_KEYWORDS = [
+                    'bit.ly', 'tinyurl', 't.co', 'goo.gl', 'ow.ly', 'rb.gy', 'cutt.ly',
+                    'is.gd', 'tiny.cc', 'x.co', 'lnk.to',  # shortlinks
+                    'verify-account', 'confirm-identity', 'secure-login', 'update-payment',
+                    'account-suspended', 'credential', 'phish', 'webscr'
+                ]
                 suspicious_urls = [u for u in unique_urls if any(kw in u.lower() for kw in PHISH_KEYWORDS)]
                 if suspicious_urls:
                     risk_score += min(25, len(suspicious_urls) * 8)
-                    details.append({"step": "Embedded URL Forensics", "finding": f"PERINGATAN: {len(suspicious_urls)} URL phishing/shortlink ditemukan: {', '.join(suspicious_urls[:4])}."})
+                    details.append({"step": "Embedded URL Forensics", "finding": f"PERINGATAN: {len(suspicious_urls)} URL phishing/shortlink terdeteksi: {', '.join(suspicious_urls[:3])}."})
                 else:
-                    details.append({"step": "Embedded URL Forensics", "finding": f"Ditemukan {len(unique_urls)} URL. Tidak ada shortlink atau pola phishing terdeteksi."})
+                    # Many links in a Word PDF = internal document links / references = NORMAL
+                    details.append({"step": "Embedded URL Forensics", "finding": f"Ditemukan {len(unique_urls)} URL (normal untuk dokumen Office). Tidak ada shortlink atau pola phishing."})
             else:
                 details.append({"step": "Embedded URL Forensics", "finding": "Tidak ada URL eksternal dalam dokumen."})
 
-            # --- Stream count anomaly ---
-            flate_count = raw_content.count(b'/FlateDecode')
-            if flate_count > 50:
-                risk_score += 10
-                details.append({"step": "Stream Complexity", "finding": f"PERHATIAN: {flate_count} FlateDecode streams — struktur sangat kompleks, tidak wajar untuk dokumen normal."})
-            else:
-                details.append({"step": "Stream Complexity", "finding": f"Jumlah stream normal: {flate_count} FlateDecode streams."})
+
 
         # ═════════════════════════════════════════════════════════════════════
         # OFFICE XML (DOCX/XLSX/PPTX) ANALYSIS
