@@ -313,7 +313,7 @@ def analyze_link(target_url):
     def _task_wayback():
         # Get earliest snapshot
         r1 = urllib.request.Request(
-            f'https://web.archive.org/cdx/search/cdx?url={root_domain}/*&output=json&limit=1&fl=timestamp&filter=statuscode:200&from=19960101&fastLatest=true',
+            f'https://web.archive.org/cdx/search/cdx?url={root_domain}&output=json&limit=1&fl=timestamp&filter=statuscode:200&from=19960101',
             headers={'User-Agent': 'PhishDeep-Analyzer/1.0'})
         earliest = []
         try:
@@ -323,7 +323,7 @@ def analyze_link(target_url):
             pass
         # Get latest snapshot count
         r2 = urllib.request.Request(
-            f'https://web.archive.org/cdx/search/cdx?url={root_domain}/*&output=json&limit=1&fl=timestamp&filter=statuscode:200&fastLatest=true',
+            f'https://web.archive.org/cdx/search/cdx?url={root_domain}&output=json&limit=1&fl=timestamp&filter=statuscode:200&fastLatest=true',
             headers={'User-Agent': 'PhishDeep-Analyzer/1.0'})
         latest = []
         try:
@@ -923,12 +923,16 @@ def analyze_link(target_url):
         # Port check even on failure
         try:
             host = parsed_url.hostname or domain
+            socket.setdefaulttimeout(3) # Set a 3-second timeout for socket operations
             port80 = socket.connect_ex((host, 80))
             port443 = socket.connect_ex((host, 443))
             port_status = f"Port 80 (HTTP): {'Terbuka' if port80 == 0 else 'Tertutup'} | Port 443 (HTTPS): {'Terbuka' if port443 == 0 else 'Tertutup'}"
             details.append({"step": "Port Reachability", "finding": port_status + ". Meski HTTPS gagal, port dasar tetap dicek untuk menilai apakah server masih aktif."})
         except Exception:
             pass
+        finally:
+            socket.setdefaulttimeout(None) # Reset back to default
+
     except Exception as e:
         details.append({"step": "Koneksi Jaringan", "finding": f"Gagal menganalisis situs: {str(e)[:200]}"})
     encoded = quote(target_url, safe='')
