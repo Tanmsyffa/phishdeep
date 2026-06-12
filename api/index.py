@@ -991,56 +991,294 @@ def analyze_file(file_url, file_type):
     domain_info = {}
     frameworks = []
     redirect_chain = []
-    
+    threat_indicators = []
+
     try:
         if not is_safe_url(file_url):
             raise ValueError("Target URL dilarang karena merujuk pada jaringan internal/lokal (Potensi SSRF diblokir).")
-            
+
         ctx = ssl.create_default_context()
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
-        
-        details.append({"step": "Persiapan Engine", "finding": "Mengunduh file dari brankas terenkripsi untuk analisis..."})
-        req = urllib.request.Request(file_url, headers={'User-Agent': 'PhishDeep-Analyzer'})
+
+        details.append({"step": "Persiapan Engine", "finding": "Mengunduh file dari brankas terenkripsi untuk analisis forensik mendalam..."})
+        req = urllib.request.Request(file_url, headers={
+            'User-Agent': 'PhishDeep-ForensicAnalyzer/2.0',
+            'Accept': '*/*'
+        })
         response = urllib.request.urlopen(req, timeout=15, context=ctx)
         raw_content = response.read()
-        details.append({"step": "Integrasi File", "finding": f"File berhasil diekstraksi ke dalam sistem analyzer ({len(raw_content)} bytes)."})
-        
+        file_size = len(raw_content)
+        content_type = response.headers.get('Content-Type', 'unknown')
+        details.append({"step": "Integrasi File", "finding": f"File berhasil diekstraksi ke dalam sistem analyzer ({file_size:,} bytes). Content-Type: {content_type}."})
+
+        # ── MAGIC BYTE DETECTION ─────────────────────────────────────────────
+        magic = raw_content[:8]
+        is_pdf    = raw_content[:4] == b'%PDF'
+        is_zip    = magic[:2] == b'PK'          # DOCX / XLSX / PPTX / APK
+        is_pe     = magic[:2] == b'MZ'          # Windows EXE / DLL
+        is_elf    = magic[:4] == b'\x7fELF'     # Linux binary / Android native
+        is_office_legacy = magic[:8] == b'\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1'  # DOC/XLS/PPT (OLE)
+
+        details.append({"step": "Format Verification", "finding":
+            f"Magic bytes: PDF={is_pdf}, ZIP/Office-XML={is_zip}, OLE-Office={is_office_legacy}, PE-EXE={is_pe}"})
+
+        # ── EMBEDDED EXECUTABLE CHECK ────────────────────────────────────────
+        if is_pe or is_elf:
+            risk_score += 90
+            threat_indicators.append("File adalah executable (PE/ELF) yang disamarkan sebagai dokumen")
+            details.append({"step": "Executable Detection", "finding": "KRITIS: File terdeteksi sebagai executable (EXE/DLL/ELF) yang disamarkan. Ancaman ekstrem."})
+
+        if not is_pe and not is_elf:
+            # Check for embedded PE inside document
+            pe_offsets = [i for i in range(len(raw_content) - 2) if raw_content[i:i+2] == b'MZ' and i > 0]
+            if len(pe_offsets) > 0:
+                risk_score += 50
+                threat_indicators.append(f"Ditemukan {len(pe_offsets)} embedded executable (MZ header) di dalam file")
+                details.append({"step": "Embedded Payload Check", "finding": f"TINGGI: Ditemukan {len(pe_offsets)} signature executable tersembunyi di dalam dokumen."})
+                extracted_code = f"MZ executable offsets: {pe_offsets[:5]}"
+            else:
+                details.append({"step": "Embedded Payload Check", "finding": "Tidak ditemukan embedded executable atau payload tersembunyi di dalam file."})
+
+        # ══════════════════════════════════════════════════════════════════════
+        # APK ANALYSIS
+        # ══════════════════════════════════════════════════════════════════════
         if file_type.lower() == 'apk':
             frameworks.append("Android Package (APK)")
-            permissions = re.findall(br'android\.permission\.[A-Z_]+', raw_content)
-            unique_perms = list(set([p.decode('utf-8') for p in permissions]))
-            dangerous_perms = ['READ_SMS', 'RECEIVE_SMS', 'SEND_SMS', 'SYSTEM_ALERT_WINDOW', 'READ_CONTACTS', 'CALL_PHONE']
-            found_dangerous = [p for p in unique_perms if any(dp in p for dp in dangerous_perms)]
-            
+
+            # Permission analysis
+            permissions = re.findall(rb'android\.permission\.[A-Z_]+', raw_content)
+            unique_perms = list(set([p.decode('utf-8', errors='ignore') for p in permissions]))
+
+            DANGEROUS_PERMS = {
+                'READ_SMS': (30, "Membaca SMS (risiko pencurian OTP)"),
+                'RECEIVE_SMS': (25, "Menerima SMS secara diam-diam"),
+                'SEND_SMS': (30, "Mengirim SMS tanpa sepengetahuan pengguna (modus penipuan)"),
+                'SYSTEM_ALERT_WINDOW': (20, "Overlay layar (modus phishing layar)"),
+                'READ_CONTACTS': (15, "Mengakses seluruh daftar kontak"),
+                'CALL_PHONE': (20, "Melakukan panggilan telepon otomatis"),
+                'CAMERA': (15, "Akses kamera di latar belakang"),
+                'RECORD_AUDIO': (20, "Merekam audio tanpa interaksi pengguna"),
+                'ACCESS_FINE_LOCATION': (15, "Melacak lokasi GPS secara presisi"),
+                'READ_CALL_LOG': (15, "Membaca riwayat panggilan"),
+                'PROCESS_OUTGOING_CALLS': (20, "Mengintersepsi dan memodifikasi panggilan keluar"),
+                'INSTALL_PACKAGES': (35, "Menginstal APK lain secara senyap (dropper malware)"),
+                'REQUEST_INSTALL_PACKAGES': (30, "Meminta izin instalasi APK (dropper)"),
+                'CHANGE_NETWORK_STATE': (10, "Memanipulasi jaringan"),
+                'WRITE_EXTERNAL_STORAGE': (10, "Menulis ke penyimpanan eksternal"),
+            }
+
+            found_dangerous = []
+            for perm in unique_perms:
+                perm_key = perm.replace('android.permission.', '')
+                if perm_key in DANGEROUS_PERMS:
+                    score, desc = DANGEROUS_PERMS[perm_key]
+                    found_dangerous.append((perm, score, desc))
+
             if unique_perms:
-                details.append({"step": "Manifest Extraction", "finding": f"Berhasil mengekstrak {len(unique_perms)} deklarasi permission."})
-                if found_dangerous:
-                    risk_score += 65
-                    details.append({"step": "Security Audit", "finding": f"PERINGATAN KRITIS: Aplikasi meminta akses yang melanggar privasi pengguna secara invasif."})
-                    extracted_code = "\n".join(found_dangerous)
-                else:
-                    risk_score += 10
-                    details.append({"step": "Security Audit", "finding": "Aplikasi hanya meminta akses wajar. Tidak ada anomali privasi."})
+                details.append({"step": "Manifest Extraction", "finding": f"Berhasil mengekstrak {len(unique_perms)} deklarasi permission. {len(found_dangerous)} di antaranya tergolong berbahaya."})
             else:
-                details.append({"step": "Manifest Extraction", "finding": "Manifest obfuscated atau tidak dapat diuraikan. Perlu kewaspadaan tinggi."})
+                details.append({"step": "Manifest Extraction", "finding": "Manifest obfuscated atau tidak dapat diuraikan. Ini indikasi APK termodifikasi. Perlu kewaspadaan tinggi."})
                 risk_score += 40
-                
-            if b'Landroid/telephony/SmsManager;' in raw_content:
+
+            if found_dangerous:
+                total_perm_score = min(70, sum(s for _, s, _ in found_dangerous))
+                risk_score += total_perm_score
+                perm_desc = "; ".join([f"{p.split('.')[-1]} ({d})" for p, s, d in found_dangerous[:5]])
+                details.append({"step": "Security Audit - Permission", "finding": f"PERINGATAN KRITIS: {len(found_dangerous)} permission berbahaya terdeteksi: {perm_desc}."})
+                extracted_code = "\n".join([p for p, _, _ in found_dangerous])
+            else:
+                risk_score += 5
+                details.append({"step": "Security Audit - Permission", "finding": "Aplikasi hanya meminta akses wajar. Tidak ada anomali privasi terdeteksi."})
+
+            # Dangerous API calls inside bytecode (Dalvik)
+            DANGEROUS_APIS = {
+                b'Landroid/telephony/SmsManager;': (25, "SMS Manager API (pencurian OTP)"),
+                b'Ljava/lang/Runtime;->exec': (30, "Runtime exec (eksekusi perintah shell)"),
+                b'Ljava/lang/reflect/Method;->invoke': (15, "Reflection API (obfuscation/evasion)"),
+                b'Landroid/content/pm/PackageInstaller;': (25, "PackageInstaller API (silent install)"),
+                b'Ljava/net/URL;->openConnection': (10, "URL openConnection (komunikasi jaringan tersembunyi)"),
+                b'Ldalvik/system/DexClassLoader;': (30, "DexClassLoader (memuat kode dinamis dari luar)"),
+                b'Landroid/app/admin/DevicePolicyManager;': (20, "DevicePolicyManager (kontrol perangkat penuh)"),
+            }
+
+            found_apis = []
+            for api_bytes, (score, desc) in DANGEROUS_APIS.items():
+                if api_bytes in raw_content:
+                    found_apis.append((api_bytes.decode('utf-8', errors='ignore'), score, desc))
+
+            if found_apis:
+                api_score = min(40, sum(s for _, s, _ in found_apis))
+                risk_score += api_score
+                api_desc = "; ".join([f"{d}" for _, _, d in found_apis[:4]])
+                details.append({"step": "Bytecode Analysis", "finding": f"TERDETEKSI: {len(found_apis)} pemanggilan API berbahaya di bytecode: {api_desc}."})
+            else:
+                details.append({"step": "Bytecode Analysis", "finding": "Tidak ada pemanggilan API berbahaya yang teridentifikasi pada bytecode Dalvik."})
+
+            # Obfuscation check
+            str_sections = re.findall(rb'[A-Za-z0-9+/]{50,}={0,2}', raw_content)
+            b64_count = len(str_sections)
+            if b64_count > 20:
+                risk_score += 15
+                details.append({"step": "Obfuscation Scan", "finding": f"Terdeteksi {b64_count} potongan data base64/encoded yang mencurigakan. Kemungkinan payload tersembunyi."})
+            else:
+                details.append({"step": "Obfuscation Scan", "finding": f"Tingkat obfuscation rendah. Ditemukan {b64_count} segmen encoded — masih dalam batas normal."})
+
+        # ══════════════════════════════════════════════════════════════════════
+        # PDF ANALYSIS
+        # ══════════════════════════════════════════════════════════════════════
+        elif is_pdf:
+            frameworks.append("PDF Document")
+            content_str = raw_content  # raw bytes for PDF parsing
+
+            # ── Structural threat indicators ─────────────────────────────────
+            PDF_THREATS = {
+                # (pattern, score_per_occurrence, max_score, description, is_keyword_only)
+                b'/JS':            (20, 40, "JavaScript action stream"),
+                b'/JavaScript':    (20, 40, "JavaScript action (explicit)"),
+                b'/OpenAction':    (15, 30, "Auto-open action saat dokumen dibuka"),
+                b'/AA':            (10, 20, "Additional-Action (trigger otomatis)"),
+                b'/Launch':        (25, 50, "Shell Launch command"),
+                b'/EmbeddedFile':  (20, 40, "File tersembunyi di dalam PDF"),
+                b'/RichMedia':     (15, 30, "RichMedia embed (Flash/aktivasi eksternal)"),
+                b'/Encrypt':       (10, 10, "Enkripsi stream mencurigakan"),
+                b'/JBIG2Decode':   (15, 15, "Decoder eksploit (CVE-2009-0658 related)"),
+                b'/URI':           (5,  15, "External URI reference"),
+                b'/AcroForm':      (5,  10, "AcroForm (data harvesting)"),
+                b'/XFA':           (10, 20, "XFA Form (eksekusi XML berbahaya)"),
+                b'eval(':          (20, 40, "eval() JavaScript call"),
+                b'app.alert':      (5,  10, "app.alert (social engineering)"),
+                b'this.exportDataObject': (30, 30, "exportDataObject (mengekstrak embedded file)"),
+                b'util.printf':    (15, 15, "util.printf (buffer overflow exploit)"),
+                b'Collab.collectEmailInfo': (25, 25, "collectEmailInfo (data harvesting)"),
+            }
+
+            found_pdf_threats = []
+            for pattern, (score, max_s, desc) in PDF_THREATS.items():
+                count = content_str.count(pattern)
+                if count > 0:
+                    actual_score = min(max_s, score * count)
+                    found_pdf_threats.append((pattern.decode('utf-8', errors='ignore'), count, actual_score, desc))
+
+            if found_pdf_threats:
+                total_pdf_score = min(80, sum(s for _, _, s, _ in found_pdf_threats))
+                risk_score += total_pdf_score
+                threat_summary = "; ".join([f"'{p}' x{c} ({d})" for p, c, _, d in found_pdf_threats[:6]])
+                details.append({"step": "Macro & Script Scan", "finding": f"ANCAMAN TERDETEKSI: {len(found_pdf_threats)} indikator berbahaya ditemukan: {threat_summary}."})
+                extracted_code = "\n".join([f"{p} (x{c}): {d}" for p, c, _, d in found_pdf_threats])
+            else:
+                details.append({"step": "Macro & Script Scan", "finding": "Tidak ditemukan action JavaScript, auto-launch, atau embedded file berbahaya. Dokumen terlihat pasif dan bersih."})
+
+            # ── Embedded URL Scan ─────────────────────────────────────────────
+            embedded_urls = re.findall(rb'https?://[^\s\)\]>"\x00-\x1f]{10,150}', content_str)
+            if embedded_urls:
+                unique_urls = list(set([u.decode('utf-8', errors='ignore') for u in embedded_urls]))[:10]
+                suspicious_domains = [u for u in unique_urls if any(kw in u.lower() for kw in ['bit.ly', 'tinyurl', 't.co', 'goo.gl', 'ow.ly', 'su.pr', 'is.gd', 'rb.gy', 'cutt.ly', 'login', 'verify', 'secure', 'account', 'password', 'update'])]
+                if suspicious_domains:
+                    risk_score += min(20, len(suspicious_domains) * 8)
+                    details.append({"step": "URL Extraction", "finding": f"PERINGATAN: {len(suspicious_domains)} URL mencurigakan ditemukan dalam dokumen (shortlink/phishing pattern): {', '.join(suspicious_domains[:3])}."})
+                else:
+                    details.append({"step": "URL Extraction", "finding": f"Ditemukan {len(unique_urls)} URL. Tidak ada pola phishing atau shortlink berbahaya yang terdeteksi."})
+            else:
+                details.append({"step": "URL Extraction", "finding": "Tidak ada URL eksternal tertanam di dalam dokumen."})
+
+            # ── Stream anomaly / obfuscation ─────────────────────────────────
+            flate_count = content_str.count(b'/FlateDecode')
+            filter_count = content_str.count(b'/Filter')
+            if flate_count > 30:
+                risk_score += 10
+                details.append({"step": "Stream Analysis", "finding": f"Struktur kompleks: {flate_count} stream FlateDecode terdeteksi. Kemungkinan konten tersembunyi atau obfuscated payload."})
+            else:
+                details.append({"step": "Stream Analysis", "finding": f"Struktur stream normal. {flate_count} stream ditemukan — tidak ada anomali kompresi."})
+
+        # ══════════════════════════════════════════════════════════════════════
+        # OFFICE XML (DOCX/XLSX/PPTX) ANALYSIS
+        # ══════════════════════════════════════════════════════════════════════
+        elif is_zip:
+            frameworks.append("Office XML Document (OOXML)")
+
+            # Check for VBA macro container
+            if b'vbaProject.bin' in raw_content:
+                risk_score += 50
+                details.append({"step": "Macro & Script Scan", "finding": "KRITIS: File mengandung vbaProject.bin — modul VBA Macro aktif ditemukan. Risiko eksekusi kode otomatis."})
+                extracted_code = "vbaProject.bin detected (VBA Macro container)"
+            else:
+                details.append({"step": "Macro & Script Scan", "finding": "Tidak ditemukan modul VBA Macro. File bersih dari risiko eksekusi otomatis."})
+
+            # Check for external relationship connections
+            ext_refs = re.findall(rb'Target="(https?://[^"]{10,})"', raw_content)
+            if ext_refs:
+                unique_ext = list(set([r.decode('utf-8', errors='ignore') for r in ext_refs]))[:10]
+                suspicious = [u for u in unique_ext if any(kw in u.lower() for kw in ['login', 'verify', 'secure', 'account', 'payload', 'shell', 'cmd', 'powershell', 'download', 'update'])]
+                if suspicious:
+                    risk_score += 30
+                    details.append({"step": "External Link Check", "finding": f"PERINGATAN: Ditemukan {len(suspicious)} external reference mencurigakan: {', '.join(suspicious[:3])}."})
+                else:
+                    details.append({"step": "External Link Check", "finding": f"Ditemukan {len(unique_ext)} external reference. Tidak ada target mencurigakan terdeteksi."})
+            else:
+                details.append({"step": "External Link Check", "finding": "Tidak ada external reference tersembunyi dalam relasi dokumen."})
+
+            # ActiveX / OLE object check
+            if b'oleObject' in raw_content or b'ActiveX' in raw_content:
                 risk_score += 25
-                details.append({"step": "Bytecode Scan", "finding": "Menemukan injeksi pemanggilan API SMS Manager di belakang layar (Potensi pencurian OTP)."})
-                
+                details.append({"step": "OLE/ActiveX Scan", "finding": "TINGGI: Ditemukan OLE object atau ActiveX component — vektor eksploitasi umum dalam dokumen berbahaya."})
+            else:
+                details.append({"step": "OLE/ActiveX Scan", "finding": "Tidak ada OLE object atau ActiveX tertanam yang terdeteksi."})
+
+            # DDE (Dynamic Data Exchange) exploit
+            if b'DDEAUTO' in raw_content or b'=CMD' in raw_content or b'=SHELL' in raw_content:
+                risk_score += 40
+                details.append({"step": "DDE Exploit Scan", "finding": "KRITIS: Instruksi DDE (Dynamic Data Exchange) terdeteksi — teknik eksploitasi tanpa macro yang dikenal."})
+            else:
+                details.append({"step": "DDE Exploit Scan", "finding": "Tidak ada instruksi DDE atau formula eksploitasi yang terdeteksi."})
+
+        # ══════════════════════════════════════════════════════════════════════
+        # LEGACY OFFICE (OLE) ANALYSIS
+        # ══════════════════════════════════════════════════════════════════════
+        elif is_office_legacy:
+            frameworks.append("Legacy Office Document (OLE/DOC/XLS)")
+            risk_score += 10  # Base score for legacy format
+
+            # OLE formats almost always have macro risks
+            if b'Macro' in raw_content or b'Module' in raw_content or b'VBA' in raw_content:
+                risk_score += 45
+                details.append({"step": "Macro & Script Scan", "finding": "KRITIS: Format Office lama (.doc/.xls) dengan indikasi VBA Macro aktif. Format ini merupakan vektor malware paling umum."})
+            else:
+                details.append({"step": "Macro & Script Scan", "finding": "Format Office lama terdeteksi. Tidak ada indikasi macro jelas, namun format ini tetap berisiko lebih tinggi."})
+
+            if b'DDEAUTO' in raw_content or b'=SHELL' in raw_content:
+                risk_score += 35
+                details.append({"step": "DDE Exploit Scan", "finding": "KRITIS: Formula DDE/SHELL ditemukan dalam file Office lama. Dapat mengeksekusi perintah sistem saat dibuka."})
+
+        # ══════════════════════════════════════════════════════════════════════
+        # GENERIC / UNKNOWN FORMAT
+        # ══════════════════════════════════════════════════════════════════════
         else:
             frameworks.append("Document/File Media")
-            if b'JavaScript' in raw_content or b'/JS' in raw_content:
-                risk_score += 75
-                details.append({"step": "Macro & Script Scan", "finding": "ANCAMAN TERDETEKSI: Dokumen mengandung sisipan JavaScript eksekusi otomatis."})
+            details.append({"step": "Format Verification", "finding": f"Format tidak dikenal atau tidak standar. Magic bytes: {magic.hex()}."})
+            risk_score += 20  # Unknown format is inherently suspicious
+
+            # Generic dangerous string check (last resort)
+            generic_threats = {
+                b'PowerShell': (20, "PowerShell script"),
+                b'cmd.exe': (25, "Command prompt execution"),
+                b'WScript': (20, "Windows Script Host"),
+                b'CreateObject': (15, "COM object creation"),
+                b'eval(': (20, "eval() call"),
+                b'document.write': (10, "DOM write operation"),
+                b'XMLHttpRequest': (5, "HTTP request object"),
+            }
+            found_generic = [(k.decode(), v[0], v[1]) for k, v in generic_threats.items() if k in raw_content]
+            if found_generic:
+                risk_score += min(40, sum(s for _, s, _ in found_generic))
+                desc = "; ".join([d for _, _, d in found_generic])
+                details.append({"step": "Macro & Script Scan", "finding": f"Ditemukan indikator skrip berbahaya: {desc}."})
             else:
-                details.append({"step": "Macro & Script Scan", "finding": "Dokumen terlihat pasif dan bersih dari injeksi payload."})
+                details.append({"step": "Macro & Script Scan", "finding": "Tidak ada indikator skrip atau payload yang terdeteksi pada file tidak dikenal ini."})
 
     except Exception as e:
         details.append({"step": "Ekstraksi File", "finding": f"Kegagalan mesin forensik: {str(e)}"})
-        
+
     return min(risk_score, 100), details, extracted_code, domain_info, frameworks, redirect_chain, ""
 
 @app.route('/api/scan', methods=['POST'])
