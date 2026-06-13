@@ -9,7 +9,7 @@ export default function CaraKerjaPage() {
     {
       step: "01",
       title: "Masukkan Target",
-      desc: "Tempelkan URL mencurigakan, unggah file APK, atau dokumen yang ingin Anda periksa ke form pemindaian PhishDeep."
+      desc: "Tempelkan URL mencurigakan, atau unggah file APK yang ingin Anda periksa ke form pemindaian PhishDeep."
     },
     {
       step: "02",

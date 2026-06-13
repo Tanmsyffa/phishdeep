@@ -18,12 +18,7 @@ export default function FiturPage() {
       desc: "Unggah file APK dan kami akan mengekstrak daftar permission, mendeteksi overlay attack, dan mencocokkan signature malware. Hasilnya ditampilkan dengan visual highlight pada izin berbahaya.",
       color: "bg-green-100 text-green-600"
     },
-    {
-      icon: <FileSearch className="w-7 h-7" />,
-      title: "Scan Dokumen (PDF / Office)",
-      desc: "Dokumen sering disusupi embedded URL dan macro berbahaya. PhishDeep mengekstrak dan menganalisis setiap link tersembunyi di dalam file Anda tanpa membuka file di perangkat Anda.",
-      color: "bg-purple-100 text-purple-600"
-    },
+
     {
       icon: <FileText className="w-7 h-7" />,
       title: "Laporan Bukti Forensik (PDF)",
@@ -46,14 +41,14 @@ export default function FiturPage() {
               <ShieldCheck className="w-4 h-4 shrink-0" /> <span className="leading-tight">Fitur Lengkap</span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">Semua yang Anda Butuhkan untuk Keamanan Digital</h1>
-            <p className="text-base sm:text-lg text-gray-600 mb-8 leading-relaxed">PhishDeep menyediakan empat jenis pemindaian untuk melindungi Anda dari berbagai ancaman siber, lengkap dengan bukti visual.</p>
+            <p className="text-base sm:text-lg text-gray-600 mb-8 leading-relaxed">PhishDeep menyediakan tiga fitur utama untuk melindungi Anda dari berbagai ancaman siber, lengkap dengan bukti visual.</p>
           </div>
         </section>
 
         {/* Feature Cards */}
         <section className="py-12 bg-white">
           <div className="container mx-auto px-4 max-w-5xl">
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-3 gap-8">
               {features.map((f, i) => (
                 <div key={i} className="bg-gray-50 border border-gray-100 p-6 sm:p-10 rounded-2xl hover:shadow-lg transition-shadow">
                   <div className={`w-12 h-12 sm:w-14 sm:h-14 ${f.color} rounded-xl flex items-center justify-center mb-6 shadow-sm`}>

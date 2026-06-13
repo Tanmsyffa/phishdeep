@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     default: "PhishDeep - Deteksi Phishing & Malware dengan Bukti Visual",
     template: "%s | PhishDeep"
   },
-  description: "PhishDeep adalah platform cerdas untuk mendeteksi phishing, malware, dan ancaman siber pada link, APK, dan dokumen dengan laporan forensik visual.",
+  description: "PhishDeep adalah platform cerdas untuk mendeteksi phishing, malware, dan ancaman siber pada link dan APK dengan laporan forensik visual.",
   keywords: [
     "PhishDeep", "deteksi phishing", "scan malware", "cek link aman", 
     "cek APK berbahaya", "keamanan siber", "bukti visual phishing", 
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "PhishDeep - Deteksi Phishing & Malware",
-    description: "Cek link, APK, dan dokumen Anda dari bahaya phishing dan malware. Dapatkan bukti visual nyata dengan PhishDeep.",
+    description: "Cek link dan APK Anda dari bahaya phishing dan malware. Dapatkan bukti visual nyata dengan PhishDeep.",
     url: 'https://phishdeep.vercel.app',
     siteName: 'PhishDeep',
     locale: 'id_ID',
@@ -64,7 +64,7 @@ export default function RootLayout({
     name: 'PhishDeep',
     alternateName: 'PhishDeep - Deteksi Phishing & Malware',
     url: 'https://phishdeep.vercel.app',
-    description: 'Platform cerdas untuk mendeteksi phishing, malware, dan ancaman siber pada link, APK, dan dokumen dengan laporan forensik visual.',
+    description: 'Platform cerdas untuk mendeteksi phishing, malware, dan ancaman siber pada link dan APK dengan laporan forensik visual.',
     potentialAction: {
       '@type': 'SearchAction',
       target: {

@@ -865,7 +865,7 @@ def analyze_link(target_url):
                         form_actions.append(action)
                 if form_actions:
                     domain_info['form_actions'] = form_actions
-                    risk_score += 40
+                    risk_score += 40 
                     details.append({"step": "Deteksi Form Eksternal", "finding": f"BAHAYA: Formulir di halaman ini mengirimkan data (seperti sandi) ke server luar yang tidak terkait: {form_actions[0]}"})
 
                 # Extract iframes and links

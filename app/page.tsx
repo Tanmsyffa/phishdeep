@@ -28,7 +28,7 @@ export default function Home() {
                 </h1>
                 
                 <p className="text-sm sm:text-lg text-gray-600 mb-8 sm:mb-10 max-w-xl leading-relaxed px-2 sm:px-0">
-                  PhishDeep mendeteksi phishing, malware, dan ancaman lain pada link, APK, dan dokumen dilengkapi bukti visual lengkap yang siap digunakan.
+                  PhishDeep mendeteksi phishing, malware, dan ancaman lain pada link dan APK dilengkapi bukti visual lengkap yang siap digunakan.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-10 w-full sm:w-auto px-4 sm:px-0 justify-center lg:justify-start">
@@ -102,7 +102,7 @@ export default function Home() {
               <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">Kami menyediakan berbagai alat pemindaian untuk memastikan Anda aman dari ancaman siber.</p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
               <div className="bg-white border border-gray-100 p-5 sm:p-8 rounded-2xl hover:shadow-lg transition-shadow">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 text-primary-600 rounded-xl flex items-center justify-center mb-4 sm:mb-6">
                   <LinkIcon className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -117,14 +117,6 @@ export default function Home() {
                 </div>
                 <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-3">Scan APK</h3>
                 <p className="text-gray-600 text-xs sm:text-sm">Analisis izin berbahaya, deteksi malware, dan overlay detection.</p>
-              </div>
-
-              <div className="bg-white border border-gray-100 p-5 sm:p-8 rounded-2xl hover:shadow-lg transition-shadow">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-4 sm:mb-6">
-                  <FileSearch className="w-5 h-5 sm:w-6 sm:h-6" />
-                </div>
-                <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-3">Scan Dokumen</h3>
-                <p className="text-gray-600 text-xs sm:text-sm">Ekstrak embedded URL, deteksi macro berbahaya, dan analisis konten.</p>
               </div>
 
               <div className="bg-white border border-gray-100 p-5 sm:p-8 rounded-2xl hover:shadow-lg transition-shadow">

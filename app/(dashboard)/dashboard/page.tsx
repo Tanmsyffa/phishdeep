@@ -77,8 +77,7 @@ export default async function DashboardPage() {
 
   const categories = [
     { type: 'Link', title: 'Statistik Link', icon: <LinkIcon className="w-4 h-4 text-blue-600"/>, bg: 'bg-blue-50' },
-    { type: 'APK', title: 'Statistik APK', icon: <Smartphone className="w-4 h-4 text-purple-600"/>, bg: 'bg-purple-50' },
-    { type: 'Dokumen', title: 'Statistik Dokumen', icon: <FileSearch className="w-4 h-4 text-orange-600"/>, bg: 'bg-orange-50' }
+    { type: 'APK', title: 'Statistik APK', icon: <Smartphone className="w-4 h-4 text-green-600"/>, bg: 'bg-green-50' }
   ];
 
   return (
@@ -95,7 +94,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats Cards grouped by Type */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {categories.map((c) => {
           const catScans = scans.filter(s => s.target_type === c.type);
           const dang = catScans.filter(s => s.risk_score > 70).length;
@@ -249,18 +248,15 @@ export default async function DashboardPage() {
             {(() => {
               const linkCount = allScansForTrend.filter(s => s.target_type === 'Link').length;
               const apkCount  = allScansForTrend.filter(s => s.target_type === 'APK').length;
-              const dokCount  = allScansForTrend.filter(s => s.target_type === 'Dokumen').length;
-              const total = linkCount + apkCount + dokCount;
+              const total = linkCount + apkCount;
               // Proportional percentages — always sum to 100
               const lPct = total > 0 ? (linkCount / total) * 100 : 0;
               const aPct = total > 0 ? (apkCount / total) * 100 : 0;
-              const dPct = total > 0 ? (dokCount / total) * 100 : 0;
               return (
                 <>
                   <div className="flex h-3 rounded-full overflow-hidden mb-4 bg-gray-100">
                     {lPct > 0 && <div style={{ width: `${lPct}%` }} className="bg-blue-500 transition-all" />}
-                    {aPct > 0 && <div style={{ width: `${aPct}%` }} className="bg-purple-500 transition-all" />}
-                    {dPct > 0 && <div style={{ width: `${dPct}%` }} className="bg-orange-500 transition-all" />}
+                    {aPct > 0 && <div style={{ width: `${aPct}%` }} className="bg-green-500 transition-all" />}
                   </div>
                   <div className="space-y-2 text-xs">
                     <div className="flex justify-between items-center">
@@ -268,12 +264,8 @@ export default async function DashboardPage() {
                       <span className="font-bold text-gray-700">{linkCount}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-purple-500 inline-block"></span> APK</span>
+                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span> APK</span>
                       <span className="font-bold text-gray-700">{apkCount}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-orange-500 inline-block"></span> Dokumen</span>
-                      <span className="font-bold text-gray-700">{dokCount}</span>
                     </div>
                     {total === 0 && (
                       <p className="text-gray-400 text-center pt-1 text-[10px]">Belum ada data scan dalam 7 hari terakhir.</p>
@@ -346,7 +338,7 @@ export default async function DashboardPage() {
         <div className="space-y-4">
           <div className="bg-gradient-to-br from-blue-600 to-blue-700 p-5 rounded-2xl text-white">
             <h3 className="font-bold mb-1 text-sm">Mulai Scan Baru</h3>
-            <p className="text-xs text-blue-200 mb-4 leading-relaxed">Analisis link, APK, atau dokumen mencurigakan sekarang.</p>
+            <p className="text-xs text-blue-200 mb-4 leading-relaxed">Analisis link atau APK mencurigakan sekarang.</p>
             <Link href="/scan" className="block text-center bg-white text-blue-700 font-bold py-2 px-4 rounded-xl text-sm hover:bg-blue-50 transition-colors">
               Scan Sekarang →
             </Link>

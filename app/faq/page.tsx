@@ -7,7 +7,7 @@ export default function FAQPage() {
   const faqs = [
     {
       q: "Bagaimana cara kerja PhishDeep?",
-      a: "PhishDeep memindai URL atau file (APK/Dokumen) Anda di lingkungan tersolasi (sandbox). Kami menganalisis perilaku, metadata, sertifikat SSL, dan konten visual halaman untuk mendeteksi ancaman secara otomatis."
+      a: "PhishDeep memindai URL atau file APK Anda di lingkungan tersolasi (sandbox). Kami menganalisis perilaku, metadata, sertifikat SSL, dan konten visual halaman untuk mendeteksi ancaman secara otomatis."
     },
     {
       q: "Apakah data saya aman?",

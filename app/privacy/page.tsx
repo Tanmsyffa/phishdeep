@@ -19,7 +19,7 @@ export default function PrivacyPage() {
             
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">1. Data yang Kami Kumpulkan</h2>
-              <p>Saat Anda menggunakan layanan kami, kami memproses URL, file APK, dokumen, atau gambar yang Anda unggah untuk dianalisis. Kami tidak mengekstrak data pribadi di dalam file tersebut untuk kepentingan lain selain pemindaian ancaman malware dan phishing.</p>
+              <p>Saat Anda menggunakan layanan kami, kami memproses URL atau file APK yang Anda unggah untuk dianalisis. Kami tidak mengekstrak data pribadi di dalam file tersebut untuk kepentingan lain selain pemindaian ancaman malware dan phishing.</p>
             </div>
 
             <div>
