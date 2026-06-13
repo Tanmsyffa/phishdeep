@@ -37,7 +37,7 @@ export default function NewScanPage() {
       targetUrl = 'http://' + targetUrl;
     }
 
-    const type = activeTab === 'link' ? 'Link' : (activeTab === 'apk' ? 'APK' : 'Dokumen');
+    const type = activeTab === 'link' ? 'Link' : 'APK';
     
     let uploadedFilePath = "";
 
@@ -152,13 +152,6 @@ export default function NewScanPage() {
               >
                 <Smartphone className="w-4 h-4 shrink-0" /> APK
               </button>
-              <button 
-                className={`flex-1 flex items-center justify-center gap-1.5 py-3.5 px-3 sm:px-6 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap min-w-0
-                ${activeTab === 'doc' ? 'text-primary-600 border-b-2 border-primary-600 bg-blue-50/50' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
-                onClick={() => setActiveTab('doc')}
-              >
-                <FileSearch className="w-4 h-4 shrink-0" /> Dokumen
-              </button>
             </div>
 
             <div className="p-4 sm:p-8">
@@ -212,7 +205,6 @@ export default function NewScanPage() {
                   />
                   <div className="w-16 h-16 bg-blue-50 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
                     {activeTab === 'apk' && <Smartphone className="w-8 h-8" />}
-                    {activeTab === 'doc' && <FileSearch className="w-8 h-8" />}
                     {activeTab === 'image' && <ImageIcon className="w-8 h-8" />}
                   </div>
                   <h3 className="font-medium text-gray-900 mb-1">{file ? file.name : 'Upload File Anda'}</h3>
