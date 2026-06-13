@@ -79,7 +79,42 @@ export default function NewScanPage() {
       if (!res.ok) {
         throw new Error("Target tidak dapat dijangkau atau analisis terhenti.");
       }
-      scanResult = await res.json();
+      const reader = res.body?.getReader();
+      if (!reader) throw new Error("Stream tidak tersedia.");
+      
+      const decoder = new TextDecoder();
+      let buffer = "";
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\\n');
+        
+        for (let i = 0; i < lines.length - 1; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          
+          try {
+            const parsed = JSON.parse(line);
+            if (parsed.status === "progress") {
+              setScanStatusMsg(parsed.message);
+            } else if (parsed.status === "success") {
+              scanResult = parsed.result;
+            } else if (parsed.status === "error") {
+              throw new Error(parsed.message);
+            }
+          } catch (e: any) {
+             if (e.message !== "Unexpected end of JSON input" && e.message !== "Unexpected token") {
+                console.error("JSON Parse error:", e);
+             }
+          }
+        }
+        buffer = lines[lines.length - 1];
+      }
+      
+      if (!scanResult) throw new Error("Gagal mendapatkan hasil dari server.");
 
       setScanStatusMsg("Menyimpan hasil laporan...");
       

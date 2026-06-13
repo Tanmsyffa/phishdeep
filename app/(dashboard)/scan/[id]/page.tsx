@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, AlertTriangle, ShieldAlert, RefreshCw, CheckCircle, Globe, Server, Link as LinkIcon, Monitor, Calendar, Clock, Shield, Lock, History, Search, FileText, Activity, Layers, Tag } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import PrintButton from "@/components/ui/PrintButton";
+import ExportButtons from "@/components/ui/ExportButtons";
 import ScreenshotImage from "@/components/ui/ScreenshotImage";
 import { notFound } from "next/navigation";
 
@@ -65,6 +66,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
               <CheckCircle className="w-3.5 h-3.5" /> Aman
             </span>
           )}
+          <ExportButtons data={scan} />
           <PrintButton />
         </div>
       </div>

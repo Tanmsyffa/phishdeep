@@ -241,6 +241,21 @@ def analyze_link(target_url):
     else:
         details.append({"step": "Analisis Shannon Entropy", "finding": f"Nama domain wajar (Entropy: {round(entropy, 2)}). Tidak terdeteksi algoritma pengacak (DGA)."})
 
+    # --- TYPO-SQUATTING ENGINE ---
+    TOP_INDO_TARGETS = ['bca.co.id', 'klikbca.com', 'bri.co.id', 'bankmandiri.co.id', 'bni.co.id', 'dana.id', 'gopay.co.id', 'shopee.co.id', 'tokopedia.com']
+    import difflib
+    is_typo = False
+    for target in TOP_INDO_TARGETS:
+        similarity = difflib.SequenceMatcher(None, root_domain, target).ratio()
+        if similarity > 0.85 and root_domain != target:
+            is_typo = True
+            risk_score += 60
+            details.append({"step": "Typo-Squatting Engine", "finding": f"SANGAT KRITIS: Domain '{root_domain}' sangat mirip dengan '{target}'. Kemungkinan besar ini adalah penipuan (Typo-squatting)."})
+            break
+    if not is_typo:
+        details.append({"step": "Typo-Squatting Engine", "finding": "Tidak terdeteksi pola typo-squatting pada domain ini."})
+
+
     # ================================================================
     # ALL OSINT LOOKUPS — run in parallel (ThreadPoolExecutor)
     # Max wall-clock time = slowest individual call (~5s) not sum of all.
@@ -869,6 +884,26 @@ def analyze_link(target_url):
                     details.append({"step": "Deteksi Form Eksternal", "finding": f"BAHAYA: Formulir di halaman ini mengirimkan data (seperti sandi) ke server luar yang tidak terkait: {form_actions[0]}"})
 
                 # Extract iframes and links
+                
+                # --- DOM BRAND SPOOFING DETECTION ---
+                dom_text = (soup.title.string if soup.title else "") + " " + " ".join([m.get('content', '') for m in soup.find_all('meta') if m.get('content')])
+                dom_text = dom_text.lower()
+                
+                BRANDS = {
+                    'bca': 'bca.co.id',
+                    'bank rakyat indonesia': 'bri.co.id',
+                    'bank mandiri': 'bankmandiri.co.id',
+                    'bni': 'bni.co.id',
+                    'tokopedia': 'tokopedia.com',
+                    'shopee': 'shopee.co.id'
+                }
+                
+                for brand, official_domain in BRANDS.items():
+                    if brand in dom_text and root_domain != official_domain and root_domain != 'localhost':
+                        risk_score += 70
+                        details.append({"step": "Brand Spoofing Detection", "finding": f"SANGAT KRITIS: Halaman ini menyebutkan brand '{brand.upper()}', namun domain ({root_domain}) BUKAN domain resminya ({official_domain}). Ini adalah pola pasti Phishing."})
+                        break
+
                 iframes = soup.find_all('iframe')
                 external_links = [link.get('href') for link in soup.find_all('a') if link.get('href') and link.get('href').startswith('http') and root_domain not in link.get('href').lower()]
                 hidden_iframes = [f for f in iframes if 'display:none' in (f.get('style','').replace(' ','').lower()) or f.get('width') == '0' or f.get('height') == '0']
@@ -1354,6 +1389,45 @@ def analyze_file(file_url, file_type):
             # --- ZIP Entry inspection ---
             apk_entries = _parse_apk_entries(raw_content)
             has_dex     = sum(1 for e in apk_entries if re.match(r'classes\d*\.dex', e))
+
+            # --- STATIC DEX ANALYSIS ---
+            try:
+                import zipfile
+                import io
+                with zipfile.ZipFile(io.BytesIO(raw_content), 'r') as apk_zip:
+                    dex_files = [f for f in apk_zip.namelist() if f.endswith('.dex')]
+                    if dex_files:
+                        for dex in dex_files[:1]: # scan the primary classes.dex
+                            dex_data = apk_zip.read(dex)
+                            
+                            # Simple regex signature engine on raw DEX bytes
+                            import re
+                            ip_patterns = re.findall(rb'https?://[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}', dex_data)
+                            if ip_patterns:
+                                risk_score += 30
+                                unique_ips = list(set([ip.decode('utf-8', errors='ignore') for ip in ip_patterns]))
+                                details.append({"step": "DEX Static Analysis", "finding": f"KRITIS: Ditemukan hardcoded IP/URL (C2) di dalam kode sumber: {', '.join(unique_ips[:2])}."})
+                            
+                            # Signature Engine (YARA Lite)
+                            MALWARE_FAMILIES = {
+                                b'sendTextMessage': "Trojan SMS Stealer (Mencuri OTP)",
+                                b'AccessibilityService': "Overlay/Keylogger via Aksesibilitas",
+                                b'DeviceAdminReceiver': "Malware Persistence (Mencegah Unistall)",
+                                b'package_add_': "Dropper (Install APK Tersembunyi)"
+                            }
+                            found_sigs = []
+                            for sig, desc in MALWARE_FAMILIES.items():
+                                if sig in dex_data:
+                                    found_sigs.append(desc)
+                            
+                            if found_sigs:
+                                risk_score += min(40, len(found_sigs) * 15)
+                                details.append({"step": "Regex Signature Engine", "finding": f"ANCAMAN: Ditemukan {len(found_sigs)} pola malware dalam kode DEX: {', '.join(found_sigs)}."})
+                            else:
+                                details.append({"step": "Regex Signature Engine", "finding": "Tidak ditemukan pola malware umum di dalam kode DEX utama."})
+            except Exception as e:
+                details.append({"step": "DEX Static Analysis", "finding": f"Gagal mengekstrak/memindai classes.dex: {str(e)}"})
+
             has_native  = [e for e in apk_entries if e.endswith('.so')]
             has_manifest = 'AndroidManifest.xml' in apk_entries
 
@@ -1462,56 +1536,71 @@ def analyze_file(file_url, file_type):
 
 
 
+import queue
+import threading
+from flask import Response, stream_with_context
+
 @app.route('/api/scan', methods=['POST'])
 def scan():
-    try:
-        data = request.json
-        if not data:
-            return jsonify({"status": "error", "message": "Request body tidak valid."}), 400
+    data = request.json
+    if not data:
+        return jsonify({"status": "error", "message": "Request body tidak valid."}), 400
 
-        target = (data.get('target', '') or '').strip()
-        scan_type = data.get('type', 'link')
-        
-        if not target:
-            return jsonify({"status": "error", "message": "Target tidak boleh kosong."}), 400
+    target = (data.get('target', '') or '').strip()
+    scan_type = data.get('type', 'link')
+    
+    if not target:
+        return jsonify({"status": "error", "message": "Target tidak boleh kosong."}), 400
+
+    q = queue.Queue()
+
+    def worker():
+        try:
+            q.put({"status": "progress", "message": "Memulai engine analitik PhishDeep..."})
+            if scan_type.lower() == 'link':
+                if not target.startswith('http://') and not target.startswith('https://'):
+                    t = 'http://' + target
+                else:
+                    t = target
+                parsed = urlparse(t)
+                if not parsed.netloc or parsed.scheme in ('javascript', 'data', 'vbscript'):
+                    q.put({"status": "error", "message": "URL tidak valid atau dilarang."})
+                    return
+                q.put({"status": "progress", "message": "Melakukan pemindaian forensik Link..."})
+                res = analyze_link(t)
+            elif scan_type.lower() == 'apk':
+                q.put({"status": "progress", "message": "Mengunduh dan mengekstrak file APK..."})
+                res = analyze_file(target, scan_type)
+            else:
+                q.put({"status": "error", "message": "Tipe scan tidak dikenali."})
+                return
             
-        if scan_type.lower() == 'link':
-            # Auto-prefix protocol if missing
-            if not target.startswith('http://') and not target.startswith('https://'):
-                target = 'http://' + target
+            risk_score, details, extracted_code, domain_info, frameworks, redirect_chain, screenshot_url = res
+            results = {
+                "risk_score": risk_score,
+                "details": details,
+                "domain_info": domain_info,
+                "frameworks": frameworks,
+                "redirect_chain": redirect_chain,
+                "screenshot_url": screenshot_url
+            }
+            if extracted_code:
+                results["extracted_code"] = extracted_code
+            
+            q.put({"status": "success", "result": results})
+        except Exception as e:
+            q.put({"status": "error", "message": f"Server error: {str(e)}"})
 
-            # Validate URL has a real domain/IP after protocol
-            parsed = urlparse(target)
-            if not parsed.netloc:
-                return jsonify({"status": "error", "message": "URL tidak valid. Pastikan formatnya benar (contoh: nama-domain.com)."}), 400
+    threading.Thread(target=worker).start()
 
-            # Block javascript: and data: URIs
-            if parsed.scheme in ('javascript', 'data', 'vbscript'):
-                return jsonify({"status": "error", "message": "Protokol URL tidak diizinkan."}), 400
+    def generate():
+        while True:
+            item = q.get()
+            yield json.dumps(item) + "\n"
+            if item["status"] in ["success", "error"]:
+                break
 
-            risk_score, details, extracted_code, domain_info, frameworks, redirect_chain, screenshot_url = analyze_link(target)
-        elif scan_type.lower() == 'apk':
-            risk_score, details, extracted_code, domain_info, frameworks, redirect_chain, screenshot_url = analyze_file(target, scan_type)
-        else:
-            return jsonify({"status": "error", "message": "Tipe scan tidak dikenali atau telah dinonaktifkan."}), 400
-        
-        results = {
-            "status": "success",
-            "risk_score": risk_score,
-            "details": details,
-            "domain_info": domain_info,
-            "frameworks": frameworks,
-            "redirect_chain": redirect_chain,
-            "screenshot_url": screenshot_url
-        }
-        
-        if extracted_code:
-            results["extracted_code"] = extracted_code
-
-        return jsonify(results), 200
-        
-    except Exception as e:
-        return jsonify({"status": "error", "message": f"Server error: {str(e)}"}), 500
+    return Response(stream_with_context(generate()), mimetype='application/x-ndjson')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5328, debug=True)
