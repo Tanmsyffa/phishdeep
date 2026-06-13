@@ -1037,8 +1037,11 @@ def _analyze_pdf_pymupdf(raw_content: bytes) -> dict:
         PHISH_KEYWORDS = [
             'login', 'verify', 'secure', 'account', 'password', 'update',
             'confirm', 'suspend', 'banking', 'paypal', 'signin', 'credential',
-            'bit.ly', 'tinyurl', 't.co', 'goo.gl', 'ow.ly', 'rb.gy', 'cutt.ly'
+            'bit.ly', 'tinyurl', 't.co', 'goo.gl', 'ow.ly', 'rb.gy', 'cutt.ly',
+            'is.gd', 'tiny.cc', 'x.co', 'lnk.to', 'shorturl', 's.id'
         ]
+        
+        DANGEROUS_EXTS = ['.exe', '.apk', '.scr', '.vbs', '.bat', '.cmd', '.ps1', '.sh', '.msi', '.bin', '.dll', '.js']
 
         # ── Scan all XRef objects for dangerous PDF keys ──────────────────
         DANGEROUS_PDF_KEYS = {
@@ -1084,14 +1087,28 @@ def _analyze_pdf_pymupdf(raw_content: bytes) -> dict:
                 continue
 
         # ── Extract all links from pages ──────────────────────────────────
+        result["ip_links"] = []
+        result["download_links"] = []
+
         for page in doc:
             for link in page.get_links():
                 uri = link.get('uri', '')
                 kind = link.get('kind', 0)
                 if uri:
                     result["all_links"].append(uri)
-                    if any(kw in uri.lower() for kw in PHISH_KEYWORDS):
+                    uri_lower = uri.lower()
+                    
+                    if any(kw in uri_lower for kw in PHISH_KEYWORDS):
                         result["suspicious_links"].append(uri)
+                        
+                    # IP-based URL check (e.g. http://192.168.1.1)
+                    if re.search(r'https?://[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+', uri_lower):
+                        result["ip_links"].append(uri)
+                        
+                    # Dangerous extension check
+                    if any(uri_lower.split('?')[0].endswith(ext) for ext in DANGEROUS_EXTS):
+                        result["download_links"].append(uri)
+
                 if kind == 3:  # LINK_LAUNCH
                     result["launch_actions"].append(f"Launch link: {link}")
 
@@ -1631,12 +1648,28 @@ def analyze_file(file_url, file_type):
 
                     # Suspicious links
                     susp_links = mupdf.get('suspicious_links', [])
+                    ip_links = mupdf.get('ip_links', [])
+                    dl_links = mupdf.get('download_links', [])
                     all_links = mupdf.get('all_links', [])
+                    
+                    if ip_links:
+                        risk_score += min(35, len(ip_links) * 15)
+                        details.append({"step": "Link Analysis (PyMuPDF)", "finding": f"SANGAT KRITIS: {len(ip_links)} URL menggunakan alamat IP (indikasi infrastruktur malware/phishing): {', '.join(ip_links[:2])}."})
+                    
+                    if dl_links:
+                        risk_score += min(30, len(dl_links) * 15)
+                        details.append({"step": "Link Analysis (PyMuPDF)", "finding": f"KRITIS: {len(dl_links)} URL mengarah ke file eksekusi/berbahaya (.exe, .apk, dll): {', '.join(dl_links[:2])}."})
+
                     if susp_links:
-                        risk_score += min(20, len(susp_links) * 7)
-                        details.append({"step": "Link Analysis (PyMuPDF)", "finding": f"PERINGATAN: {len(susp_links)} link phishing ditemukan: {', '.join(susp_links[:3])}."})
-                    elif all_links:
+                        risk_score += min(25, len(susp_links) * 8)
+                        details.append({"step": "Link Analysis (PyMuPDF)", "finding": f"PERINGATAN: {len(susp_links)} link phishing/shortlink ditemukan: {', '.join(susp_links[:3])}."})
+                    elif all_links and not (ip_links or dl_links):
                         details.append({"step": "Link Analysis (PyMuPDF)", "finding": f"Ditemukan {len(all_links)} link. Tidak ada pola phishing terdeteksi."})
+
+                    # Heuristic: 1-Page Phishing PDF (Very common tactic)
+                    if pg == 1 and (susp_links or ip_links or dl_links):
+                        risk_score += 25
+                        details.append({"step": "Phishing Heuristic (PyMuPDF)", "finding": "SANGAT KRITIS: Dokumen hanya 1 halaman dan mengandung link berbahaya. Ini adalah pola klasik phishing PDF (Fake Invoice/Captcha)."})
 
                     # Launch actions
                     launches = mupdf.get('launch_actions', [])
