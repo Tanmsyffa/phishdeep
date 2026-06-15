@@ -3,9 +3,9 @@ import { ShieldAlert, AlertCircle, LayoutDashboard, CheckCircle, Link as LinkIco
 import { createClient } from "@/lib/supabase/server";
 
 function getStatusColor(score: number) {
-  if (score > 70) return { label: 'Berbahaya', color: 'bg-red-50 text-red-600 border-red-100' };
-  if (score > 30) return { label: 'Mencurigakan', color: 'bg-yellow-50 text-yellow-600 border-yellow-100' };
-  return { label: 'Aman', color: 'bg-green-50 text-green-600 border-green-100' };
+  if (score > 70) return { label: 'Berbahaya', color: 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-800' };
+  if (score > 30) return { label: 'Mencurigakan', color: 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 border-yellow-100 dark:border-yellow-800' };
+  return { label: 'Aman', color: 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border-green-100 dark:border-green-800' };
 }
 
 export default async function DashboardPage() {
@@ -76,16 +76,16 @@ export default async function DashboardPage() {
   }
 
   const categories = [
-    { type: 'Link', title: 'Statistik Link', icon: <LinkIcon className="w-4 h-4 text-blue-600"/>, bg: 'bg-blue-50' },
-    { type: 'APK', title: 'Statistik APK', icon: <Smartphone className="w-4 h-4 text-green-600"/>, bg: 'bg-green-50' }
+    { type: 'Link', title: 'Statistik Link', icon: <LinkIcon className="w-4 h-4 text-blue-600 dark:text-blue-400"/>, bg: 'bg-blue-50 dark:bg-blue-900/20' },
+    { type: 'APK', title: 'Statistik APK', icon: <Smartphone className="w-4 h-4 text-green-600 dark:text-green-400"/>, bg: 'bg-green-50 dark:bg-green-900/20' }
   ];
 
   return (
     <div className="max-w-5xl mx-auto space-y-5 sm:space-y-7">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-          <LayoutDashboard className="w-5 h-5 text-blue-600" />
+        <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center shrink-0">
+          <LayoutDashboard className="w-5 h-5 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
           <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight">Dashboard</h1>
@@ -118,15 +118,15 @@ export default async function DashboardPage() {
 
               <div className="space-y-2 sm:space-y-2.5">
                 <div className="flex justify-between items-center text-xs sm:text-sm">
-                  <span className="flex items-center gap-2 text-gray-600"><ShieldAlert className="w-4 h-4 text-red-500 shrink-0"/> Berbahaya</span>
+                  <span className="flex items-center gap-2 text-gray-600 dark:text-gray-300"><ShieldAlert className="w-4 h-4 text-red-500 shrink-0"/> Berbahaya</span>
                   <span className="font-bold text-gray-900 dark:text-white">{dang}</span>
                 </div>
                 <div className="flex justify-between items-center text-xs sm:text-sm">
-                  <span className="flex items-center gap-2 text-gray-600"><AlertCircle className="w-4 h-4 text-yellow-500 shrink-0"/> Mencurigakan</span>
+                  <span className="flex items-center gap-2 text-gray-600 dark:text-gray-300"><AlertCircle className="w-4 h-4 text-yellow-500 shrink-0"/> Mencurigakan</span>
                   <span className="font-bold text-gray-900 dark:text-white">{susp}</span>
                 </div>
                 <div className="flex justify-between items-center text-xs sm:text-sm">
-                  <span className="flex items-center gap-2 text-gray-600"><CheckCircle className="w-4 h-4 text-green-500 shrink-0"/> Aman</span>
+                  <span className="flex items-center gap-2 text-gray-600 dark:text-gray-300"><CheckCircle className="w-4 h-4 text-green-500 shrink-0"/> Aman</span>
                   <span className="font-bold text-gray-900 dark:text-white">{safe}</span>
                 </div>
               </div>
@@ -231,13 +231,13 @@ export default async function DashboardPage() {
             </div>
             <div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-2 mb-3 overflow-hidden">
               <div
-                className={`h-2 rounded-full transition-all ${todayScanCount >= 10 ? 'bg-red-500' : todayScanCount >= 7 ? 'bg-yellow-500' : 'bg-blue-500'}`}
+                className={`h-2 rounded-full transition-all ${todayScanCount >= 10 ? 'bg-red-50 dark:bg-red-900/200' : todayScanCount >= 7 ? 'bg-yellow-50 dark:bg-yellow-900/200' : 'bg-blue-50 dark:bg-blue-900/200'}`}
                 style={{ width: `${Math.min((todayScanCount / 10) * 100, 100)}%` }}
               />
             </div>
             <p className="text-xs text-gray-400 dark:text-gray-500">Reset setiap tengah malam (00:00 WIB).</p>
             {todayScanCount >= 10 && (
-              <div className="mt-3 text-xs bg-red-50 text-red-600 rounded-lg p-2.5 border border-red-100">
+              <div className="mt-3 text-xs bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg p-2.5 border border-red-100 dark:border-red-800">
                 Batas harian tercapai. Kembali lagi besok!
               </div>
             )}
@@ -255,17 +255,17 @@ export default async function DashboardPage() {
               return (
                 <>
                   <div className="flex h-3 rounded-full overflow-hidden mb-4 bg-gray-100 dark:bg-slate-800">
-                    {lPct > 0 && <div style={{ width: `${lPct}%` }} className="bg-blue-500 transition-all" />}
-                    {aPct > 0 && <div style={{ width: `${aPct}%` }} className="bg-green-500 transition-all" />}
+                    {lPct > 0 && <div style={{ width: `${lPct}%` }} className="bg-blue-50 dark:bg-blue-900/200 transition-all" />}
+                    {aPct > 0 && <div style={{ width: `${aPct}%` }} className="bg-green-50 dark:bg-green-900/200 transition-all" />}
                   </div>
                   <div className="space-y-2 text-xs">
                     <div className="flex justify-between items-center">
-                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-500 inline-block"></span> Link</span>
-                      <span className="font-bold text-gray-700">{linkCount}</span>
+                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-50 dark:bg-blue-900/200 inline-block"></span> Link</span>
+                      <span className="font-bold text-gray-700 dark:text-gray-300">{linkCount}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span> APK</span>
-                      <span className="font-bold text-gray-700">{apkCount}</span>
+                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-green-50 dark:bg-green-900/200 inline-block"></span> APK</span>
+                      <span className="font-bold text-gray-700 dark:text-gray-300">{apkCount}</span>
                     </div>
                     {total === 0 && (
                       <p className="text-gray-400 dark:text-gray-500 text-center pt-1 text-[10px]">Belum ada data scan dalam 7 hari terakhir.</p>
@@ -284,7 +284,7 @@ export default async function DashboardPage() {
         <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
           <div className="px-4 sm:px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
             <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Aktivitas Terakhir</h2>
-            <Link href="/history" className="text-xs text-blue-600 font-medium hover:text-blue-700">Lihat semua →</Link>
+            <Link href="/history" className="text-xs text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:text-blue-400">Lihat semua →</Link>
           </div>
 
           {/* Mobile card list */}
@@ -298,7 +298,7 @@ export default async function DashboardPage() {
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border shrink-0 ${row.warna}`}>{row.hasil}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
-                  <span className="bg-gray-100 dark:bg-slate-800 text-gray-600 px-1.5 py-0.5 rounded font-medium">{row.jenis}</span>
+                  <span className="bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 px-1.5 py-0.5 rounded font-medium">{row.jenis}</span>
                   <span>{row.tanggal}</span>
                 </div>
               </Link>
@@ -321,10 +321,10 @@ export default async function DashboardPage() {
                   <tr><td colSpan={4} className="px-6 py-10 text-center text-gray-400 dark:text-gray-500 text-sm">Belum ada aktivitas scan</td></tr>
                 ) : displayScans.map(row => (
                   <tr key={row.id} className="hover:bg-gray-50 dark:bg-slate-800/70 transition-colors">
-                    <td className="px-6 py-3.5 max-w-[220px] truncate text-gray-700 font-medium">
-                      <Link href={`/scan/${row.id}`} className="hover:text-blue-600 transition-colors">{row.target}</Link>
+                    <td className="px-6 py-3.5 max-w-[220px] truncate text-gray-700 dark:text-gray-300 font-medium">
+                      <Link href={`/scan/${row.id}`} className="hover:text-blue-600 dark:text-blue-400 transition-colors">{row.target}</Link>
                     </td>
-                    <td className="px-6 py-3.5"><span className="bg-gray-100 dark:bg-slate-800 text-gray-600 px-2 py-0.5 rounded text-xs font-medium">{row.jenis}</span></td>
+                    <td className="px-6 py-3.5"><span className="bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded text-xs font-medium">{row.jenis}</span></td>
                     <td className="px-6 py-3.5"><span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${row.warna}`}>{row.hasil}</span></td>
                     <td className="px-6 py-3.5 text-gray-400 dark:text-gray-500 text-xs">{row.tanggal}</td>
                   </tr>
@@ -339,7 +339,7 @@ export default async function DashboardPage() {
           <div className="bg-gradient-to-br from-blue-600 to-blue-700 p-5 rounded-2xl text-white">
             <h3 className="font-bold mb-1 text-sm">Mulai Scan Baru</h3>
             <p className="text-xs text-blue-200 mb-4 leading-relaxed">Analisis link atau APK mencurigakan sekarang.</p>
-            <Link href="/scan" className="block text-center bg-white dark:bg-slate-900 text-blue-700 font-bold py-2 px-4 rounded-xl text-sm hover:bg-blue-50 transition-colors">
+            <Link href="/scan" className="block text-center bg-white dark:bg-slate-900 text-blue-700 dark:text-blue-400 font-bold py-2 px-4 rounded-xl text-sm hover:bg-blue-50 dark:bg-blue-900/20 transition-colors">
               Scan Sekarang →
             </Link>
           </div>

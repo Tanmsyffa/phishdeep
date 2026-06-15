@@ -52,17 +52,17 @@ export default async function ScanResultPage({ params, searchParams }: { params:
         <div className="flex items-center gap-2 text-sm flex-wrap">
           <span className="text-gray-400 dark:text-gray-500 text-xs font-mono bg-gray-100 dark:bg-slate-800 px-2 py-0.5 rounded">#{params.id.split('-')[0]}</span>
           {isDanger && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 font-semibold border border-red-100 text-xs">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-semibold border border-red-100 dark:border-red-800 text-xs">
               <AlertTriangle className="w-3.5 h-3.5" /> Berbahaya
             </span>
           )}
           {isSuspicious && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-50 text-yellow-600 font-semibold border border-yellow-100 text-xs">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 font-semibold border border-yellow-100 dark:border-yellow-800 text-xs">
               <AlertTriangle className="w-3.5 h-3.5" /> Mencurigakan
             </span>
           )}
           {isSafe && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 text-green-600 font-semibold border border-green-100 text-xs">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 font-semibold border border-green-100 dark:border-green-800 text-xs">
               <CheckCircle className="w-3.5 h-3.5" /> Aman
             </span>
           )}
@@ -95,23 +95,23 @@ export default async function ScanResultPage({ params, searchParams }: { params:
             <h2 className="font-bold text-gray-900 dark:text-white mb-4 text-sm sm:text-base print:text-lg">Ringkasan Eksekutif</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               
-              <div className={`sm:col-span-1 border rounded-xl p-4 print:border-2 ${isDanger ? 'bg-red-50 border-red-100 print:border-red-600 print:bg-white dark:bg-slate-900' : isSuspicious ? 'bg-yellow-50 border-yellow-100 print:border-yellow-600 print:bg-white dark:bg-slate-900' : 'bg-green-50 border-green-100 print:border-green-600 print:bg-white dark:bg-slate-900'}`}>
-                <div className={`flex items-center gap-2 font-bold mb-2 text-sm ${isDanger ? 'text-red-600' : isSuspicious ? 'text-yellow-600' : 'text-green-600'}`}>
+              <div className={`sm:col-span-1 border rounded-xl p-4 print:border-2 ${isDanger ? 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800 print:border-red-600 print:bg-white dark:bg-slate-900' : isSuspicious ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-800 print:border-yellow-600 print:bg-white dark:bg-slate-900' : 'bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-800 print:border-green-600 print:bg-white dark:bg-slate-900'}`}>
+                <div className={`flex items-center gap-2 font-bold mb-2 text-sm ${isDanger ? 'text-red-600 dark:text-red-400' : isSuspicious ? 'text-yellow-600 dark:text-yellow-400' : 'text-green-600 dark:text-green-400'}`}>
                   {isDanger || isSuspicious ? <ShieldAlert className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" /> : <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />}
                   {isDanger ? 'Berisiko Tinggi' : isSuspicious ? 'Perlu Diwaspadai' : 'Terlihat Aman'}
                 </div>
-                <p className={`text-xs leading-relaxed ${isDanger ? 'text-red-700 print:text-black' : isSuspicious ? 'text-yellow-700 print:text-black' : 'text-green-700 print:text-black'}`}>
+                <p className={`text-xs leading-relaxed ${isDanger ? 'text-red-700 dark:text-red-400 print:text-black' : isSuspicious ? 'text-yellow-700 dark:text-yellow-400 print:text-black' : 'text-green-700 dark:text-green-400 print:text-black'}`}>
                   {isDanger ? 'Aktivitas berbahaya terdeteksi. Sistem menyarankan untuk memblokir interaksi dengan target ini segera.' : isSuspicious ? 'Ditemukan beberapa anomali. Harap berhati-hati dan lakukan verifikasi manual.' : 'Tidak ditemukan ancaman signifikan pada saat pemindaian dilakukan.'}
                 </p>
               </div>
 
               <div className="bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl p-4 flex flex-col justify-center print:bg-white dark:bg-slate-900 print:border-gray-300">
                 <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-1">Skor Risiko Total</div>
-                <div className={`text-2xl sm:text-3xl font-bold flex items-end gap-1 ${isDanger ? 'text-red-600' : isSuspicious ? 'text-yellow-600' : 'text-green-600'}`}>
+                <div className={`text-2xl sm:text-3xl font-bold flex items-end gap-1 ${isDanger ? 'text-red-600 dark:text-red-400' : isSuspicious ? 'text-yellow-600 dark:text-yellow-400' : 'text-green-600 dark:text-green-400'}`}>
                   {scan.risk_score} <span className="text-sm text-gray-400 dark:text-gray-500 font-normal">/ 100</span>
                 </div>
                 <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-1.5 mt-2 overflow-hidden print:hidden">
-                  <div className={`h-1.5 rounded-full ${isDanger ? 'bg-red-500' : isSuspicious ? 'bg-yellow-500' : 'bg-green-500'}`} style={{ width: `${scan.risk_score}%` }}></div>
+                  <div className={`h-1.5 rounded-full ${isDanger ? 'bg-red-50 dark:bg-red-900/200' : isSuspicious ? 'bg-yellow-50 dark:bg-yellow-900/200' : 'bg-green-50 dark:bg-green-900/200'}`} style={{ width: `${scan.risk_score}%` }}></div>
                 </div>
               </div>
 
@@ -159,7 +159,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                       <span className="text-[9px] uppercase font-bold tracking-wide">Umur Domain</span>
                     </div>
                     {domainInfo.age_days != null ? (
-                      <div className={`font-bold text-xs ${domainInfo.age_days < 30 ? 'text-red-600' : domainInfo.age_days < 180 ? 'text-yellow-600' : 'text-green-600'}`}>
+                      <div className={`font-bold text-xs ${domainInfo.age_days < 30 ? 'text-red-600 dark:text-red-400' : domainInfo.age_days < 180 ? 'text-yellow-600 dark:text-yellow-400' : 'text-green-600 dark:text-green-400'}`}>
                         {domainInfo.age_days < 365 ? `${domainInfo.age_days} hari` : `${(domainInfo.age_days/365).toFixed(1)} thn`}
                         {domainInfo.age_days < 30 && <span className="ml-1">⚠️</span>}
                       </div>
@@ -195,12 +195,12 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     </div>
                   )}
                   {domainInfo.ssl_issuer && domainInfo.ssl_issuer !== 'Unknown' && (
-                    <div className={`rounded-xl p-3 border shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border ${domainInfo.ssl_issuer.includes('Invalid') ? 'bg-red-50 border-red-100 print:border-red-300' : 'bg-white dark:bg-slate-900 border-gray-100 dark:border-slate-700 print:border-gray-200 dark:border-slate-700'}`}>
+                    <div className={`rounded-xl p-3 border shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border ${domainInfo.ssl_issuer.includes('Invalid') ? 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800 print:border-red-300' : 'bg-white dark:bg-slate-900 border-gray-100 dark:border-slate-700 print:border-gray-200 dark:border-slate-700'}`}>
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-1.5">
                         <Lock className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">SSL Issuer</span>
                       </div>
-                      <div className={`text-xs font-semibold leading-snug ${domainInfo.ssl_issuer.includes('Invalid') ? 'text-red-600' : 'text-gray-900 dark:text-white'}`}>{domainInfo.ssl_issuer}</div>
+                      <div className={`text-xs font-semibold leading-snug ${domainInfo.ssl_issuer.includes('Invalid') ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>{domainInfo.ssl_issuer}</div>
                     </div>
                   )}
                   {domainInfo.wayback_first_seen && (
@@ -242,7 +242,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                         <Search className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">URLScan.io</span>
                       </div>
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${domainInfo.urlscan_malicious > 0 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${domainInfo.urlscan_malicious > 0 ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400' : 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400'}`}>
                         {domainInfo.urlscan_malicious > 0 ? `⚠️ ${domainInfo.urlscan_malicious} Berbahaya` : '✅ Bersih'}
                       </span>
                       <div className="text-[9px] text-gray-400 dark:text-gray-500 mt-1">{domainInfo.urlscan_total} riwayat scan</div>
@@ -254,7 +254,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                         <Activity className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">DNS TTL</span>
                       </div>
-                      <div className={`text-xs font-bold ${domainInfo.dns_ttl < 300 ? 'text-red-600' : 'text-green-700'}`}>{domainInfo.dns_ttl}s {domainInfo.dns_ttl < 300 ? '⚠️' : '✓'}</div>
+                      <div className={`text-xs font-bold ${domainInfo.dns_ttl < 300 ? 'text-red-600 dark:text-red-400' : 'text-green-700 dark:text-green-400'}`}>{domainInfo.dns_ttl}s {domainInfo.dns_ttl < 300 ? '⚠️' : '✓'}</div>
                     </div>
                   )}
                   {domainInfo.cert_count !== undefined && (
@@ -271,49 +271,49 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                 {/* Row 4 — Security signals as badges */}
                 <div className="flex flex-wrap gap-2 mt-2 pt-4 border-t border-gray-100 dark:border-slate-700">
                   {domainInfo.safe_browsing && domainInfo.safe_browsing !== 'Unchecked' && (
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm ${domainInfo.safe_browsing === 'Clean' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm ${domainInfo.safe_browsing === 'Clean' ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200'}`}>
                       {domainInfo.safe_browsing === 'Clean' ? <CheckCircle className="w-3 h-3"/> : <AlertTriangle className="w-3 h-3"/>}
                       Safe Browsing: {domainInfo.safe_browsing === 'Clean' ? 'Clean' : 'MALICIOUS'}
                     </span>
                   )}
                   {domainInfo.tld_risk && (
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm ${domainInfo.tld_risk === 'Normal' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm ${domainInfo.tld_risk === 'Normal' ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200'}`}>
                       <Tag className="w-3 h-3" />
                       TLD: {domainInfo.tld_risk === 'Normal' ? 'Normal' : `⚠️ ${domainInfo.tld_risk.split('—')[0].trim()}`}
                     </span>
                   )}
                   {domainInfo.spf_record !== undefined && (
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm ${domainInfo.spf_record === 'Tidak Ada' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-green-50 text-green-700 border-green-200'}`}>
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm ${domainInfo.spf_record === 'Tidak Ada' ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200' : 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200'}`}>
                       SPF {domainInfo.spf_record === 'Tidak Ada' ? '✗' : '✓'}
                     </span>
                   )}
                   {domainInfo.dmarc_record !== undefined && (
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm ${domainInfo.dmarc_record === 'Tidak Ada' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-green-50 text-green-700 border-green-200'}`}>
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm ${domainInfo.dmarc_record === 'Tidak Ada' ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200' : 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200'}`}>
                       DMARC {domainInfo.dmarc_record === 'Tidak Ada' ? '✗' : '✓'}
                     </span>
                   )}
                   {domainInfo.hidden_iframe_count > 0 && (
-                    <span className="text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm bg-red-50 text-red-700 border-red-200">
+                    <span className="text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200">
                       <AlertTriangle className="w-3 h-3" /> {domainInfo.hidden_iframe_count} iFrame Tersembunyi
                     </span>
                   )}
                   {domainInfo.external_links_count !== undefined && (
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm ${domainInfo.external_links_count > 20 ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 'bg-gray-50 dark:bg-slate-800 text-gray-700 border-gray-200 dark:border-slate-700'}`}>
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm ${domainInfo.external_links_count > 20 ? 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 border-yellow-200' : 'bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-700'}`}>
                       <LinkIcon className="w-3 h-3" /> {domainInfo.external_links_count} Link Eksternal
                     </span>
                   )}
                   {domainInfo.form_actions?.length > 0 && (
-                    <span className="text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm bg-red-50 text-red-700 border-red-200">
+                    <span className="text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200">
                       <AlertTriangle className="w-3 h-3" /> Form Kirim ke Luar
                     </span>
                   )}
                   {domainInfo.domain_status?.length > 0 && (
-                    <span className="text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm bg-gray-50 dark:bg-slate-800 text-gray-700 border-gray-200 dark:border-slate-700" title={domainInfo.domain_status.join(', ')}>
+                    <span className="text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-700" title={domainInfo.domain_status.join(', ')}>
                       <Lock className="w-3 h-3" /> {domainInfo.domain_status.length} Status Lock
                     </span>
                   )}
                   {domainInfo.wayback_snapshot_url && (
-                    <a href={domainInfo.wayback_snapshot_url} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 transition-colors">
+                    <a href={domainInfo.wayback_snapshot_url} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 shadow-sm bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-blue-200 hover:bg-blue-100 dark:bg-blue-900/40 transition-colors">
                       <History className="w-3 h-3" /> Lihat Snapshot
                     </a>
                   )}
@@ -335,18 +335,18 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     const isWarning = label.toLowerCase().includes('peringatan') || fw.toLowerCase().includes('peringatan');
                     
                     let badgeColor = 'bg-slate-50 text-slate-700 border-slate-200';
-                    if (label.includes('Web Server')) badgeColor = 'bg-purple-50 text-purple-800 border-purple-200';
-                    else if (label.includes('CDN')) badgeColor = 'bg-orange-50 text-orange-800 border-orange-200';
+                    if (label.includes('Web Server')) badgeColor = 'bg-purple-50 dark:bg-purple-900/20 text-purple-800 border-purple-200';
+                    else if (label.includes('CDN')) badgeColor = 'bg-orange-50 dark:bg-orange-900/20 text-orange-800 border-orange-200';
                     else if (label.includes('Backend') || label.includes('PHP') || label.includes('Python')) badgeColor = 'bg-indigo-50 text-indigo-800 border-indigo-200';
-                    else if (label.includes('CMS')) badgeColor = 'bg-blue-50 text-blue-800 border-blue-200';
-                    else if (label.includes('Analytics')) badgeColor = 'bg-green-50 text-green-800 border-green-200';
-                    else if (label.includes('Security') || label.includes('PERINGATAN')) badgeColor = 'bg-red-50 text-red-800 border-red-200';
+                    else if (label.includes('CMS')) badgeColor = 'bg-blue-50 dark:bg-blue-900/20 text-blue-800 border-blue-200';
+                    else if (label.includes('Analytics')) badgeColor = 'bg-green-50 dark:bg-green-900/20 text-green-800 border-green-200';
+                    else if (label.includes('Security') || label.includes('PERINGATAN')) badgeColor = 'bg-red-50 dark:bg-red-900/20 text-red-800 border-red-200';
                     else if (label.includes('CSS') || label.includes('JS') || label.includes('Library')) badgeColor = 'bg-pink-50 text-pink-800 border-pink-200';
 
                     return (
                       <div key={idx} className={`flex flex-col px-3 py-2 rounded-lg border shadow-sm ${badgeColor} ${isWarning ? 'ring-1 ring-red-400' : ''}`}>
                         <span className="text-[9px] uppercase tracking-wider font-bold opacity-70 mb-0.5">{label}</span>
-                        <span className={`text-xs font-bold ${isWarning ? 'text-red-700' : 'text-gray-900 dark:text-white'} leading-tight whitespace-nowrap`}>{value}</span>
+                        <span className={`text-xs font-bold ${isWarning ? 'text-red-700 dark:text-red-400' : 'text-gray-900 dark:text-white'} leading-tight whitespace-nowrap`}>{value}</span>
                       </div>
                     );
                   })}
@@ -363,7 +363,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                 {redirectChain.map((url: string, idx: number) => (
                   <div key={idx} className="relative flex items-center gap-3">
                     <div className="absolute -left-4 w-2.5 h-2.5 rounded-full bg-primary-500 ring-4 ring-white print:ring-0"></div>
-                    <div className="bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl px-4 py-2 flex-1 break-all text-xs text-gray-700 font-mono print:bg-white dark:bg-slate-900 print:border-gray-300">
+                    <div className="bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl px-4 py-2 flex-1 break-all text-xs text-gray-700 dark:text-gray-300 font-mono print:bg-white dark:bg-slate-900 print:border-gray-300">
                       {url}
                     </div>
                   </div>
@@ -423,19 +423,19 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
                     return (
                       <div key={idx} className="flex items-start gap-2.5 p-3 bg-gray-50 dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 print:border-gray-300 print:bg-white dark:bg-slate-900 relative">
-                        <div className="w-5 h-5 rounded-full bg-blue-100 text-primary-700 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 print:border print:border-gray-300">
+                        <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-primary-700 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 print:border print:border-gray-300">
                           {idx + 1}
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="font-semibold text-gray-900 dark:text-white text-xs flex items-center gap-2 flex-wrap">
                             <span className="leading-snug">{cleanStep}</span>
                             {tag && (
-                              <span className="text-[8px] bg-purple-100 text-purple-700 border border-purple-200 px-1.5 py-0.5 rounded-md tracking-widest font-mono shrink-0">
+                              <span className="text-[8px] bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400 border border-purple-200 px-1.5 py-0.5 rounded-md tracking-widest font-mono shrink-0">
                                 {tag}
                               </span>
                             )}
                           </div>
-                          <div className="text-[11px] text-gray-600 mt-1 leading-relaxed print:text-black">{item.finding}</div>
+                          <div className="text-[11px] text-gray-600 dark:text-gray-300 mt-1 leading-relaxed print:text-black">{item.finding}</div>
                         </div>
                       </div>
                     );
@@ -460,7 +460,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 pt-2 print:hidden">
-            <Link href="/scan" className="flex-1 bg-white dark:bg-slate-900 text-gray-700 border border-gray-200 dark:border-slate-700 font-semibold py-3 px-5 rounded-xl hover:bg-gray-50 dark:bg-slate-800 transition-colors flex items-center justify-center gap-2 shadow-sm text-sm">
+            <Link href="/scan" className="flex-1 bg-white dark:bg-slate-900 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-slate-700 font-semibold py-3 px-5 rounded-xl hover:bg-gray-50 dark:bg-slate-800 transition-colors flex items-center justify-center gap-2 shadow-sm text-sm">
               <RefreshCw className="w-4 h-4" /> Scan Ulang Target Lain
             </Link>
           </div>
@@ -481,7 +481,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
               </div>
               <div className="flex justify-between gap-2 border-b border-gray-50 pb-2">
                 <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500 shrink-0">Status Sistem</span>
-                <span className="font-medium text-right text-green-600">Terverifikasi</span>
+                <span className="font-medium text-right text-green-600 dark:text-green-400">Terverifikasi</span>
               </div>
               <div className="flex justify-between gap-2 pt-1">
                 <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500 shrink-0">ID Laporan</span>
@@ -490,9 +490,9 @@ export default async function ScanResultPage({ params, searchParams }: { params:
             </div>
           </div>
 
-          <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-2xl p-5">
             <h4 className="font-bold text-gray-900 dark:text-white text-sm mb-2">Penafian Laporan</h4>
-            <p className="text-xs text-gray-600 leading-relaxed">
+            <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
               Laporan ini dibuat otomatis menggunakan teknik <i>static & dynamic analysis</i> tanpa manipulasi.
               Sistem PhishDeep tidak bertanggung jawab atas kerugian yang ditimbulkan akibat salah tafsir terhadap data ini.
             </p>
