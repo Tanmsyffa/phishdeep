@@ -230,6 +230,8 @@ export default function NewScanPage() {
             
             {!isScanning && limitCheck.allowed && activeTab === 'link' && (
               <div className="px-4 sm:px-8 pb-5 sm:pb-8">
+                <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-4 border border-gray-100 dark:border-slate-700">
+                  <h4 className="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2.5">Contoh link phishing untuk dicoba:</h4>
                   <ul className="space-y-1.5 text-xs text-primary-600">
                     <li><button onClick={() => setUrl('bca-security-update-verify.com/login')} className="hover:underline text-left text-blue-600 flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-blue-600 shrink-0"></span><span className="break-all">bca-security-update-verify.com/login</span></button></li>
                     <li><button onClick={() => setUrl('secure.login.paypal.com.account-refund.info')} className="hover:underline text-left text-blue-600 flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-blue-600 shrink-0"></span><span className="break-all">secure.login.paypal.com.account-refund.info</span></button></li>
