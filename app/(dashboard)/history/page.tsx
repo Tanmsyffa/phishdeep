@@ -92,7 +92,7 @@ export default async function HistoryPage({
                     <span>{row.tanggal}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <Link href={`/scan/${row.id}`} className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:bg-blue-900/20 rounded-lg transition-colors" title="Lihat Detail">
+                    <Link href={`/scan/${row.id}`} className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors" title="Lihat Detail">
                       <Eye className="w-4 h-4" />
                     </Link>
                     <DeleteScanButton id={row.id} />
@@ -117,7 +117,7 @@ export default async function HistoryPage({
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
                   {filteredScans.map((row) => (
-                    <tr key={row.id} className="hover:bg-gray-50 dark:bg-slate-800/70 dark:hover:bg-slate-800/50 transition-colors">
+                    <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                       <td className="px-6 py-4 max-w-[300px] truncate text-gray-700 dark:text-gray-300 font-medium">{row.target}</td>
                       <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
                         <span className="bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-md font-medium text-xs">{row.jenis}</span>
@@ -130,7 +130,7 @@ export default async function HistoryPage({
                       <td className="px-6 py-4 text-gray-400 dark:text-gray-500 dark:text-gray-400 text-xs">{row.tanggal}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
-                          <Link href={`/scan/${row.id}`} className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:bg-blue-900/20 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-xs" title="Lihat Detail">
+                          <Link href={`/scan/${row.id}`} className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-xs" title="Lihat Detail">
                             <Eye className="w-4 h-4" /> Detail
                           </Link>
                           <DeleteScanButton id={row.id} />

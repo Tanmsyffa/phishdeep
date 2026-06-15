@@ -284,11 +284,11 @@ export default async function DashboardPage() {
         <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
           <div className="px-4 sm:px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
             <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Aktivitas Terakhir</h2>
-            <Link href="/history" className="text-xs text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:text-blue-400">Lihat semua →</Link>
+            <Link href="/history" className="text-xs text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors">Lihat semua →</Link>
           </div>
 
           {/* Mobile card list */}
-          <div className="sm:hidden divide-y divide-gray-50">
+          <div className="sm:hidden divide-y divide-gray-100 dark:divide-slate-800">
             {displayScans.length === 0 ? (
               <p className="text-center text-sm text-gray-400 dark:text-gray-500 py-10">Belum ada aktivitas scan</p>
             ) : displayScans.map(row => (
@@ -316,7 +316,7 @@ export default async function DashboardPage() {
                   <th className="px-6 py-3">Waktu</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
                 {displayScans.length === 0 ? (
                   <tr><td colSpan={4} className="px-6 py-10 text-center text-gray-400 dark:text-gray-500 text-sm">Belum ada aktivitas scan</td></tr>
                 ) : displayScans.map(row => (
@@ -339,7 +339,7 @@ export default async function DashboardPage() {
           <div className="bg-gradient-to-br from-blue-600 to-blue-700 p-5 rounded-2xl text-white">
             <h3 className="font-bold mb-1 text-sm">Mulai Scan Baru</h3>
             <p className="text-xs text-blue-200 mb-4 leading-relaxed">Analisis link atau APK mencurigakan sekarang.</p>
-            <Link href="/scan" className="block text-center bg-white dark:bg-slate-900 text-blue-700 dark:text-blue-400 font-bold py-2 px-4 rounded-xl text-sm hover:bg-blue-50 dark:bg-blue-900/20 transition-colors">
+            <Link href="/scan" className="block text-center bg-white text-blue-700 font-bold py-2 px-4 rounded-xl text-sm hover:bg-blue-50 transition-colors">
               Scan Sekarang →
             </Link>
           </div>

@@ -359,7 +359,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
           {redirectChain.length > 0 && (
             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 print:border-gray-300 print:shadow-none print:break-inside-avoid">
               <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm flex items-center gap-2"><LinkIcon className="w-4 h-4 text-primary-500" /> Jejak Redirect (Redirect Chain)</h3>
-              <div className="relative pl-4 space-y-4 before:absolute before:inset-y-0 before:left-[11px] before:w-0.5 before:bg-gray-200 dark:bg-slate-700">
+              <div className="relative pl-4 space-y-4 before:absolute before:inset-y-0 before:left-[11px] before:w-0.5 before:bg-gray-200 dark:before:bg-slate-700">
                 {redirectChain.map((url: string, idx: number) => (
                   <div key={idx} className="relative flex items-center gap-3">
                     <div className="absolute -left-4 w-2.5 h-2.5 rounded-full bg-primary-500 ring-4 ring-white print:ring-0"></div>
@@ -460,7 +460,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 pt-2 print:hidden">
-            <Link href="/scan" className="flex-1 bg-white dark:bg-slate-900 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-slate-700 font-semibold py-3 px-5 rounded-xl hover:bg-gray-50 dark:bg-slate-800 transition-colors flex items-center justify-center gap-2 shadow-sm text-sm">
+            <Link href="/scan" className="flex-1 bg-white dark:bg-slate-900 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-slate-700 font-semibold py-3 px-5 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 shadow-sm text-sm">
               <RefreshCw className="w-4 h-4" /> Scan Ulang Target Lain
             </Link>
           </div>
@@ -471,15 +471,15 @@ export default async function ScanResultPage({ params, searchParams }: { params:
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 sm:p-6">
             <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm sm:text-base">Informasi Metadata</h3>
             <div className="space-y-3 text-xs sm:text-sm">
-              <div className="flex justify-between gap-2 border-b border-gray-50 pb-2">
+              <div className="flex justify-between gap-2 border-b border-gray-100 dark:border-slate-700 pb-2">
                 <span className="text-gray-500 dark:text-gray-400 shrink-0">Waktu Scan</span>
                 <span className="font-medium text-right text-gray-900 dark:text-white">{new Date(scan.created_at).toLocaleString('id-ID')}</span>
               </div>
-              <div className="flex justify-between gap-2 border-b border-gray-50 pb-2">
+              <div className="flex justify-between gap-2 border-b border-gray-100 dark:border-slate-700 pb-2">
                 <span className="text-gray-500 dark:text-gray-400 shrink-0">Tipe Entitas</span>
                 <span className="font-medium text-right text-gray-900 dark:text-white">{scan.target_type}</span>
               </div>
-              <div className="flex justify-between gap-2 border-b border-gray-50 pb-2">
+              <div className="flex justify-between gap-2 border-b border-gray-100 dark:border-slate-700 pb-2">
                 <span className="text-gray-500 dark:text-gray-400 shrink-0">Status Sistem</span>
                 <span className="font-medium text-right text-green-600 dark:text-green-400">Terverifikasi</span>
               </div>

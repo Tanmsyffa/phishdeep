@@ -97,7 +97,7 @@ export default async function ReportsPage({
                 
                 <Link 
                   href={`/scan/${scan.id}`} 
-                  className="mt-auto w-full border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 font-semibold py-2.5 rounded-xl hover:bg-gray-50 dark:bg-slate-800 flex items-center justify-center gap-2 transition-colors text-sm"
+                  className="mt-auto w-full border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 font-semibold py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 flex items-center justify-center gap-2 transition-colors text-sm"
                 >
                   <Download className="w-4 h-4" /> Download PDF
                 </Link>
