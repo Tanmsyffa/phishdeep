@@ -130,7 +130,7 @@ export default function CaraKerjaPage() {
           <div className="container mx-auto px-4">
             <h2 className="text-2xl sm:text-3xl font-bold mb-4">Coba Sekarang</h2>
             <p className="text-primary-100 mb-8 max-w-xl mx-auto text-sm sm:text-base">Scan link pertama Anda dan lihat sendiri perbedaannya.</p>
-            <Link href="/register" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-900 text-primary-900 font-semibold px-8 py-4 rounded-xl hover:bg-gray-50 dark:bg-slate-800 transition-all duration-300 text-base sm:text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 group">
+            <Link href="/register" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-950 text-primary-900 dark:text-white font-semibold px-8 py-4 rounded-xl border border-transparent dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-900 transition-all duration-300 text-base sm:text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 group">
               Mulai Scan Gratis <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
