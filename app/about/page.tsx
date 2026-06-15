@@ -3,8 +3,28 @@ import Footer from "@/components/layout/Footer";
 import BackButton from "@/components/ui/BackButton";
 import Link from "next/link";
 import { ShieldCheck, Target, Users, ArrowRight } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const supabase = createClient();
+
+  // Fetch real statistics from Supabase
+  const { count: totalScans } = await supabase
+    .from("scans")
+    .select("*", { count: "exact", head: true });
+
+  const { count: totalThreats } = await supabase
+    .from("scans")
+    .select("*", { count: "exact", head: true })
+    .gt("risk_score", 30);
+
+  // Format numbers (e.g., 1500 -> 1.5K, 500 -> 500+)
+  const formatNumber = (num: number | null) => {
+    if (!num) return "0";
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K+`;
+    return `${num}+`;
+  };
+
   const cards = [
     {
       icon: <Target className="w-6 h-6 sm:w-7 sm:h-7" />,
@@ -27,8 +47,8 @@ export default function AboutPage() {
   ];
 
   const stats = [
-    { value: "10K+", label: "Scan Dilakukan" },
-    { value: "98%", label: "Akurasi Deteksi" },
+    { value: formatNumber(totalScans), label: "Total Scan Dilakukan" },
+    { value: formatNumber(totalThreats), label: "Ancaman Terdeteksi" },
     { value: "24/7", label: "Layanan Aktif" },
     { value: "100%", label: "Gratis" },
   ];
