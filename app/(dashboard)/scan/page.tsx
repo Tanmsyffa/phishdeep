@@ -114,6 +114,19 @@ export default function NewScanPage() {
         buffer = lines[lines.length - 1];
       }
       
+      if (buffer.trim()) {
+        try {
+          const parsed = JSON.parse(buffer.trim());
+          if (parsed.status === "success") {
+            scanResult = parsed.result;
+          } else if (parsed.status === "error") {
+            throw new Error(parsed.message);
+          }
+        } catch (e: any) {
+           console.error("Final buffer parse error:", e);
+        }
+      }
+      
       if (!scanResult) throw new Error("Gagal mendapatkan hasil dari server.");
 
       setScanStatusMsg("Menyimpan hasil laporan...");
@@ -130,7 +143,7 @@ export default function NewScanPage() {
         // Perbarui limit UI agar form disembunyikan
         setLimitCheck({ allowed: false, count: 10, loading: false });
       } else {
-        setErrorMsg("Analisis terhenti: Server forensik sedang sibuk atau target tidak dapat dijangkau. Silakan coba lagi nanti.");
+        setErrorMsg(err.message || "Analisis terhenti: Server forensik sedang sibuk atau target tidak dapat dijangkau. Silakan coba lagi nanti.");
       }
       setIsScanning(false);
     } finally {
