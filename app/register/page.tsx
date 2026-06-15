@@ -9,7 +9,7 @@ export default function RegisterPage({
   searchParams: { message: string }
 }) {
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex bg-gray-50 dark:bg-slate-800">
       
       {/* Left Side - Visual Banner (Hidden on Mobile) */}
       <div className="hidden lg:flex w-1/2 bg-gray-900 relative overflow-hidden flex-col justify-between">
@@ -28,7 +28,7 @@ export default function RegisterPage({
         </div>
 
         <div className="relative z-20 p-12 mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold tracking-wide mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/200/20 border border-blue-400/30 text-blue-300 text-xs font-semibold tracking-wide mb-6">
             <Lock className="w-3.5 h-3.5" /> Platform Analisis Forensik
           </div>
           <h1 className="text-4xl xl:text-5xl font-bold text-white leading-tight mb-6">
@@ -46,7 +46,7 @@ export default function RegisterPage({
               </div>
               <div>
                 <h4 className="text-white font-semibold text-sm mb-1">Tanpa Password</h4>
-                <p className="text-gray-400 text-xs leading-relaxed">Lebih aman dan cepat dengan sistem Single Sign-On Google.</p>
+                <p className="text-gray-400 dark:text-gray-500 text-xs leading-relaxed">Lebih aman dan cepat dengan sistem Single Sign-On Google.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -55,7 +55,7 @@ export default function RegisterPage({
               </div>
               <div>
                 <h4 className="text-white font-semibold text-sm mb-1">Standar Global</h4>
-                <p className="text-gray-400 text-xs leading-relaxed">Analisis keamanan Anda didukung framework internasional kelas enterprise.</p>
+                <p className="text-gray-400 dark:text-gray-500 text-xs leading-relaxed">Analisis keamanan Anda didukung framework internasional kelas enterprise.</p>
               </div>
             </div>
           </div>
@@ -63,11 +63,11 @@ export default function RegisterPage({
       </div>
 
       {/* Right Side - Register Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative bg-white">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative bg-white dark:bg-slate-900">
         
         {/* Mobile Back Button */}
         <div className="absolute top-6 left-6 lg:hidden">
-           <Link href="/" className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
+           <Link href="/" className="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:text-white transition-colors">
             <ArrowLeft className="w-4 h-4" /> Kembali
           </Link>
         </div>
@@ -75,20 +75,20 @@ export default function RegisterPage({
         <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-8 duration-700">
           
           <div className="lg:hidden flex justify-center mb-10">
-            <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100">
+            <div className="w-14 h-14 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center border border-blue-100 dark:border-blue-800">
               <ShieldCheck className="h-8 w-8 text-primary-600" />
             </div>
           </div>
 
           <div className="mb-10 text-center lg:text-left">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3 tracking-tight">Buat Akun Gratis</h2>
-            <p className="text-gray-500 text-sm leading-relaxed">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">Buat Akun Gratis</h2>
+            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 text-sm leading-relaxed">
               Bergabung dan mulai scan ancaman siber dalam hitungan detik. 100% gratis.
             </p>
           </div>
 
           {/* Benefits List (More prominent on mobile, visible on both) */}
-          <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-5 mb-8 space-y-3">
+          <div className="bg-blue-50 dark:bg-blue-900/20/50 border border-blue-100 dark:border-blue-800 rounded-xl p-5 mb-8 space-y-3">
             {[
               'Riwayat scan tersimpan otomatis',
               'Laporan PDF forensik siap unduh',
@@ -103,7 +103,7 @@ export default function RegisterPage({
 
           {/* Error Message */}
           {searchParams?.message && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3.5 rounded-xl mb-8 flex items-start gap-3 text-sm animate-in zoom-in-95">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 text-red-600 dark:text-red-400 px-4 py-3.5 rounded-xl mb-8 flex items-start gap-3 text-sm animate-in zoom-in-95">
               <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-red-500" />
               <span className="font-medium">{searchParams.message}</span>
             </div>
@@ -113,9 +113,9 @@ export default function RegisterPage({
           <form action={signInWithGoogle}>
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm transition-all duration-200 group relative overflow-hidden"
+              className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-900 border-2 border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 font-bold py-4 rounded-xl hover:bg-gray-50 dark:bg-slate-800 hover:border-gray-300 hover:shadow-sm transition-all duration-200 group relative overflow-hidden"
             >
-              <div className="absolute inset-0 bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0 bg-gray-50 dark:bg-slate-800 opacity-0 group-hover:opacity-100 transition-opacity" />
               {/* Google Icon SVG */}
               <svg className="w-5 h-5 shrink-0 relative z-10" viewBox="0 0 48 48">
                 <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -131,22 +131,22 @@ export default function RegisterPage({
           {/* Divider */}
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-100"></div>
+              <div className="w-full border-t border-gray-100 dark:border-slate-700"></div>
             </div>
-            <div className="relative flex justify-center text-xs text-gray-400 font-medium">
-              <span className="bg-white px-4">AMAN & TERENKRIPSI</span>
+            <div className="relative flex justify-center text-xs text-gray-400 dark:text-gray-500 font-medium">
+              <span className="bg-white dark:bg-slate-900 px-4">AMAN & TERENKRIPSI</span>
             </div>
           </div>
 
           {/* Trust badges */}
-          <p className="text-center text-xs text-gray-400 leading-relaxed mb-8">
+          <p className="text-center text-xs text-gray-400 dark:text-gray-500 leading-relaxed mb-8">
             Dengan mendaftar, Anda menyetujui{' '}
-            <Link href="/terms" className="text-gray-600 font-semibold hover:text-gray-900 transition-colors">Syarat & Ketentuan</Link>
+            <Link href="/terms" className="text-gray-600 dark:text-gray-300 font-semibold hover:text-gray-900 dark:text-white transition-colors">Syarat & Ketentuan</Link>
             {' '}dan{' '}
-            <Link href="/privacy" className="text-gray-600 font-semibold hover:text-gray-900 transition-colors">Kebijakan Privasi</Link>{' '}kami.
+            <Link href="/privacy" className="text-gray-600 dark:text-gray-300 font-semibold hover:text-gray-900 dark:text-white transition-colors">Kebijakan Privasi</Link>{' '}kami.
           </p>
 
-          <div className="text-center text-sm text-gray-500 bg-gray-50 rounded-xl py-4 border border-gray-100">
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-slate-800 rounded-xl py-4 border border-gray-100 dark:border-slate-700">
             Sudah punya akun?{' '}
             <Link href="/login" className="text-primary-600 font-bold hover:text-primary-700 transition-colors">
               Masuk
