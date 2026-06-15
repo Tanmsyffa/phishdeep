@@ -8,15 +8,16 @@ import { createClient } from "@/lib/supabase/server";
 export default async function AboutPage() {
   const supabase = createClient();
 
-  // Fetch real statistics from Supabase
-  const { count: totalScans } = await supabase
-    .from("scans")
-    .select("*", { count: "exact", head: true });
+  // Gunakan RPC (Remote Procedure Call) agar bisa membypass RLS (Row Level Security)
+  const { data: rpcData, error } = await supabase.rpc("get_public_stats");
 
-  const { count: totalThreats } = await supabase
-    .from("scans")
-    .select("*", { count: "exact", head: true })
-    .gt("risk_score", 30);
+  let totalScans = 0;
+  let totalThreats = 0;
+
+  if (rpcData && rpcData.length > 0) {
+    totalScans = rpcData[0].total_scans;
+    totalThreats = rpcData[0].total_threats;
+  }
 
   // Format numbers (e.g., 1500 -> 1.5K, 500 -> 500+)
   const formatNumber = (num: number | null) => {
