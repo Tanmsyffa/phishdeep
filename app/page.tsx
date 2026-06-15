@@ -58,14 +58,14 @@ export default function Home() {
                       <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
                       <div className="w-3 h-3 rounded-full bg-green-400"></div>
                     </div>
-                    <div className="mx-auto bg-white dark:bg-slate-900 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 px-4 py-1 rounded-md border border-gray-200 dark:border-slate-700 flex items-center gap-2 w-2/3 truncate">
+                    <div className="mx-auto bg-white dark:bg-slate-900 text-xs text-gray-500 dark:text-gray-400 px-4 py-1 rounded-md border border-gray-200 dark:border-slate-700 flex items-center gap-2 w-2/3 truncate">
                       <span className="text-green-600 dark:text-green-400">🔒</span> https://secure-login-banking.com/login
                     </div>
                   </div>
                   <div className="p-8 bg-gray-50 dark:bg-slate-800 h-full">
                     <div className="bg-primary-900 text-white p-4 rounded-t-lg font-bold flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 bg-blue-50 dark:bg-blue-900/200 rounded flex items-center justify-center text-xs">B</div>
+                        <div className="w-6 h-6 bg-blue-500 rounded flex items-center justify-center text-xs">B</div>
                         <span>BANK XYZ</span>
                       </div>
                       <span className="text-sm font-normal text-gray-300">Internet Banking</span>
@@ -80,7 +80,7 @@ export default function Home() {
                     </div>
                     
                     {/* The Red Box Evidence Simulation */}
-                    <div className="absolute top-[35%] left-[10%] right-[10%] bottom-[10%] border-2 md:border-4 border-red-500 border-dashed rounded bg-red-50 dark:bg-red-900/200/5 animate-pulse"></div>
+                    <div className="absolute top-[35%] left-[10%] right-[10%] bottom-[10%] border-2 md:border-4 border-red-500 border-dashed rounded bg-red-500/5 animate-pulse"></div>
                     <div className="absolute top-[50%] left-1/2 md:left-auto md:right-4 -translate-x-1/2 md:translate-x-0 -translate-y-1/2 bg-red-600 text-white text-[10px] md:text-xs font-bold px-3 py-2 rounded shadow-lg flex flex-col md:flex-row items-center gap-1 md:gap-2 z-10 w-max max-w-[90%] text-center md:text-left">
                        <span>Form Login Palsu</span> <span className="font-normal opacity-90">(Masukkan data)</span>
                     </div>
@@ -181,7 +181,7 @@ export default function Home() {
               </table>
             </div>
             
-            <div className="mt-12 flex flex-wrap justify-center gap-8 text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">
+            <div className="mt-12 flex flex-wrap justify-center gap-8 text-sm font-medium text-gray-500 dark:text-gray-400">
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500"/> Gratis Digunakan</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500"/> Privasi Terjaga</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500"/> File Auto-Delete 24 Jam</div>

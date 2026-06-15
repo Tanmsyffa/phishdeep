@@ -28,7 +28,7 @@ export default function RegisterPage({
         </div>
 
         <div className="relative z-20 p-12 mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/200/20 border border-blue-400/30 text-blue-300 text-xs font-semibold tracking-wide mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold tracking-wide mb-6">
             <Lock className="w-3.5 h-3.5" /> Platform Analisis Forensik
           </div>
           <h1 className="text-4xl xl:text-5xl font-bold text-white leading-tight mb-6">
@@ -67,7 +67,7 @@ export default function RegisterPage({
         
         {/* Mobile Back Button */}
         <div className="absolute top-6 left-6 lg:hidden">
-           <Link href="/" className="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:text-white transition-colors">
+           <Link href="/" className="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-white transition-colors">
             <ArrowLeft className="w-4 h-4" /> Kembali
           </Link>
         </div>
@@ -82,7 +82,7 @@ export default function RegisterPage({
 
           <div className="mb-10 text-center lg:text-left">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">Buat Akun Gratis</h2>
-            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 text-sm leading-relaxed">
+            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
               Bergabung dan mulai scan ancaman siber dalam hitungan detik. 100% gratis.
             </p>
           </div>
@@ -146,7 +146,7 @@ export default function RegisterPage({
             <Link href="/privacy" className="text-gray-600 dark:text-gray-300 font-semibold hover:text-gray-900 dark:text-white transition-colors">Kebijakan Privasi</Link>{' '}kami.
           </p>
 
-          <div className="text-center text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-slate-800 rounded-xl py-4 border border-gray-100 dark:border-slate-700">
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-slate-800 rounded-xl py-4 border border-gray-100 dark:border-slate-700">
             Sudah punya akun?{' '}
             <Link href="/login" className="text-primary-600 font-bold hover:text-primary-700 transition-colors">
               Masuk

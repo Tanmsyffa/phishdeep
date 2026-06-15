@@ -89,7 +89,7 @@ export default async function DashboardPage() {
         </div>
         <div>
           <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight">Dashboard</h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Ringkasan aktivitas scanning Anda hari ini</p>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Ringkasan aktivitas scanning Anda hari ini</p>
         </div>
       </div>
 
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
                 </div>
                 <div className="text-right">
                   <span className="block text-2xl font-bold text-gray-900 dark:text-white leading-none mb-0.5">{catScans.length}</span>
-                  <span className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold block">Total</span>
+                  <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold block">Total</span>
                 </div>
               </div>
 
@@ -141,7 +141,7 @@ export default async function DashboardPage() {
         {/* Trend Chart (7 Hari Terakhir) */}
         <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 sm:p-6">
           <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base mb-1">Tren Analisis (7 Hari)</h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-4">Perbandingan total scan vs ancaman berbahaya harian.</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Perbandingan total scan vs ancaman berbahaya harian.</p>
           
           {(() => {
             const CHART_H = 120; // fixed pixel height for the bar area
@@ -177,12 +177,12 @@ export default async function DashboardPage() {
                             <div className="w-full flex justify-center">
                               {barH > 0 ? (
                                 <div
-                                  className="w-4 sm:w-5 lg:w-6 rounded-t-sm relative overflow-hidden bg-blue-200 group-hover:bg-blue-300 transition-colors cursor-default"
+                                  className="w-4 sm:w-5 lg:w-6 rounded-t-sm relative overflow-hidden bg-blue-200 dark:bg-blue-500/50 group-hover:bg-blue-300 dark:group-hover:bg-blue-500/70 transition-colors cursor-default"
                                   style={{ height: `${barH}px` }}
                                 >
                                   {dangH > 0 && (
                                     <div
-                                      className="absolute bottom-0 left-0 right-0 bg-red-400"
+                                      className="absolute bottom-0 left-0 right-0 bg-red-400 dark:bg-red-500"
                                       style={{ height: `${dangH}px` }}
                                     />
                                   )}
@@ -206,15 +206,15 @@ export default async function DashboardPage() {
                 <div className="flex justify-around pl-8 mt-1.5">
                   {trendData.map((t, idx) => (
                     <div key={idx} className="flex-1 text-center">
-                      <span className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium">{t.dayName}</span>
+                      <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">{t.dayName}</span>
                     </div>
                   ))}
                 </div>
 
                 {/* Legend */}
-                <div className="flex gap-4 mt-3 text-[10px] font-medium justify-center border-t border-gray-100 dark:border-slate-700 pt-3">
-                  <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-blue-200 rounded-sm inline-block"></span> Total Scan</div>
-                  <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-red-400 rounded-sm inline-block"></span> Bahaya Terdeteksi</div>
+                <div className="flex gap-4 mt-3 text-[10px] font-medium justify-center border-t border-gray-100 dark:border-slate-700 pt-3 text-gray-600 dark:text-gray-300">
+                  <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-blue-200 dark:bg-blue-500/50 rounded-sm inline-block"></span> Total Scan</div>
+                  <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-red-400 dark:bg-red-500 rounded-sm inline-block"></span> Bahaya Terdeteksi</div>
                 </div>
               </>
             );
@@ -226,12 +226,12 @@ export default async function DashboardPage() {
           <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
             <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm">Batas Scan Harian</h3>
             <div className="flex justify-between text-xs mb-2">
-              <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Terpakai</span>
+              <span className="text-gray-500 dark:text-gray-400">Terpakai</span>
               <span className="font-bold text-gray-900 dark:text-white">{todayScanCount} / 10</span>
             </div>
             <div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-2 mb-3 overflow-hidden">
               <div
-                className={`h-2 rounded-full transition-all ${todayScanCount >= 10 ? 'bg-red-50 dark:bg-red-900/200' : todayScanCount >= 7 ? 'bg-yellow-50 dark:bg-yellow-900/200' : 'bg-blue-50 dark:bg-blue-900/200'}`}
+                className={`h-2 rounded-full transition-all ${todayScanCount >= 10 ? 'bg-red-500' : todayScanCount >= 7 ? 'bg-yellow-500' : 'bg-blue-500'}`}
                 style={{ width: `${Math.min((todayScanCount / 10) * 100, 100)}%` }}
               />
             </div>
@@ -255,16 +255,16 @@ export default async function DashboardPage() {
               return (
                 <>
                   <div className="flex h-3 rounded-full overflow-hidden mb-4 bg-gray-100 dark:bg-slate-800">
-                    {lPct > 0 && <div style={{ width: `${lPct}%` }} className="bg-blue-50 dark:bg-blue-900/200 transition-all" />}
-                    {aPct > 0 && <div style={{ width: `${aPct}%` }} className="bg-green-50 dark:bg-green-900/200 transition-all" />}
+                    {lPct > 0 && <div style={{ width: `${lPct}%` }} className="bg-blue-500 transition-all" />}
+                    {aPct > 0 && <div style={{ width: `${aPct}%` }} className="bg-green-500 transition-all" />}
                   </div>
                   <div className="space-y-2 text-xs">
                     <div className="flex justify-between items-center">
-                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-50 dark:bg-blue-900/200 inline-block"></span> Link</span>
+                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-500 inline-block"></span> Link</span>
                       <span className="font-bold text-gray-700 dark:text-gray-300">{linkCount}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-green-50 dark:bg-green-900/200 inline-block"></span> APK</span>
+                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span> APK</span>
                       <span className="font-bold text-gray-700 dark:text-gray-300">{apkCount}</span>
                     </div>
                     {total === 0 && (
@@ -292,7 +292,7 @@ export default async function DashboardPage() {
             {displayScans.length === 0 ? (
               <p className="text-center text-sm text-gray-400 dark:text-gray-500 py-10">Belum ada aktivitas scan</p>
             ) : displayScans.map(row => (
-              <Link key={row.id} href={`/scan/${row.id}`} className="block px-4 py-3 hover:bg-gray-50 dark:bg-slate-800 transition-colors">
+              <Link key={row.id} href={`/scan/${row.id}`} className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate flex-1">{row.target}</span>
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border shrink-0 ${row.warna}`}>{row.hasil}</span>
@@ -308,7 +308,7 @@ export default async function DashboardPage() {
           {/* Desktop table */}
           <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 dark:text-gray-500 text-xs font-medium border-b border-gray-100 dark:border-slate-700">
+              <thead className="bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 text-xs font-medium border-b border-gray-100 dark:border-slate-700">
                 <tr>
                   <th className="px-6 py-3">Target</th>
                   <th className="px-6 py-3">Jenis</th>
@@ -320,7 +320,7 @@ export default async function DashboardPage() {
                 {displayScans.length === 0 ? (
                   <tr><td colSpan={4} className="px-6 py-10 text-center text-gray-400 dark:text-gray-500 text-sm">Belum ada aktivitas scan</td></tr>
                 ) : displayScans.map(row => (
-                  <tr key={row.id} className="hover:bg-gray-50 dark:bg-slate-800/70 transition-colors">
+                  <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/70 transition-colors">
                     <td className="px-6 py-3.5 max-w-[220px] truncate text-gray-700 dark:text-gray-300 font-medium">
                       <Link href={`/scan/${row.id}`} className="hover:text-blue-600 dark:text-blue-400 transition-colors">{row.target}</Link>
                     </td>

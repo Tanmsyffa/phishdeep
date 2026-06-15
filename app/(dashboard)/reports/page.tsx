@@ -44,7 +44,7 @@ export default async function ReportsPage({
         </div>
         <div>
           <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight">Laporan PDF</h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Unduh laporan forensik dari riwayat pemindaian Anda.</p>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Unduh laporan forensik dari riwayat pemindaian Anda.</p>
         </div>
       </div>
 
@@ -58,7 +58,7 @@ export default async function ReportsPage({
             <FileText className="w-7 h-7" />
           </div>
           <h3 className="font-bold text-gray-900 dark:text-white text-base sm:text-lg mb-2">Tidak Ada Hasil</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-xs mx-auto mb-6">Tidak ditemukan laporan yang cocok dengan filter pencarian Anda.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs mx-auto mb-6">Tidak ditemukan laporan yang cocok dengan filter pencarian Anda.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -84,11 +84,11 @@ export default async function ReportsPage({
                     Laporan-{scan.id.split('-')[0].toUpperCase()}
                   </h3>
                   <div className="space-y-1.5">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 flex items-center gap-1.5 truncate" title={scan.target_url}>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5 truncate" title={scan.target_url}>
                       <HardDrive className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 shrink-0" />
                       <span className="truncate">{scan.target_url}</span>
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 flex items-center gap-1.5">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 shrink-0" />
                       {dateStr}
                     </p>
