@@ -26,34 +26,34 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen flex flex-col font-sans">
       <Header />
-      <main className="flex-grow bg-gray-50 pt-10 pb-16">
+      <main className="flex-grow bg-gray-50 dark:bg-slate-800 pt-10 pb-16">
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="mb-4">
             <BackButton />
           </div>
           <div className="text-center mb-10">
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3 leading-tight">Pertanyaan Seputar PhishDeep</h1>
-            <p className="text-base sm:text-lg text-gray-600 leading-relaxed">Temukan jawaban untuk pertanyaan umum mengenai layanan kami.</p>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 leading-tight">Pertanyaan Seputar PhishDeep</h1>
+            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 leading-relaxed">Temukan jawaban untuk pertanyaan umum mengenai layanan kami.</p>
           </div>
 
           <div className="space-y-3 sm:space-y-4">
             {faqs.map((faq, idx) => (
-              <div key={idx} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+              <div key={idx} className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-start gap-4 p-5 sm:p-6">
                   <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center shrink-0 font-bold text-sm mt-0.5">
                     {idx + 1}
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900 text-base sm:text-lg mb-2 leading-snug">{faq.q}</h3>
-                    <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{faq.a}</p>
+                    <h3 className="font-bold text-gray-900 dark:text-white text-base sm:text-lg mb-2 leading-snug">{faq.q}</h3>
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm sm:text-base">{faq.a}</p>
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-10 text-center bg-white rounded-2xl border border-gray-200 p-6 sm:p-8">
-            <p className="text-gray-600 text-sm sm:text-base mb-4">Masih ada pertanyaan lain?</p>
+          <div className="mt-10 text-center bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 p-6 sm:p-8">
+            <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base mb-4">Masih ada pertanyaan lain?</p>
             <a href="/contact" className="inline-flex items-center gap-2 bg-primary-600 text-white font-semibold px-6 py-3 rounded-xl hover:bg-primary-700 transition-colors text-sm sm:text-base shadow-sm">
               Hubungi Tim Kami
             </a>

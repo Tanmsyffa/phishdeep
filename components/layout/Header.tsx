@@ -6,6 +6,7 @@ import { ShieldCheck, Menu, X, LogOut, LayoutDashboard } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { logout } from "@/app/auth-actions";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -56,9 +57,13 @@ export default function Header() {
                   <LogOut className="w-4 h-4" /> Keluar
                 </button>
               </form>
+              <div className="border-l border-gray-200 dark:border-slate-700 h-6 mx-1"></div>
+              <ThemeToggle />
             </>
           ) : (
             <>
+              <ThemeToggle />
+              <div className="border-l border-gray-200 dark:border-slate-700 h-6 mx-1"></div>
               <Link href="/login" className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white">
                 Masuk
               </Link>
@@ -111,6 +116,10 @@ export default function Header() {
                 </Link>
               </>
             )}
+            <div className="border-t border-gray-100 dark:border-slate-800 pt-3 mt-1 flex justify-between items-center">
+              <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Tema</span>
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       )}

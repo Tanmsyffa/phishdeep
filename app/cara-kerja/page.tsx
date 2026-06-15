@@ -38,16 +38,16 @@ export default function CaraKerjaPage() {
             <div className="mb-4">
               <BackButton />
             </div>
-            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-blue-50/80 border border-blue-100 text-primary-700 text-xs sm:text-sm font-semibold mb-6 shadow-sm mx-auto">
+            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-500/20/80 border border-blue-100 dark:border-blue-800 text-primary-700 text-xs sm:text-sm font-semibold mb-6 shadow-sm mx-auto">
               <ShieldCheck className="w-4 h-4 shrink-0" /> <span className="leading-tight">Cara Kerja</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">Bagaimana PhishDeep Melindungi Anda</h1>
-            <p className="text-base sm:text-lg text-gray-600 leading-relaxed">Proses pemindaian berjalan sepenuhnya otomatis di server kami. Anda hanya perlu mengirimkan target, dan kami yang melakukan sisanya.</p>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight">Bagaimana PhishDeep Melindungi Anda</h1>
+            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 leading-relaxed">Proses pemindaian berjalan sepenuhnya otomatis di server kami. Anda hanya perlu mengirimkan target, dan kami yang melakukan sisanya.</p>
           </div>
         </section>
 
         {/* Steps */}
-        <section className="py-12 bg-white">
+        <section className="py-12 bg-white dark:bg-slate-900">
           <div className="container mx-auto px-4 max-w-4xl">
             <div className="space-y-12">
               {steps.map((s, i) => (
@@ -56,8 +56,8 @@ export default function CaraKerjaPage() {
                     {s.step}
                   </div>
                   <div className="pt-1 sm:pt-2">
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">{s.title}</h3>
-                    <p className="text-gray-600 leading-relaxed text-base sm:text-lg">{s.desc}</p>
+                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">{s.title}</h3>
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-base sm:text-lg">{s.desc}</p>
                   </div>
                 </div>
               ))}
@@ -66,57 +66,57 @@ export default function CaraKerjaPage() {
         </section>
 
         {/* Comparison Table */}
-        <section className="py-12 bg-gray-50">
+        <section className="py-12 bg-gray-50 dark:bg-slate-800">
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="text-center mb-8">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-4">Kenapa PhishDeep Lebih Baik?</h2>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-4">Kenapa PhishDeep Lebih Baik?</h2>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="p-3 sm:p-6 font-semibold text-gray-900 text-sm sm:text-base w-1/2">Fitur</th>
-                    <th className="p-3 sm:p-6 font-semibold text-gray-900 text-center text-sm sm:text-base w-1/4">Tools Lain</th>
-                    <th className="p-3 sm:p-6 font-bold text-primary-600 text-center text-sm sm:text-base w-1/4 bg-blue-50/50">PhishDeep</th>
+                  <tr className="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
+                    <th className="p-3 sm:p-6 font-semibold text-gray-900 dark:text-white text-sm sm:text-base w-1/2">Fitur</th>
+                    <th className="p-3 sm:p-6 font-semibold text-gray-900 dark:text-white text-center text-sm sm:text-base w-1/4">Tools Lain</th>
+                    <th className="p-3 sm:p-6 font-bold text-primary-600 text-center text-sm sm:text-base w-1/4 bg-blue-50 dark:bg-blue-500/20/50">PhishDeep</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   <tr>
-                    <td className="p-3 sm:p-6 text-gray-700 text-xs sm:text-base">Deteksi phishing / malware</td>
-                    <td className="p-3 sm:p-6 text-center text-gray-400 text-base sm:text-lg">✓</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Deteksi phishing / malware</td>
+                    <td className="p-3 sm:p-6 text-center text-gray-400 dark:text-gray-500 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50 dark:bg-blue-500/20/20 text-base sm:text-lg">✓</td>
                   </tr>
                   <tr>
-                    <td className="p-3 sm:p-6 text-gray-700 text-xs sm:text-base">Screenshot bukti visual</td>
+                    <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Screenshot bukti visual</td>
                     <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50 dark:bg-blue-500/20/20 text-base sm:text-lg">✓</td>
                   </tr>
                   <tr>
-                    <td className="p-3 sm:p-6 text-gray-700 text-xs sm:text-base">Kotak merah area scam</td>
+                    <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Kotak merah area scam</td>
                     <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50 dark:bg-blue-500/20/20 text-base sm:text-lg">✓</td>
                   </tr>
                   <tr>
-                    <td className="p-3 sm:p-6 text-gray-700 text-xs sm:text-base">Redirect chain lengkap</td>
+                    <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Redirect chain lengkap</td>
                     <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50 dark:bg-blue-500/20/20 text-base sm:text-lg">✓</td>
                   </tr>
                   <tr>
-                    <td className="p-3 sm:p-6 text-gray-700 text-xs sm:text-base">Laporan PDF forensik</td>
+                    <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Laporan PDF forensik</td>
                     <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50 dark:bg-blue-500/20/20 text-base sm:text-lg">✓</td>
                   </tr>
                   <tr>
-                    <td className="p-3 sm:p-6 text-gray-700 text-xs sm:text-base">Bukti siap laporan polisi</td>
+                    <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Bukti siap laporan polisi</td>
                     <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50 dark:bg-blue-500/20/20 text-base sm:text-lg">✓</td>
                   </tr>
                 </tbody>
               </table>
             </div>
             
-            <div className="mt-8 flex flex-wrap justify-center gap-4 sm:gap-8 text-xs sm:text-sm font-medium text-gray-500">
+            <div className="mt-8 flex flex-wrap justify-center gap-4 sm:gap-8 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 shrink-0"/> Gratis Digunakan</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 shrink-0"/> Privasi Terjaga</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 shrink-0"/> File Auto-Delete 24 Jam</div>
@@ -130,7 +130,7 @@ export default function CaraKerjaPage() {
           <div className="container mx-auto px-4">
             <h2 className="text-2xl sm:text-3xl font-bold mb-4">Coba Sekarang</h2>
             <p className="text-primary-100 mb-8 max-w-xl mx-auto text-sm sm:text-base">Scan link pertama Anda dan lihat sendiri perbedaannya.</p>
-            <Link href="/register" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-primary-900 font-semibold px-8 py-4 rounded-xl hover:bg-gray-50 transition-all duration-300 text-base sm:text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 group">
+            <Link href="/register" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-900 text-primary-900 font-semibold px-8 py-4 rounded-xl hover:bg-gray-50 dark:bg-slate-800 transition-all duration-300 text-base sm:text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 group">
               Mulai Scan Gratis <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
