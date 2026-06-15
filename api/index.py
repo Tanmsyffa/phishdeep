@@ -251,6 +251,19 @@ def analyze_link(target_url):
     if not is_typo:
         details.append({"step": "Typo-Squatting Engine", "finding": "Tidak terdeteksi pola typo-squatting pada domain ini."})
 
+    # --- SUBDOMAIN DEEP-CHAIN DETECTION ---
+    domain_parts = parsed_url.hostname.split('.') if parsed_url.hostname else []
+    if len(domain_parts) > 3:
+        suspicious_kws = ['login', 'secure', 'update', 'verify', 'account', 'auth', 'support', 'billing', 'bca', 'bri', 'bni', 'mandiri']
+        found_kws = [kw for kw in suspicious_kws if any(kw in part.lower() for part in domain_parts[:-2])]
+        if found_kws:
+            risk_score += 35
+            details.append({"step": "Subdomain Deep-Chain", "finding": f"KRITIS: Terdeteksi hierarki subdomain berlapis ({len(domain_parts)} tingkat) dengan kata kunci penyamaran: {', '.join(found_kws)}."})
+        else:
+            risk_score += 10
+            details.append({"step": "Subdomain Deep-Chain", "finding": f"MENCURIGAKAN: Domain memiliki {len(domain_parts)} tingkat subdomain. Taktik ini umum digunakan untuk menyembunyikan identitas domain utama."})
+    else:
+        details.append({"step": "Subdomain Deep-Chain", "finding": "Struktur hierarki domain normal (tidak ada subdomain berlapis yang mencurigakan)."})
 
     # ================================================================
     # ALL OSINT LOOKUPS — run in parallel (ThreadPoolExecutor)
@@ -1389,6 +1402,18 @@ def analyze_file(file_url, file_type):
             has_manifest = 'AndroidManifest.xml' in apk_entries
 
             details.append({"step": "APK Structure", "finding": f"Ditemukan {len(apk_entries)} entri file: {has_dex} DEX class(es), {len(has_native)} native library (.so), Manifest: {'Ada' if has_manifest else 'TIDAK ADA'}."})
+
+            # --- APK DIGITAL SIGNATURE FORENSICS ---
+            cert_files = [e for e in apk_entries if e.startswith('META-INF/') and (e.endswith('.RSA') or e.endswith('.DSA') or e.endswith('.SF'))]
+            if not cert_files:
+                risk_score += 40
+                details.append({"step": "Digital Signature", "finding": "KRITIS: File sertifikat (META-INF/*.RSA) tidak ditemukan! APK ini telah dimodifikasi secara ilegal setelah dikompilasi (Tampered)."})
+            else:
+                details.append({"step": "Digital Signature", "finding": f"Sertifikat ditemukan: {', '.join(cert_files)}. Integritas paket secara struktural terjaga."})
+            
+            if b'android:debuggable="true"' in raw_content or b'debuggable' in raw_content:
+                risk_score += 25
+                details.append({"step": "Debuggable Flag", "finding": "PERINGATAN: APK dikompilasi dalam mode DEBUG. Aplikasi resmi (Production) tidak pernah dirilis dalam mode ini. Indikasi kuat buatan amatir/malware."})
 
             if has_dex > 2:
                 risk_score += 20

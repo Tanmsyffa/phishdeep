@@ -4,6 +4,7 @@ import { useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Link from "next/link";
 import { ShieldCheck, Menu, X } from "lucide-react";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 export default function DashboardLayout({
   children,
@@ -13,21 +14,24 @@ export default function DashboardLayout({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex h-[100dvh] overflow-hidden bg-gray-50 flex-col md:flex-row relative print:h-auto print:overflow-visible print:bg-white">
+    <div className="flex h-[100dvh] overflow-hidden bg-gray-50 dark:bg-slate-950 flex-col md:flex-row relative print:h-auto print:overflow-visible print:bg-white transition-colors duration-300">
       {/* Mobile Top Bar */}
-      <div className="md:hidden flex items-center justify-between p-4 bg-white text-gray-900 z-40 border-b border-gray-200">
+      <div className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-slate-900 text-gray-900 dark:text-white z-40 border-b border-gray-200 dark:border-slate-800 transition-colors">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-lg bg-blue-600 dark:bg-blue-500 flex items-center justify-center shrink-0">
             <ShieldCheck className="h-4 w-4 text-white" />
           </div>
           <span className="font-bold tracking-tight text-base">PhishDeep</span>
         </Link>
-        <button 
-          onClick={() => setIsMobileMenuOpen(true)}
-          className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <button 
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-colors"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* Sidebar Overlay (Mobile) */}

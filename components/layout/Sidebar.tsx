@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 import { logout } from "@/app/auth-actions";
 import { 
   ShieldCheck, 
@@ -32,14 +33,14 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   ];
 
   return (
-    <aside className="w-64 bg-white text-gray-900 h-full md:h-screen sticky top-0 flex flex-col border-r border-gray-200" style={{ overflow: 'hidden' }}>
+    <aside className="w-64 bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100 h-full md:h-screen sticky top-0 flex flex-col border-r border-gray-200 dark:border-slate-800 transition-colors" style={{ overflow: 'hidden' }}>
       {/* Logo */}
-      <div className="px-4 py-4 flex items-center justify-between border-b border-gray-100">
+      <div className="px-4 py-4 flex items-center justify-between border-b border-gray-100 dark:border-slate-800">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 dark:bg-blue-500 flex items-center justify-center shrink-0">
             <ShieldCheck className="h-5 w-5 text-white" />
           </div>
-          <span className="font-bold text-lg tracking-tight text-gray-900">PhishDeep</span>
+          <span className="font-bold text-lg tracking-tight text-gray-900 dark:text-white">PhishDeep</span>
         </Link>
         {onClose && (
           <button 
@@ -62,8 +63,8 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             onClick={onClose}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
               link.active
-                ? 'bg-blue-50 text-blue-700 font-semibold'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                ? 'bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 font-semibold'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800/50'
             }`}
           >
             <span className={link.active ? 'text-blue-600' : 'text-gray-400'}>
@@ -75,18 +76,23 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       </nav>
 
       {/* Bottom section */}
-      <div className="px-3 py-4 border-t border-gray-100 space-y-1">
+      <div className="px-3 py-4 border-t border-gray-100 dark:border-slate-800 space-y-3">
         {/* Promo card */}
-        <div className="bg-blue-50 border border-blue-100 rounded-xl px-3.5 py-3 mb-2">
-          <p className="text-xs font-semibold text-blue-700 mb-0.5">100% Gratis</p>
-          <p className="text-[11px] text-gray-500 leading-snug">Limit <span className="text-gray-800 font-medium">10 scan / hari</span>. Tanpa biaya tersembunyi.</p>
+        <div className="bg-blue-50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 rounded-xl px-3.5 py-3">
+          <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-0.5">100% Gratis</p>
+          <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-snug">Limit <span className="text-gray-800 dark:text-gray-300 font-medium">10 scan / hari</span>. Tanpa biaya tersembunyi.</p>
+        </div>
+
+        <div className="flex items-center justify-between px-2">
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Tema</span>
+          <ThemeToggle />
         </div>
 
         {/* Logout */}
         <form action={logout}>
           <button
             type="submit"
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-all text-left"
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 transition-all text-left"
           >
             <LogOut className="w-4 h-4 text-gray-400" />
             Keluar

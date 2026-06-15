@@ -59,36 +59,36 @@ export default async function HistoryPage({
           <ClipboardList className="w-5 h-5 text-blue-600" />
         </div>
         <div>
-          <h1 className="text-lg sm:text-2xl font-bold text-gray-900 leading-tight">Riwayat Scan</h1>
-          <p className="text-xs sm:text-sm text-gray-500">Daftar semua aktivitas pemindaian Anda.</p>
+          <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight">Riwayat Scan</h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Daftar semua aktivitas pemindaian Anda.</p>
         </div>
       </div>
 
       <SearchFilter />
 
       {filteredScans.length === 0 ? (
-        <div className="bg-white border border-gray-200 rounded-2xl p-10 sm:p-16 text-center shadow-sm">
-          <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Eye className="w-7 h-7 text-gray-400" />
+        <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-10 sm:p-16 text-center shadow-sm">
+          <div className="w-14 h-14 bg-gray-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Eye className="w-7 h-7 text-gray-400 dark:text-gray-500" />
           </div>
-          <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-2">Tidak Ada Hasil</h2>
-          <p className="text-gray-500 mb-6 text-sm max-w-xs mx-auto">Tidak ditemukan data scan yang cocok dengan filter Anda.</p>
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-2">Tidak Ada Hasil</h2>
+          <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm max-w-xs mx-auto">Tidak ditemukan data scan yang cocok dengan filter Anda.</p>
         </div>
       ) : (
         <>
           {/* Mobile Card View */}
           <div className="space-y-3 sm:hidden">
             {filteredScans.map((row) => (
-              <div key={row.id} className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
+              <div key={row.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-4 shadow-sm">
                 <div className="flex items-start justify-between gap-3 mb-3">
-                  <p className="text-sm font-semibold text-gray-800 truncate flex-1 min-w-0">{row.target}</p>
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate flex-1 min-w-0">{row.target}</p>
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border shrink-0 ${row.warna}`}>
                     {row.hasil}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs text-gray-400">
-                    <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md font-medium">{row.jenis}</span>
+                  <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
+                    <span className="bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-md font-medium">{row.jenis}</span>
                     <span>{row.tanggal}</span>
                   </div>
                   <div className="flex items-center gap-1">
@@ -103,10 +103,10 @@ export default async function HistoryPage({
           </div>
 
           {/* Desktop Table View */}
-          <div className="hidden sm:block bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="hidden sm:block bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-gray-50 text-gray-500 text-xs font-medium border-b border-gray-100">
+                <thead className="bg-gray-50 dark:bg-slate-800/50 text-gray-500 dark:text-gray-400 text-xs font-medium border-b border-gray-100 dark:border-slate-800">
                   <tr>
                     <th className="px-6 py-3">Target</th>
                     <th className="px-6 py-3">Jenis</th>
@@ -115,19 +115,19 @@ export default async function HistoryPage({
                     <th className="px-6 py-3 text-right">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
                   {filteredScans.map((row) => (
-                    <tr key={row.id} className="hover:bg-gray-50/70 transition-colors">
-                      <td className="px-6 py-4 max-w-[300px] truncate text-gray-700 font-medium">{row.target}</td>
-                      <td className="px-6 py-4 text-gray-500">
-                        <span className="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md font-medium text-xs">{row.jenis}</span>
+                    <tr key={row.id} className="hover:bg-gray-50/70 dark:hover:bg-slate-800/50 transition-colors">
+                      <td className="px-6 py-4 max-w-[300px] truncate text-gray-700 dark:text-gray-300 font-medium">{row.target}</td>
+                      <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
+                        <span className="bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-md font-medium text-xs">{row.jenis}</span>
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${row.warna}`}>
                           {row.hasil}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-gray-400 text-xs">{row.tanggal}</td>
+                      <td className="px-6 py-4 text-gray-400 dark:text-gray-500 text-xs">{row.tanggal}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
                           <Link href={`/scan/${row.id}`} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-xs" title="Lihat Detail">

@@ -127,33 +127,41 @@ export default function NewScanPage() {
   return (
     <div className="max-w-6xl mx-auto">
       <header className="mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Scan Baru</h1>
-        <p className="text-sm text-gray-500">Pilih jenis file atau masukkan link yang ingin di-scan</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">Scan Baru</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Pilih jenis file atau masukkan link yang ingin di-scan</p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-8">
         <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           
           {errorMsg && (
-            <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl p-4 flex items-start gap-3 shadow-sm animate-in fade-in slide-in-from-top-2">
+            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-xl p-4 flex items-start gap-3 shadow-sm animate-in fade-in slide-in-from-top-2">
               <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
               <p className="text-sm font-medium leading-relaxed">{errorMsg}</p>
             </div>
           )}
 
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="flex border-b border-gray-200 overflow-x-auto">
-              <button 
-                className={`flex-1 flex items-center justify-center gap-1.5 py-3.5 px-3 sm:px-6 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap min-w-0
-                ${activeTab === 'link' ? 'text-primary-600 border-b-2 border-primary-600 bg-blue-50/50' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden transition-colors">
+            <div className="flex border-b border-gray-200 dark:border-slate-800 overflow-x-auto">
+              <button
+                type="button"
                 onClick={() => setActiveTab('link')}
+                className={`flex-1 py-3.5 px-4 text-sm font-semibold flex items-center justify-center gap-2 whitespace-nowrap transition-colors border-b-2 ${
+                  activeTab === 'link' 
+                  ? 'border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-500' 
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800'
+                }`}
               >
                 <LinkIcon className="w-4 h-4 shrink-0" /> Link
               </button>
-              <button 
-                className={`flex-1 flex items-center justify-center gap-1.5 py-3.5 px-3 sm:px-6 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap min-w-0
-                ${activeTab === 'apk' ? 'text-primary-600 border-b-2 border-primary-600 bg-blue-50/50' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
+              <button
+                type="button"
                 onClick={() => setActiveTab('apk')}
+                className={`flex-1 py-3.5 px-4 text-sm font-semibold flex items-center justify-center gap-2 whitespace-nowrap transition-colors border-b-2 ${
+                  activeTab === 'apk' 
+                  ? 'border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-500' 
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800'
+                }`}
               >
                 <Smartphone className="w-4 h-4 shrink-0" /> APK
               </button>
@@ -162,29 +170,29 @@ export default function NewScanPage() {
             <div className="p-4 sm:p-8">
               {limitCheck.loading ? (
                 <div className="py-12 text-center">
-                  <Loader2 className="w-8 h-8 animate-spin text-gray-300 mx-auto mb-3" />
-                  <p className="text-sm text-gray-500 font-medium">Memeriksa kuota...</p>
+                  <Loader2 className="w-8 h-8 animate-spin text-gray-300 dark:text-slate-700 mx-auto mb-3" />
+                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Memeriksa kuota...</p>
                 </div>
               ) : !limitCheck.allowed ? (
-                <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl p-6 text-center">
+                <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-xl p-6 text-center">
                   <ShieldAlert className="w-12 h-12 mx-auto mb-3 text-red-500" />
                   <h3 className="font-bold text-lg mb-1">Batas Scan Tercapai</h3>
                   <p className="text-sm">Anda telah mencapai batas 10 scan untuk hari ini. Silakan kembali besok.</p>
                 </div>
               ) : isScanning ? (
                 <div className="py-12 text-center">
-                  <Loader2 className="w-12 h-12 animate-spin text-primary-600 mx-auto mb-4" />
-                  <h3 className="font-bold text-gray-900 mb-1">{scanStatusMsg}</h3>
-                  <p className="text-sm text-gray-500">Mengeksekusi analisis, harap tunggu. File yang diunggah akan segera dihapus setelah analisis selesai.</p>
+                  <Loader2 className="w-12 h-12 animate-spin text-blue-600 dark:text-blue-400 mx-auto mb-4" />
+                  <h3 className="font-bold text-gray-900 dark:text-white mb-1">{scanStatusMsg}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Mengeksekusi analisis, harap tunggu. File yang diunggah akan segera dihapus setelah analisis selesai.</p>
                 </div>
               ) : activeTab === 'link' ? (
                 <form onSubmit={handleScan}>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Masukkan URL</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">URL Target</label>
                   <div className="flex flex-col sm:flex-row gap-3">
                     <input 
                       type="text" 
                       placeholder="contoh-link.com atau https://contoh.com" 
-                      className="flex-1 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow disabled:bg-gray-100"
+                      className="flex-1 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow disabled:bg-gray-100 dark:disabled:bg-slate-900 text-gray-900 dark:text-white"
                       value={url}
                       onChange={(e) => setUrl(e.target.value)}
                       disabled={isScanning}
@@ -193,14 +201,14 @@ export default function NewScanPage() {
                     <button 
                       type="submit" 
                       disabled={isScanning}
-                      className="w-full sm:w-auto bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors shadow-sm text-sm disabled:opacity-50"
+                      className="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-sm text-sm disabled:opacity-50"
                     >
                       Scan Sekarang
                     </button>
                   </div>
                 </form>
               ) : (
-                <form onSubmit={handleScan} className="border-2 border-dashed border-gray-300 rounded-xl p-8 sm:p-12 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
+                <form onSubmit={handleScan} className="border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-xl p-8 sm:p-12 text-center hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer relative">
                   <input 
                     type="file" 
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed" 
@@ -208,13 +216,12 @@ export default function NewScanPage() {
                     disabled={isScanning}
                     required
                   />
-                  <div className="w-16 h-16 bg-blue-50 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    {activeTab === 'apk' && <Smartphone className="w-8 h-8" />}
-                    {activeTab === 'image' && <ImageIcon className="w-8 h-8" />}
+                  <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Smartphone className="w-8 h-8" />
                   </div>
-                  <h3 className="font-medium text-gray-900 mb-1">{file ? file.name : 'Upload File Anda'}</h3>
-                  <p className="text-sm text-gray-500 mb-4">{file ? 'File siap untuk dipindai (Maks 25MB)' : 'Tarik dan letakkan file di sini atau klik (Maks 25MB)'}</p>
-                  <button type="submit" disabled={isScanning || !file} className="text-white font-medium text-sm border bg-primary-600 px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 relative z-10 cursor-pointer">
+                  <h3 className="font-medium text-gray-900 dark:text-white mb-1">{file ? file.name : 'Upload File Anda'}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{file ? 'File siap untuk dipindai (Maks 25MB)' : 'Tarik dan letakkan file di sini atau klik (Maks 25MB)'}</p>
+                  <button type="submit" disabled={isScanning || !file} className="text-white font-medium text-sm border bg-blue-600 px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 relative z-10 cursor-pointer">
                     {file ? 'Mulai Scan' : 'Pilih File'}
                   </button>
                 </form>
@@ -223,8 +230,6 @@ export default function NewScanPage() {
             
             {!isScanning && limitCheck.allowed && activeTab === 'link' && (
               <div className="px-4 sm:px-8 pb-5 sm:pb-8">
-                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                  <h4 className="text-xs font-bold text-gray-700 mb-2.5">Contoh link phishing untuk dicoba:</h4>
                   <ul className="space-y-1.5 text-xs text-primary-600">
                     <li><button onClick={() => setUrl('bca-security-update-verify.com/login')} className="hover:underline text-left text-blue-600 flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-blue-600 shrink-0"></span><span className="break-all">bca-security-update-verify.com/login</span></button></li>
                     <li><button onClick={() => setUrl('secure.login.paypal.com.account-refund.info')} className="hover:underline text-left text-blue-600 flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-blue-600 shrink-0"></span><span className="break-all">secure.login.paypal.com.account-refund.info</span></button></li>
