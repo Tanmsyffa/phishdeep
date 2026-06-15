@@ -20,10 +20,6 @@ try:
     from bs4 import BeautifulSoup
 except ImportError:
     BeautifulSoup = None  # type: ignore
-
-    pymupdf = None  # type: ignore
-    
-
 app = Flask(__name__)
 
 # ---------------------------------------------------------------------------
@@ -1231,45 +1227,6 @@ def _byte_entropy(data: bytes) -> float:
             p = f / n
             entropy -= p * math.log2(p)
     return entropy
-
-# ── Helper: Decode PDF FlateDecode streams ────────────────────────────────────
-def _decode_pdf_streams(raw: bytes) -> list[str]:
-    """Extract and decompress all FlateDecode streams from a PDF."""
-    decoded = []
-    pattern = re.compile(rb'stream\r?\n(.*?)\r?\nendstream', re.DOTALL)
-    for m in pattern.finditer(raw):
-        chunk = m.group(1)
-        try:
-            decoded.append(zlib.decompress(chunk).decode('utf-8', errors='ignore'))
-        except Exception:
-            try:
-                decoded.append(zlib.decompress(chunk, -15).decode('utf-8', errors='ignore'))
-            except Exception:
-                pass
-    return decoded
-
-# ── Helper: Detect JS obfuscation in code ────────────────────────────────────
-def _detect_js_obfuscation(js_code: str) -> list[str]:
-    patterns = {
-        r'\\u[0-9a-fA-F]{4}': "Unicode escape sequences (obfuscation)",
-        r'String\.fromCharCode\s*\(': "String.fromCharCode (char-by-char assembly)",
-        r'unescape\s*\(': "unescape() (encoded payload expansion)",
-        r'eval\s*\(': "eval() (dynamic code execution)",
-        r'decodeURIComponent\s*\(': "decodeURIComponent (URL-encoded payload)",
-        r'charCodeAt\s*\(': "charCodeAt (reverse string extraction)",
-        r'[A-Za-z0-9+/]{80,}={0,2}': "Long base64 string (encoded payload)",
-        r'\\x[0-9a-fA-F]{2}': "Hex escape sequences",
-        r'document\.write\s*\(': "document.write injection",
-        r'location\s*=\s*[\'"]http': "Forced redirect via location",
-        r'window\.open\s*\(': "window.open (popup/redirect)",
-        r'XMLHttpRequest': "XMLHttpRequest (hidden network call)",
-        r'fetch\s*\(': "fetch() API (hidden network call)",
-    }
-    found = []
-    for pat, desc in patterns.items():
-        if re.search(pat, js_code):
-            found.append(desc)
-    return found
 
 # ── Helper: APK ZIP entry inspection ─────────────────────────────────────────
 def _parse_apk_entries(raw: bytes) -> list[str]:
