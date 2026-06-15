@@ -16,14 +16,14 @@ export default function FiturPage() {
       icon: <Smartphone className="w-7 h-7" />,
       title: "Scan APK Android",
       desc: "Unggah file APK dan kami akan mengekstrak daftar permission, mendeteksi overlay attack, dan mencocokkan signature malware. Hasilnya ditampilkan dengan visual highlight pada izin berbahaya.",
-      color: "bg-green-100 text-green-600"
+      color: "bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400"
     },
 
     {
       icon: <FileText className="w-7 h-7" />,
       title: "Laporan Bukti Forensik (PDF)",
       desc: "Setiap hasil scan menghasilkan laporan PDF profesional yang mencakup screenshot, anotasi, redirect chain, dan analisis risiko — siap digunakan sebagai bukti untuk laporan resmi ke pihak berwajib.",
-      color: "bg-red-100 text-red-600"
+      color: "bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400"
     }
   ];
 

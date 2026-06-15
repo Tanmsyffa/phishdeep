@@ -38,7 +38,7 @@ export default function FAQPage() {
 
           <div className="space-y-3 sm:space-y-4">
             {faqs.map((faq, idx) => (
-              <div key={idx} className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+              <div key={idx} className="bg-white dark:bg-slate-900/60 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-start gap-4 p-5 sm:p-6">
                   <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary-100 dark:bg-blue-500/20 text-primary-600 rounded-lg flex items-center justify-center shrink-0 font-bold text-sm mt-0.5">
                     {idx + 1}
@@ -52,7 +52,7 @@ export default function FAQPage() {
             ))}
           </div>
 
-          <div className="mt-10 text-center bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 p-6 sm:p-8">
+          <div className="mt-10 text-center bg-white dark:bg-slate-900/60 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 sm:p-8">
             <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base mb-4">Masih ada pertanyaan lain?</p>
             <a href="/contact" className="inline-flex items-center gap-2 bg-primary-600 text-white font-semibold px-6 py-3 rounded-xl hover:bg-primary-700 transition-colors text-sm sm:text-base shadow-sm">
               Hubungi Tim Kami

@@ -28,20 +28,20 @@ export default function ContactPage() {
                 <div className="grid grid-cols-2 gap-4 sm:gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Nama Depan</label>
-                    <input type="text" name="first_name" required className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" placeholder="Budi" />
+                    <input type="text" name="first_name" required className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-700 dark:focus:border-primary-700 transition-colors placeholder:text-gray-400 dark:placeholder:text-gray-600" placeholder="Budi" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Nama Belakang</label>
-                    <input type="text" name="last_name" required className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" placeholder="Santoso" />
+                    <input type="text" name="last_name" required className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-700 dark:focus:border-primary-700 transition-colors placeholder:text-gray-400 dark:placeholder:text-gray-600" placeholder="Santoso" />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email</label>
-                  <input type="email" name="email" required className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" placeholder="budi@email.com" />
+                  <input type="email" name="email" required className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-700 dark:focus:border-primary-700 transition-colors placeholder:text-gray-400 dark:placeholder:text-gray-600" placeholder="budi@email.com" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Pesan</label>
-                  <textarea name="message" required rows={5} className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" placeholder="Tulis pesan Anda di sini..."></textarea>
+                  <textarea name="message" required rows={5} className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-700 dark:focus:border-primary-700 transition-colors placeholder:text-gray-400 dark:placeholder:text-gray-600 resize-none" placeholder="Tulis pesan Anda di sini..."></textarea>
                 </div>
                 <button type="submit" className="w-full sm:w-auto bg-primary-600 text-white font-semibold py-3 px-8 rounded-xl hover:bg-primary-700 transition-colors shadow-sm text-sm sm:text-base">
                   Kirim Pesan
@@ -50,7 +50,7 @@ export default function ContactPage() {
             </div>
 
             {/* Info */}
-            <div className="bg-gray-50 dark:bg-slate-800 rounded-2xl p-6 sm:p-8 border border-gray-100 dark:border-slate-700 h-fit">
+            <div className="bg-gray-50 dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-gray-100 dark:border-slate-800 h-fit">
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-5">Informasi Kontak</h2>
               <div className="space-y-5">
                 <div className="flex items-start gap-4">

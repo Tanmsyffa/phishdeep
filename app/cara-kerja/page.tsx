@@ -75,48 +75,48 @@ export default function CaraKerjaPage() {
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
+                  <tr className="bg-gray-50 dark:bg-slate-900/50 border-b border-gray-200 dark:border-slate-800">
                     <th className="p-3 sm:p-6 font-semibold text-gray-900 dark:text-white text-sm sm:text-base w-1/2">Fitur</th>
                     <th className="p-3 sm:p-6 font-semibold text-gray-900 dark:text-white text-center text-sm sm:text-base w-1/4">Tools Lain</th>
-                    <th className="p-3 sm:p-6 font-bold text-primary-600 text-center text-sm sm:text-base w-1/4 bg-blue-50 dark:bg-blue-500/20/50">PhishDeep</th>
+                    <th className="p-3 sm:p-6 font-bold text-primary-600 dark:text-primary-400 text-center text-sm sm:text-base w-1/4 bg-blue-50 dark:bg-blue-500/20">PhishDeep</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   <tr>
                     <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Deteksi phishing / malware</td>
                     <td className="p-3 sm:p-6 text-center text-gray-400 dark:text-gray-500 text-base sm:text-lg">✓</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50 dark:bg-blue-500/20/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
                   </tr>
                   <tr>
                     <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Screenshot bukti visual</td>
                     <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50 dark:bg-blue-500/20/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
                   </tr>
                   <tr>
                     <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Kotak merah area scam</td>
                     <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50 dark:bg-blue-500/20/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
                   </tr>
                   <tr>
                     <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Redirect chain lengkap</td>
                     <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50 dark:bg-blue-500/20/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
                   </tr>
                   <tr>
                     <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Laporan PDF forensik</td>
                     <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50 dark:bg-blue-500/20/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
                   </tr>
                   <tr>
                     <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Bukti siap laporan polisi</td>
                     <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 font-bold bg-blue-50 dark:bg-blue-500/20/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
                   </tr>
                 </tbody>
               </table>
             </div>
             
-            <div className="mt-8 flex flex-wrap justify-center gap-4 sm:gap-8 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">
+            <div className="mt-8 flex flex-wrap justify-center gap-4 sm:gap-8 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 shrink-0"/> Gratis Digunakan</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 shrink-0"/> Privasi Terjaga</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500 shrink-0"/> File Auto-Delete 24 Jam</div>

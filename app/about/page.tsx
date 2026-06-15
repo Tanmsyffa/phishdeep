@@ -45,11 +45,14 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="bg-primary-900 text-white rounded-2xl sm:rounded-3xl p-7 sm:p-12 text-center">
+          <div className="bg-gradient-to-br from-primary-900 to-slate-900 text-white rounded-2xl sm:rounded-3xl p-7 sm:p-12 text-center border border-primary-800/30">
             <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Bersama Membangun Internet yang Aman</h2>
-            <p className="text-primary-100 max-w-2xl mx-auto mb-0 text-sm sm:text-lg leading-relaxed">
+            <p className="text-primary-100 max-w-2xl mx-auto mb-8 text-sm sm:text-lg leading-relaxed">
               Setiap harinya ribuan URL phishing baru bermunculan. Dengan menggunakan PhishDeep, Anda turut berkontribusi dalam memetakan dan menghentikan pergerakan pelaku kejahatan siber.
             </p>
+            <a href="/register" className="inline-flex items-center gap-2 bg-white text-primary-900 font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-100 transition-all duration-300 text-sm sm:text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+              Mulai Gratis Sekarang
+            </a>
           </div>
         </div>
       </main>
