@@ -16,7 +16,7 @@ export default function Home() {
             <div className="flex flex-col lg:flex-row items-center gap-16">
               
               <div className="lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left">
-                <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-50 dark:bg-blue-900/20/80 border border-blue-100 dark:border-blue-800 text-primary-700 text-[10px] xs:text-xs sm:text-sm font-semibold mb-6 sm:mb-8 shadow-sm max-w-full">
+                <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-50 dark:bg-blue-500/20 border border-blue-100 dark:border-blue-800 text-primary-700 dark:text-primary-300 text-[10px] xs:text-xs sm:text-sm font-semibold mb-6 sm:mb-8 shadow-sm max-w-full">
                   <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                   <span className="leading-tight truncate sm:whitespace-normal">Deteksi Phishing & Malware dengan Bukti Visual</span>
                 </div>
@@ -80,7 +80,7 @@ export default function Home() {
                     </div>
                     
                     {/* The Red Box Evidence Simulation */}
-                    <div className="absolute top-[35%] left-[10%] right-[10%] bottom-[10%] border-2 md:border-4 border-red-500 border-dashed rounded bg-red-500/5 animate-pulse"></div>
+                    <div className="absolute top-[35%] left-[10%] right-[10%] bottom-[10%] border-2 md:border-4 border-red-500 border-dashed rounded bg-red-500/10 dark:bg-red-500/20 animate-pulse"></div>
                     <div className="absolute top-[50%] left-1/2 md:left-auto md:right-4 -translate-x-1/2 md:translate-x-0 -translate-y-1/2 bg-red-600 text-white text-[10px] md:text-xs font-bold px-3 py-2 rounded shadow-lg flex flex-col md:flex-row items-center gap-1 md:gap-2 z-10 w-max max-w-[90%] text-center md:text-left">
                        <span>Form Login Palsu</span> <span className="font-normal opacity-90">(Masukkan data)</span>
                     </div>
@@ -143,7 +143,7 @@ export default function Home() {
                   <tr className="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
                     <th className="p-3 sm:p-6 font-semibold text-gray-900 dark:text-white text-sm sm:text-base w-1/2">Fitur</th>
                     <th className="p-3 sm:p-6 font-semibold text-gray-900 dark:text-white text-center text-sm sm:text-base w-1/4">Tools Lain</th>
-                    <th className="p-3 sm:p-6 font-bold text-primary-600 text-center text-sm sm:text-base w-1/4 bg-blue-50 dark:bg-blue-900/20/50">PhishDeep</th>
+                    <th className="p-3 sm:p-6 font-bold text-primary-600 dark:text-primary-400 text-center text-sm sm:text-base w-1/4 bg-blue-50 dark:bg-blue-500/20">PhishDeep</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">

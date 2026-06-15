@@ -12,13 +12,11 @@ export default function RegisterPage({
     <div className="min-h-screen flex bg-gray-50 dark:bg-slate-800">
       
       {/* Left Side - Visual Banner (Hidden on Mobile) */}
-      <div className="hidden lg:flex w-1/2 bg-gray-900 relative overflow-hidden flex-col justify-between">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/90 to-gray-900 z-10" />
-        <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-10" />
+      <div className="hidden lg:flex w-1/2 bg-slate-950 relative overflow-hidden flex-col justify-between border-r border-slate-800">
+        <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-10" />
         
-        {/* Abstract Glowing Shapes */}
-        <div className="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] rounded-full bg-blue-600/30 blur-[120px] z-0" />
-        <div className="absolute bottom-[10%] -right-[20%] w-[60%] h-[60%] rounded-full bg-indigo-600/20 blur-[100px] z-0" />
+        {/* Subtle grid instead of glow */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 z-0" />
         
         <div className="relative z-20 p-12">
           <Link href="/" className="flex items-center gap-2 text-white hover:opacity-80 transition-opacity">
@@ -28,12 +26,12 @@ export default function RegisterPage({
         </div>
 
         <div className="relative z-20 p-12 mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold tracking-wide mb-6">
-            <Lock className="w-3.5 h-3.5" /> Platform Analisis Forensik
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/50 border border-slate-800 text-slate-300 text-xs font-semibold tracking-wide mb-6">
+            <Lock className="w-3.5 h-3.5 text-blue-400" /> Platform Analisis Forensik
           </div>
           <h1 className="text-4xl xl:text-5xl font-bold text-white leading-tight mb-6">
             Bergabung Bersama <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Keamanan Cerdas.</span>
+            <span className="text-blue-500">Keamanan Cerdas.</span>
           </h1>
           <p className="text-gray-300 text-lg leading-relaxed max-w-md">
             Mulai lindungi perangkat Anda dan dapatkan akses ke laporan forensik mendetail yang terstandarisasi.
@@ -41,7 +39,7 @@ export default function RegisterPage({
 
           <div className="grid grid-cols-2 gap-6 mt-12">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gray-800/50 border border-gray-700 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0 shadow-sm">
                 <Fingerprint className="w-5 h-5 text-blue-400" />
               </div>
               <div>
@@ -50,8 +48,8 @@ export default function RegisterPage({
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gray-800/50 border border-gray-700 flex items-center justify-center shrink-0">
-                <ShieldAlert className="w-5 h-5 text-indigo-400" />
+              <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0 shadow-sm">
+                <ShieldAlert className="w-5 h-5 text-blue-400" />
               </div>
               <div>
                 <h4 className="text-white font-semibold text-sm mb-1">Standar Global</h4>

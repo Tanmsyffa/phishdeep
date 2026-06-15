@@ -9,8 +9,8 @@ function Toast({ message, type }: { message: string; type: "success" | "error" }
   return (
     <div className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium border mt-4 ${
       type === "success"
-        ? "bg-green-50 text-green-700 border-green-200"
-        : "bg-red-50 text-red-700 border-red-200"
+        ? "bg-green-50 dark:bg-green-500/20 text-green-700 border-green-200"
+        : "bg-red-50 dark:bg-red-500/20 text-red-700 border-red-200"
     }`}>
       {type === "success" ? <CheckCircle className="w-4 h-4 shrink-0" /> : <XCircle className="w-4 h-4 shrink-0" />}
       {message}
@@ -67,24 +67,24 @@ export default function SettingsPage() {
     <div className="max-w-2xl mx-auto space-y-5">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-          <ShieldCheck className="w-5 h-5 text-blue-600" />
+        <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-500/20 flex items-center justify-center shrink-0">
+          <ShieldCheck className="w-5 h-5 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
-          <h1 className="text-lg sm:text-2xl font-bold text-gray-900 leading-tight">Pengaturan</h1>
-          <p className="text-xs sm:text-sm text-gray-500">Kelola profil dan keamanan akun Anda.</p>
+          <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight">Pengaturan</h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Kelola profil dan keamanan akun Anda.</p>
         </div>
       </div>
 
       {/* Profile Card */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-5">
-        <div className="px-5 sm:px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden mb-5">
+        <div className="px-5 sm:px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center gap-2">
           <User className="w-4 h-4 text-primary-500" />
-          <h2 className="font-bold text-gray-900 text-sm sm:text-base">Informasi Profil</h2>
+          <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Informasi Profil</h2>
         </div>
         <form onSubmit={handleProfileSubmit} className="p-5 sm:p-6 space-y-4">
           <div>
-            <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               Nama Lengkap
             </label>
             <input
@@ -113,14 +113,14 @@ export default function SettingsPage() {
       </div>
 
       {/* Password Card */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        <div className="px-5 sm:px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+        <div className="px-5 sm:px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center gap-2">
           <Lock className="w-4 h-4 text-primary-500" />
-          <h2 className="font-bold text-gray-900 text-sm sm:text-base">Ubah Password</h2>
+          <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Ubah Password</h2>
         </div>
         <form onSubmit={handlePasswordSubmit} className="p-5 sm:p-6 space-y-4">
           <div>
-            <label htmlFor="new_password" className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label htmlFor="new_password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               Password Baru
             </label>
             <input
@@ -134,7 +134,7 @@ export default function SettingsPage() {
             />
           </div>
           <div>
-            <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               Konfirmasi Password
             </label>
             <input
@@ -147,7 +147,7 @@ export default function SettingsPage() {
               className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
             />
           </div>
-          <p className="text-xs text-gray-400">Password minimal 6 karakter.</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500">Password minimal 6 karakter.</p>
           {passwordMsg && <Toast message={passwordMsg.text} type={passwordMsg.type} />}
           <div className="pt-1">
             <button
