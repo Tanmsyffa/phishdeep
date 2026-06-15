@@ -61,7 +61,7 @@ export default function RegisterPage({
       </div>
 
       {/* Right Side - Register Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative bg-white dark:bg-slate-950">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 py-12 sm:p-12 relative bg-white dark:bg-slate-950 min-h-screen lg:min-h-0">
         
         {/* Mobile Back Button */}
         <div className="absolute top-6 left-6 lg:hidden">

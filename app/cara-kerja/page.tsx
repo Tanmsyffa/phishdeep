@@ -96,8 +96,8 @@ export default function CaraKerjaPage() {
               <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-3">Kenapa PhishDeep Lebih Baik?</h2>
               <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-base">Tidak hanya mendeteksi — kami memberikan <strong className="text-gray-700 dark:text-gray-200">bukti nyata</strong> yang bisa digunakan.</p>
             </div>
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden shadow-sm">
-              <table className="w-full text-left border-collapse">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-x-auto overflow-y-hidden shadow-sm">
+              <table className="w-full text-left border-collapse min-w-[500px]">
                 <thead>
                   <tr className="border-b border-gray-100 dark:border-slate-800">
                     <th className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300 text-sm w-1/2">Fitur</th>
