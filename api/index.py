@@ -1536,71 +1536,56 @@ def analyze_file(file_url, file_type):
 
 
 
-import queue
-import threading
-from flask import Response, stream_with_context
-
 @app.route('/api/scan', methods=['POST'])
 def scan():
-    data = request.json
-    if not data:
-        return jsonify({"status": "error", "message": "Request body tidak valid."}), 400
+    try:
+        data = request.json
+        if not data:
+            return jsonify({"status": "error", "message": "Request body tidak valid."}), 400
 
-    target = (data.get('target', '') or '').strip()
-    scan_type = data.get('type', 'link')
-    
-    if not target:
-        return jsonify({"status": "error", "message": "Target tidak boleh kosong."}), 400
-
-    q = queue.Queue()
-
-    def worker():
-        try:
-            q.put({"status": "progress", "message": "Memulai engine analitik PhishDeep..."})
-            if scan_type.lower() == 'link':
-                if not target.startswith('http://') and not target.startswith('https://'):
-                    t = 'http://' + target
-                else:
-                    t = target
-                parsed = urlparse(t)
-                if not parsed.netloc or parsed.scheme in ('javascript', 'data', 'vbscript'):
-                    q.put({"status": "error", "message": "URL tidak valid atau dilarang."})
-                    return
-                q.put({"status": "progress", "message": "Melakukan pemindaian forensik Link..."})
-                res = analyze_link(t)
-            elif scan_type.lower() == 'apk':
-                q.put({"status": "progress", "message": "Mengunduh dan mengekstrak file APK..."})
-                res = analyze_file(target, scan_type)
-            else:
-                q.put({"status": "error", "message": "Tipe scan tidak dikenali."})
-                return
+        target = (data.get('target', '') or '').strip()
+        scan_type = data.get('type', 'link')
+        
+        if not target:
+            return jsonify({"status": "error", "message": "Target tidak boleh kosong."}), 400
             
-            risk_score, details, extracted_code, domain_info, frameworks, redirect_chain, screenshot_url = res
-            results = {
-                "risk_score": risk_score,
-                "details": details,
-                "domain_info": domain_info,
-                "frameworks": frameworks,
-                "redirect_chain": redirect_chain,
-                "screenshot_url": screenshot_url
-            }
-            if extracted_code:
-                results["extracted_code"] = extracted_code
-            
-            q.put({"status": "success", "result": results})
-        except Exception as e:
-            q.put({"status": "error", "message": f"Server error: {str(e)}"})
+        if scan_type.lower() == 'link':
+            # Auto-prefix protocol if missing
+            if not target.startswith('http://') and not target.startswith('https://'):
+                target = 'http://' + target
 
-    threading.Thread(target=worker).start()
+            # Validate URL has a real domain/IP after protocol
+            parsed = urlparse(target)
+            if not parsed.netloc:
+                return jsonify({"status": "error", "message": "URL tidak valid. Pastikan formatnya benar (contoh: nama-domain.com)."}), 400
 
-    def generate():
-        while True:
-            item = q.get()
-            yield json.dumps(item) + "\n"
-            if item["status"] in ["success", "error"]:
-                break
+            # Block javascript: and data: URIs
+            if parsed.scheme in ('javascript', 'data', 'vbscript'):
+                return jsonify({"status": "error", "message": "Protokol URL tidak diizinkan."}), 400
 
-    return Response(stream_with_context(generate()), mimetype='application/x-ndjson')
+            risk_score, details, extracted_code, domain_info, frameworks, redirect_chain, screenshot_url = analyze_link(target)
+        elif scan_type.lower() == 'apk':
+            risk_score, details, extracted_code, domain_info, frameworks, redirect_chain, screenshot_url = analyze_file(target, scan_type)
+        else:
+            return jsonify({"status": "error", "message": "Tipe scan tidak dikenali atau telah dinonaktifkan."}), 400
+        
+        results = {
+            "status": "success",
+            "risk_score": risk_score,
+            "details": details,
+            "domain_info": domain_info,
+            "frameworks": frameworks,
+            "redirect_chain": redirect_chain,
+            "screenshot_url": screenshot_url
+        }
+        
+        if extracted_code:
+            results["extracted_code"] = extracted_code
+
+        return jsonify(results), 200
+        
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Server error: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5328, debug=True)
