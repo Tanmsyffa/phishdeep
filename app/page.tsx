@@ -95,7 +95,7 @@ export default function Home() {
 
 
         {/* Features Section */}
-        <section id="fitur" className="py-12 bg-gray-50 dark:bg-slate-800">
+        <section id="fitur" className="py-12 bg-gray-50 dark:bg-transparent">
           <div className="container mx-auto px-4">
             <div className="text-center mb-10">
               <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-3">Fitur Utama PhishDeep</h2>
@@ -131,7 +131,7 @@ export default function Home() {
         </section>
 
         {/* Comparison Section */}
-        <section id="cara-kerja" className="py-12 bg-white dark:bg-slate-900">
+        <section id="cara-kerja" className="py-12 bg-white dark:bg-transparent">
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="text-center mb-10">
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Kenapa PhishDeep Lebih Baik?</h2>
@@ -140,7 +140,7 @@ export default function Home() {
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-x-auto">
               <table className="w-full text-left border-collapse min-w-[500px]">
                 <thead>
-                  <tr className="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
+                  <tr className="bg-gray-50 dark:bg-slate-900/50 border-b border-gray-200 dark:border-slate-800">
                     <th className="p-3 sm:p-6 font-semibold text-gray-900 dark:text-white text-sm sm:text-base w-1/2">Fitur</th>
                     <th className="p-3 sm:p-6 font-semibold text-gray-900 dark:text-white text-center text-sm sm:text-base w-1/4">Tools Lain</th>
                     <th className="p-3 sm:p-6 font-bold text-primary-600 dark:text-primary-400 text-center text-sm sm:text-base w-1/4 bg-blue-50 dark:bg-blue-500/20">PhishDeep</th>
@@ -150,32 +150,32 @@ export default function Home() {
                   <tr>
                     <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Deteksi phishing / malware</td>
                     <td className="p-3 sm:p-6 text-center text-gray-400 dark:text-gray-500 text-base sm:text-lg">✓</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-900/20/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
                   </tr>
                   <tr>
                     <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Screenshot bukti visual</td>
                     <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-900/20/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
                   </tr>
                   <tr>
                     <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Kotak merah area scam</td>
                     <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-900/20/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
                   </tr>
                   <tr>
                     <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Redirect chain lengkap</td>
                     <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-900/20/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
                   </tr>
                   <tr>
                     <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Laporan PDF forensik</td>
                     <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-900/20/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
                   </tr>
                   <tr>
                     <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Bukti siap untuk laporan polisi</td>
                     <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-900/20/20 text-base sm:text-lg">✓</td>
+                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
                   </tr>
                 </tbody>
               </table>
@@ -191,20 +191,20 @@ export default function Home() {
         </section>
 
         {/* Blog Section */}
-        <section id="blog" className="py-10 sm:py-12 bg-gray-50 dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700">
+        <section id="blog" className="py-10 sm:py-12 bg-gray-50 dark:bg-transparent border-t border-gray-200 dark:border-slate-800">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Blog & Edukasi Keamanan Siber</h2>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-2">Pelajari lebih lanjut tentang tren phishing, teknik terbaru malware, dan bagaimana Anda bisa melindungi diri dari serangan siber.</p>
-            <Link href="/blog" className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-xl font-semibold transition-all duration-300 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:bg-blue-900/20 hover:text-primary-600 hover:border-blue-200 hover:shadow-md group">Lihat Artikel Blog <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></Link>
+            <Link href="/blog" className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-xl font-semibold transition-all duration-300 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-primary-600 dark:hover:text-white hover:border-blue-200 dark:hover:border-slate-700 hover:shadow-md group">Lihat Artikel Blog <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></Link>
           </div>
         </section>
 
         {/* Tentang Section */}
-        <section id="tentang" className="py-10 sm:py-12 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-700">
+        <section id="tentang" className="py-10 sm:py-12 bg-white dark:bg-transparent border-t border-gray-200 dark:border-slate-800">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Tentang PhishDeep</h2>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-2">Kami adalah tim yang berdedikasi untuk menciptakan ruang digital yang lebih aman bagi semua orang di Indonesia. Misi kami adalah memberikan bukti, bukan sekadar peringatan.</p>
-            <Link href="/about" className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-xl font-semibold transition-all duration-300 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:bg-blue-900/20 hover:text-primary-600 hover:border-blue-200 hover:shadow-md group">Selengkapnya Tentang Kami <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></Link>
+            <Link href="/about" className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-xl font-semibold transition-all duration-300 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-primary-600 dark:hover:text-white hover:border-blue-200 dark:hover:border-slate-700 hover:shadow-md group">Selengkapnya Tentang Kami <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></Link>
           </div>
         </section>
       </main>

@@ -32,12 +32,12 @@ export default function FiturPage() {
       <Header />
       <main className="flex-grow">
         {/* Hero */}
-        <section className="pt-10 pb-10 bg-gradient-to-b from-blue-50 to-white">
+        <section className="pt-10 pb-10 bg-gradient-to-b from-blue-50 to-white dark:from-transparent dark:to-transparent">
           <div className="container mx-auto px-4 text-center max-w-3xl">
             <div className="mb-4">
               <BackButton />
             </div>
-            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-500/20/80 border border-blue-100 dark:border-blue-800 text-primary-700 text-xs sm:text-sm font-semibold mb-6 shadow-sm mx-auto">
+            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-500/20 border border-blue-100 dark:border-blue-800 text-primary-700 text-xs sm:text-sm font-semibold mb-6 shadow-sm mx-auto">
               <ShieldCheck className="w-4 h-4 shrink-0" /> <span className="leading-tight">Fitur Lengkap</span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight">Semua yang Anda Butuhkan untuk Keamanan Digital</h1>
@@ -46,7 +46,7 @@ export default function FiturPage() {
         </section>
 
         {/* Feature Cards */}
-        <section className="py-12 bg-white dark:bg-slate-900">
+        <section className="py-12 bg-white dark:bg-transparent">
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="grid md:grid-cols-3 gap-8">
               {features.map((f, i) => (

@@ -13,7 +13,7 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen flex flex-col font-sans">
       <Header />
-      <main className="flex-grow bg-gray-50 dark:bg-slate-800 pt-10 pb-16">
+      <main className="flex-grow bg-gray-50 dark:bg-transparent pt-10 pb-16">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="mb-4">
             <BackButton />

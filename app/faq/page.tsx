@@ -26,7 +26,7 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen flex flex-col font-sans">
       <Header />
-      <main className="flex-grow bg-gray-50 dark:bg-slate-800 pt-10 pb-16">
+      <main className="flex-grow bg-gray-50 dark:bg-transparent pt-10 pb-16">
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="mb-4">
             <BackButton />
@@ -40,7 +40,7 @@ export default function FAQPage() {
             {faqs.map((faq, idx) => (
               <div key={idx} className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-start gap-4 p-5 sm:p-6">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center shrink-0 font-bold text-sm mt-0.5">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary-100 dark:bg-blue-500/20 text-primary-600 rounded-lg flex items-center justify-center shrink-0 font-bold text-sm mt-0.5">
                     {idx + 1}
                   </div>
                   <div>

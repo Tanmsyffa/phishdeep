@@ -9,7 +9,7 @@ export default function LoginPage({
   searchParams: { message: string }
 }) {
   return (
-    <div className="min-h-screen flex bg-gray-50 dark:bg-slate-800">
+    <div className="min-h-screen flex bg-gray-50 dark:bg-slate-950">
       
       {/* Left Side - Visual Banner (Hidden on Mobile) */}
       <div className="hidden lg:flex w-1/2 bg-slate-950 relative overflow-hidden flex-col justify-between border-r border-slate-800">
@@ -61,7 +61,7 @@ export default function LoginPage({
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative bg-white dark:bg-slate-900">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative bg-white dark:bg-slate-950">
         
         {/* Mobile Back Button */}
         <div className="absolute top-6 left-6 lg:hidden">
@@ -97,9 +97,9 @@ export default function LoginPage({
           <form action={signInWithGoogle}>
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-900 border-2 border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 font-bold py-4 rounded-xl hover:bg-gray-50 dark:bg-slate-800 hover:border-gray-300 hover:shadow-sm transition-all duration-200 group relative overflow-hidden"
+              className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-slate-800 text-gray-700 dark:text-gray-300 font-bold py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-900 hover:border-gray-300 dark:hover:border-slate-700 hover:shadow-sm transition-all duration-200 group relative overflow-hidden"
             >
-              <div className="absolute inset-0 bg-gray-50 dark:bg-slate-800 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0 bg-gray-50 dark:bg-slate-900 opacity-0 group-hover:opacity-100 transition-opacity" />
               {/* Google Icon SVG */}
               <svg className="w-5 h-5 shrink-0 relative z-10" viewBox="0 0 48 48">
                 <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -118,7 +118,7 @@ export default function LoginPage({
               <div className="w-full border-t border-gray-100 dark:border-slate-700"></div>
             </div>
             <div className="relative flex justify-center text-xs text-gray-400 dark:text-gray-500 font-medium">
-              <span className="bg-white dark:bg-slate-900 px-4">AMAN & TERENKRIPSI</span>
+              <span className="bg-white dark:bg-slate-950 px-4">AMAN & TERENKRIPSI</span>
             </div>
           </div>
 
@@ -130,7 +130,7 @@ export default function LoginPage({
             <Link href="/privacy" className="text-gray-600 dark:text-gray-300 font-semibold hover:text-gray-900 dark:text-white transition-colors">Kebijakan Privasi</Link>{' '}kami.
           </p>
 
-          <div className="text-center text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-slate-800 rounded-xl py-4 border border-gray-100 dark:border-slate-700">
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-slate-900 rounded-xl py-4 border border-gray-100 dark:border-slate-800">
             Belum punya akun?{' '}
             <Link href="/register" className="text-primary-600 font-bold hover:text-primary-700 transition-colors">
               Daftar Gratis Sekarang

@@ -7,7 +7,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen flex flex-col font-sans">
       <Header />
-      <main className="flex-grow bg-white dark:bg-slate-900 pt-10 pb-16">
+      <main className="flex-grow bg-white dark:bg-transparent pt-10 pb-16">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="mb-4">
             <BackButton />
