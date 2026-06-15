@@ -77,7 +77,12 @@ export default function NewScanPage() {
         body: JSON.stringify({ target: targetUrl, type: activeTab })
       });
       if (!res.ok) {
-        throw new Error("Target tidak dapat dijangkau atau analisis terhenti.");
+        let errorTxt = "Target tidak dapat dijangkau atau analisis terhenti.";
+        try {
+           const errData = await res.json();
+           if (errData.message) errorTxt = errData.message;
+        } catch(e) {}
+        throw new Error(errorTxt);
       }
       scanResult = await res.json();
 
