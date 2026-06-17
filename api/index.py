@@ -1557,6 +1557,12 @@ def analyze_file(file_url, file_type):
 
 
 
+import time
+
+# In-memory cache for repeated scans (1 hour TTL)
+SCAN_CACHE = {}
+CACHE_TTL = 3600
+
 @app.route('/api/scan', methods=['POST'])
 def scan():
     try:
@@ -1569,6 +1575,14 @@ def scan():
         
         if not target:
             return jsonify({"status": "error", "message": "Target tidak boleh kosong."}), 400
+            
+        cache_key = f"{scan_type}_{target}"
+        if cache_key in SCAN_CACHE:
+            cached_result, timestamp = SCAN_CACHE[cache_key]
+            if time.time() - timestamp < CACHE_TTL:
+                # Add indicator that this was cached
+                cached_result["is_cached"] = True
+                return jsonify(cached_result)
             
         if scan_type.lower() == 'link':
             # Auto-prefix protocol if missing
@@ -1602,6 +1616,9 @@ def scan():
         
         if extracted_code:
             results["extracted_code"] = extracted_code
+
+        # Save to cache
+        SCAN_CACHE[cache_key] = (results, time.time())
 
         return jsonify(results), 200
         
