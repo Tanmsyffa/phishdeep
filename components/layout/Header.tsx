@@ -38,7 +38,7 @@ export default function Header() {
         </Link>
         
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
           <Link href="/" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">Beranda</Link>
           <Link href="/fitur" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">Fitur</Link>
           <Link href="/cara-kerja" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">Cara Kerja</Link>
@@ -46,7 +46,7 @@ export default function Header() {
           <Link href="/about" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">Tentang</Link>
         </nav>
 
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden lg:flex items-center gap-3 xl:gap-4">
           {user ? (
             <>
               <Link href="/dashboard" className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 flex items-center gap-2">
@@ -76,7 +76,7 @@ export default function Header() {
 
         {/* Mobile Menu Toggle */}
         <button 
-          className="md:hidden p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+          className="lg:hidden p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle Menu"
         >
@@ -86,7 +86,7 @@ export default function Header() {
 
       {/* Mobile Nav */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 absolute w-full left-0 shadow-xl border-b pb-4">
+        <div className="lg:hidden border-t border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 absolute w-full left-0 shadow-xl border-b pb-4">
           <nav className="flex flex-col px-4 py-4 space-y-4">
             <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600">Beranda</Link>
             <Link href="/fitur" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600">Fitur</Link>
