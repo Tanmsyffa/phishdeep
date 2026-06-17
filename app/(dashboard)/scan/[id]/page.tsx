@@ -334,19 +334,19 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     const value = isColon ? fw.substring(colonIdx + 1).trim() : 'Terdeteksi';
                     const isWarning = label.toLowerCase().includes('peringatan') || fw.toLowerCase().includes('peringatan');
                     
-                    let badgeColor = 'bg-slate-50 text-slate-700 border-slate-200';
-                    if (label.includes('Web Server')) badgeColor = 'bg-purple-50 dark:bg-purple-900/20 text-purple-800 border-purple-200';
-                    else if (label.includes('CDN')) badgeColor = 'bg-orange-50 dark:bg-orange-900/20 text-orange-800 border-orange-200';
-                    else if (label.includes('Backend') || label.includes('PHP') || label.includes('Python')) badgeColor = 'bg-indigo-50 text-indigo-800 border-indigo-200';
-                    else if (label.includes('CMS')) badgeColor = 'bg-blue-50 dark:bg-blue-900/20 text-blue-800 border-blue-200';
-                    else if (label.includes('Analytics')) badgeColor = 'bg-green-50 dark:bg-green-900/20 text-green-800 border-green-200';
-                    else if (label.includes('Security') || label.includes('PERINGATAN')) badgeColor = 'bg-red-50 dark:bg-red-900/20 text-red-800 border-red-200';
-                    else if (label.includes('CSS') || label.includes('JS') || label.includes('Library')) badgeColor = 'bg-pink-50 text-pink-800 border-pink-200';
+                    let badgeColor = 'bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700';
+                    if (label.includes('Web Server') || label.includes('Proxy')) badgeColor = 'bg-purple-50 dark:bg-purple-500/10 text-purple-800 dark:text-purple-300 border-purple-200 dark:border-purple-800/50';
+                    else if (label.includes('CDN')) badgeColor = 'bg-orange-50 dark:bg-orange-500/10 text-orange-800 dark:text-orange-300 border-orange-200 dark:border-orange-800/50';
+                    else if (label.includes('Backend') || label.includes('PHP') || label.includes('Python')) badgeColor = 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-800 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800/50';
+                    else if (label.includes('CMS')) badgeColor = 'bg-blue-50 dark:bg-blue-500/10 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800/50';
+                    else if (label.includes('Analytics')) badgeColor = 'bg-green-50 dark:bg-green-500/10 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800/50';
+                    else if (label.includes('Security') || label.includes('PERINGATAN') || label.includes('WAF')) badgeColor = 'bg-red-50 dark:bg-red-500/10 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800/50';
+                    else if (label.includes('CSS') || label.includes('JS') || label.includes('Library') || label.includes('Framework')) badgeColor = 'bg-pink-50 dark:bg-pink-500/10 text-pink-800 dark:text-pink-300 border-pink-200 dark:border-pink-800/50';
 
                     return (
-                      <div key={idx} className={`flex flex-col px-3 py-2 rounded-lg border shadow-sm ${badgeColor} ${isWarning ? 'ring-1 ring-red-400' : ''}`}>
+                      <div key={idx} className={`flex flex-col px-3 py-2 rounded-lg border shadow-sm ${badgeColor} ${isWarning ? 'ring-1 ring-red-400 dark:ring-red-500' : ''}`}>
                         <span className="text-[9px] uppercase tracking-wider font-bold opacity-70 mb-0.5">{label}</span>
-                        <span className={`text-xs font-bold ${isWarning ? 'text-red-700 dark:text-red-400' : 'text-gray-900 dark:text-white'} leading-tight whitespace-nowrap`}>{value}</span>
+                        <span className={`text-xs font-bold ${isWarning ? 'text-red-700 dark:text-red-400' : ''} leading-tight whitespace-nowrap`}>{value}</span>
                       </div>
                     );
                   })}
