@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, AlertTriangle, ShieldAlert, RefreshCw, CheckCircle, Globe, Server, Link as LinkIcon, Monitor, Calendar, Clock, Shield, Lock, History, Search, FileText, Activity, Layers, Tag } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ExportButtons from "@/components/ui/ExportButtons";
+import ReScanButton from "@/components/ui/ReScanButton";
 import ScreenshotImage from "@/components/ui/ScreenshotImage";
 import { notFound } from "next/navigation";
 
@@ -65,9 +66,38 @@ export default async function ScanResultPage({ params, searchParams }: { params:
               <CheckCircle className="w-3.5 h-3.5" /> Aman
             </span>
           )}
+          <ReScanButton targetUrl={scan.target_url} targetType={scan.target_type} />
           <ExportButtons data={scan} />
         </div>
       </div>
+
+      {/* Danger Alert Banner */}
+      {isDanger && (
+        <div className="mb-5 flex items-start gap-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-800/60 rounded-2xl p-4 animate-in fade-in slide-in-from-top-2 print:hidden">
+          <div className="w-9 h-9 bg-red-100 dark:bg-red-500/20 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+            <ShieldAlert className="w-5 h-5 text-red-600 dark:text-red-400" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-red-700 dark:text-red-400 mb-0.5">⚠ Ancaman Berbahaya Terdeteksi!</h3>
+            <p className="text-xs text-red-600 dark:text-red-400/80 leading-relaxed">
+              Skor risiko <strong>{scan.risk_score}/100</strong>. Target ini terindikasi sebagai situs <strong>phishing, malware, atau penipuan</strong>. Jangan klik, masukkan data, atau instal file dari sumber ini. Segera laporkan ke pihak berwajib menggunakan bukti laporan di bawah.
+            </p>
+          </div>
+        </div>
+      )}
+      {isSuspicious && (
+        <div className="mb-5 flex items-start gap-3 bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-800/60 rounded-2xl p-4 animate-in fade-in slide-in-from-top-2 print:hidden">
+          <div className="w-9 h-9 bg-yellow-100 dark:bg-yellow-500/20 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+            <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-yellow-700 dark:text-yellow-400 mb-0.5">Perlu Kewaspadaan</h3>
+            <p className="text-xs text-yellow-700 dark:text-yellow-400/80 leading-relaxed">
+              Skor risiko <strong>{scan.risk_score}/100</strong>. Ditemukan beberapa anomali mencurigakan. Lakukan verifikasi manual sebelum berinteraksi dengan target ini.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Print Header - Only visible on print */}
       <div className="hidden print:block mb-8">

@@ -2,6 +2,7 @@ import { Download, FileText, Calendar, HardDrive, ShieldAlert, CheckCircle } fro
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import SearchFilter from "@/components/ui/SearchFilter";
+import Pagination from "@/components/ui/Pagination";
 
 export default async function ReportsPage({
   searchParams,
@@ -13,27 +14,46 @@ export default async function ReportsPage({
 
   if (!user) return <div className="text-center py-12">Anda harus login untuk melihat halaman ini.</div>;
 
-  const { data: scans, error } = await supabase
-    .from('scans').select('*').eq('user_id', user.id)
-    .order('created_at', { ascending: false });
+  let filteredScans: any[] = [];
+  let error = null;
+  let totalPages = 1;
+  const currentPage = typeof searchParams.page === 'string' ? parseInt(searchParams.page, 10) || 1 : 1;
+  const limit = 10;
+  const start = (currentPage - 1) * limit;
+  const end = start + limit - 1;
 
-  const displayScans = scans || [];
-  
   const q = typeof searchParams.q === 'string' ? searchParams.q.toLowerCase() : '';
   const typeFilter = typeof searchParams.type === 'string' ? searchParams.type : 'all';
   const statusFilter = typeof searchParams.status === 'string' ? searchParams.status : 'all';
 
-  const filteredScans = displayScans.filter(scan => {
-    if (q && !scan.target_url?.toLowerCase().includes(q) && !scan.id.toLowerCase().includes(q)) return false;
-    if (typeFilter !== 'all' && scan.target_type !== typeFilter) return false;
-    
-    let status = 'Aman';
-    if (scan.risk_score > 70) status = 'Berbahaya';
-    else if (scan.risk_score > 30) status = 'Mencurigakan';
-    
-    if (statusFilter !== 'all' && status !== statusFilter) return false;
-    return true;
-  });
+  if (user) {
+    try {
+      let query = supabase
+        .from('scans').select('*', { count: 'exact' })
+        .eq('user_id', user.id)
+        .neq('status', 'deleted');
+
+      if (q) query = query.ilike('target_url', `%${q}%`);
+      if (typeFilter !== 'all') query = query.eq('target_type', typeFilter);
+      if (statusFilter === 'Berbahaya') query = query.gt('risk_score', 70);
+      if (statusFilter === 'Mencurigakan') query = query.gt('risk_score', 30).lte('risk_score', 70);
+      if (statusFilter === 'Aman') query = query.lte('risk_score', 30);
+
+      const res = await query
+        .order('created_at', { ascending: false })
+        .range(start, end);
+
+      if (res.data && !res.error) {
+        filteredScans = res.data;
+        if (res.count) totalPages = Math.ceil(res.count / limit);
+      } else if (res.error) {
+        error = res.error;
+      }
+    } catch (err) {
+      console.error("Scans table error:", err);
+      error = err;
+    }
+  }
 
   return (
     <div className="max-w-5xl mx-auto space-y-5">
@@ -105,6 +125,10 @@ export default async function ReportsPage({
             );
           })}
         </div>
+      )}
+      
+      {!error && filteredScans.length > 0 && (
+        <Pagination totalPages={totalPages} currentPage={currentPage} />
       )}
     </div>
   );

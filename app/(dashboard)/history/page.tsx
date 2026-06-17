@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Eye, ClipboardList } from "lucide-react";
 import DeleteScanButton from "@/components/ui/DeleteScanButton";
 import SearchFilter from "@/components/ui/SearchFilter";
+import Pagination from "@/components/ui/Pagination";
 
 function getStatusColor(score: number) {
   if (score > 70) return { label: 'Berbahaya', color: 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-800' };
@@ -19,36 +20,49 @@ export default async function HistoryPage({
   const { data: { user } } = await supabase.auth.getUser();
 
   let scans: any[] = [];
+  let totalPages = 1;
+  const currentPage = typeof searchParams.page === 'string' ? parseInt(searchParams.page, 10) || 1 : 1;
+  const limit = 10;
+  const start = (currentPage - 1) * limit;
+  const end = start + limit - 1;
+
+  const q = typeof searchParams.q === 'string' ? searchParams.q.toLowerCase() : '';
+  const typeFilter = typeof searchParams.type === 'string' ? searchParams.type : 'all';
+  const statusFilter = typeof searchParams.status === 'string' ? searchParams.status : 'all';
+
   if (user) {
     try {
-      const { data, error } = await supabase
-        .from('scans').select('*').eq('user_id', user.id)
-        .neq('status', 'deleted')
-        .order('created_at', { ascending: false });
-      if (!error && data) scans = data;
+      let query = supabase
+        .from('scans').select('*', { count: 'exact' })
+        .eq('user_id', user.id)
+        .neq('status', 'deleted');
+
+      if (q) query = query.ilike('target_url', `%${q}%`);
+      if (typeFilter !== 'all') query = query.eq('target_type', typeFilter);
+      if (statusFilter === 'Berbahaya') query = query.gt('risk_score', 70);
+      if (statusFilter === 'Mencurigakan') query = query.gt('risk_score', 30).lte('risk_score', 70);
+      if (statusFilter === 'Aman') query = query.lte('risk_score', 30);
+
+      const { data, count, error } = await query
+        .order('created_at', { ascending: false })
+        .range(start, end);
+
+      if (!error && data) {
+        scans = data;
+        if (count) totalPages = Math.ceil(count / limit);
+      }
     } catch (err) {
       console.error("Scans table error:", err);
     }
   }
 
-  const displayScans = scans.map((s: any) => {
+  const filteredScans = scans.map((s: any) => {
     const status = getStatusColor(s.risk_score);
     return {
       id: s.id, jenis: s.target_type, target: s.target_url,
       hasil: status.label, warna: status.color,
       tanggal: new Date(s.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
     };
-  });
-
-  const q = typeof searchParams.q === 'string' ? searchParams.q.toLowerCase() : '';
-  const typeFilter = typeof searchParams.type === 'string' ? searchParams.type : 'all';
-  const statusFilter = typeof searchParams.status === 'string' ? searchParams.status : 'all';
-
-  const filteredScans = displayScans.filter(row => {
-    if (q && !row.target.toLowerCase().includes(q)) return false;
-    if (typeFilter !== 'all' && row.jenis !== typeFilter) return false;
-    if (statusFilter !== 'all' && row.hasil !== statusFilter) return false;
-    return true;
   });
 
   return (
@@ -142,6 +156,8 @@ export default async function HistoryPage({
               </table>
             </div>
           </div>
+          
+          <Pagination totalPages={totalPages} currentPage={currentPage} />
         </>
       )}
     </div>

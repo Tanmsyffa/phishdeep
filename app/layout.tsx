@@ -38,6 +38,14 @@ export const metadata: Metadata = {
     description: "Cek link dan APK Anda dari bahaya phishing dan malware. Dapatkan bukti visual nyata dengan PhishDeep.",
     url: 'https://phishdeep.vercel.app',
     siteName: 'PhishDeep',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'PhishDeep - Deteksi Phishing & Malware',
+      },
+    ],
     locale: 'id_ID',
     type: 'website',
   },
@@ -45,6 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'PhishDeep - Deteksi Phishing & Malware',
     description: 'Platform cerdas deteksi ancaman siber dengan bukti visual forensik.',
+    images: ['/og-image.jpg'],
   },
   robots: {
     index: true,

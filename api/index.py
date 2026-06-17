@@ -422,12 +422,12 @@ def analyze_link(target_url):
         _task_crt, _task_wayback, _task_safebrowsing,
     ]
     osint_results = {}
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    with ThreadPoolExecutor(max_workers=11) as executor:
         futures = {executor.submit(fn): fn.__name__ for fn in osint_tasks}
         try:
-            for future in as_completed(futures, timeout=5):
+            for future in as_completed(futures, timeout=20):
                 try:
-                    key, val = future.result(timeout=1)
+                    key, val = future.result(timeout=3)
                     osint_results[key] = val
                 except Exception:
                     pass

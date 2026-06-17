@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { LinkIcon, Smartphone, FileSearch, Image as ImageIcon, ShieldAlert, Loader2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { LinkIcon, Smartphone, FileSearch, Image as ImageIcon, ShieldAlert, Loader2, RefreshCw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { checkScanLimit, saveScanResult } from "./actions";
 import { createClient } from "@/lib/supabase/client";
 
 export default function NewScanPage() {
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState("link");
   const [url, setUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -19,6 +21,13 @@ export default function NewScanPage() {
 
   useEffect(() => {
     checkScanLimit().then(res => setLimitCheck({ ...res, loading: false }));
+    // Pre-fill from Re-Scan navigation
+    const rescanUrl = searchParams.get('rescan');
+    const rescanType = searchParams.get('type');
+    if (rescanUrl) {
+      setUrl(decodeURIComponent(rescanUrl));
+      if (rescanType) setActiveTab(rescanType.toLowerCase() === 'apk' ? 'apk' : 'link');
+    }
   }, []);
 
   const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
