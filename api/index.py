@@ -125,7 +125,7 @@ def is_safe_url(url):
         return False
 
 def get_rdap_info(domain):
-    """Lookup domain info via RDAP (modern WHOIS replacement using HTTPS)."""
+    """Lookup domain info via python-whois (primary) with RDAP fallback."""
     domain_info = {
         'domain': domain,
         'registrar': 'Unknown',
@@ -139,6 +139,45 @@ def get_rdap_info(domain):
         'ssl_issuer': 'Unknown',
         'ssl_expiry_date': 'Unknown'
     }
+    
+    # 1. Try python-whois first
+    try:
+        import whois
+        w = whois.whois(domain)
+        
+        if getattr(w, 'registrar', None):
+            domain_info['registrar'] = w.registrar if isinstance(w.registrar, str) else w.registrar[0]
+            
+        if getattr(w, 'creation_date', None):
+            cd = w.creation_date[0] if isinstance(w.creation_date, list) else w.creation_date
+            if isinstance(cd, datetime.datetime):
+                domain_info['creation_date'] = cd.strftime("%d %b %Y")
+                domain_info['age_days'] = (datetime.datetime.now() - cd).days
+                
+        if getattr(w, 'expiration_date', None):
+            ed = w.expiration_date[0] if isinstance(w.expiration_date, list) else w.expiration_date
+            if isinstance(ed, datetime.datetime):
+                domain_info['expiry_date'] = ed.strftime("%d %b %Y")
+                
+        if getattr(w, 'updated_date', None):
+            ud = w.updated_date[0] if isinstance(w.updated_date, list) else w.updated_date
+            if isinstance(ud, datetime.datetime):
+                domain_info['last_updated'] = ud.strftime("%d %b %Y")
+                
+        if getattr(w, 'name_servers', None):
+            domain_info['nameservers'] = [ns.lower() for ns in w.name_servers]
+            
+        if getattr(w, 'status', None):
+            domain_info['domain_status'] = w.status if isinstance(w.status, list) else [w.status]
+            
+        # If whois succeeded well enough, return it
+        if domain_info['age_days'] is not None:
+            return domain_info
+            
+    except Exception:
+        pass
+
+    # 2. Fallback to RDAP if whois fails or lacks creation date
     try:
         bootstrap_url = f"https://rdap.org/domain/{domain}"
         req = urllib.request.Request(

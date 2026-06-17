@@ -342,9 +342,9 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     else if (label.includes('CSS') || label.includes('JS') || label.includes('Library') || label.includes('Framework')) badgeColor = 'bg-pink-50 dark:bg-pink-500/10 text-pink-800 dark:text-pink-300 border-pink-200 dark:border-pink-800/50';
 
                     return (
-                      <div key={idx} className={`flex flex-col px-3 py-2 rounded-lg border shadow-sm ${badgeColor} ${isWarning ? 'ring-1 ring-red-400 dark:ring-red-500' : ''}`}>
-                        <span className="text-[9px] uppercase tracking-wider font-bold opacity-70 mb-0.5">{label}</span>
-                        <span className={`text-xs font-bold ${isWarning ? 'text-red-700 dark:text-red-400' : ''} leading-tight whitespace-nowrap`}>{value}</span>
+                      <div key={idx} className={`flex flex-col px-3 py-2 rounded-lg border shadow-sm max-w-full ${badgeColor} ${isWarning ? 'ring-1 ring-red-400 dark:ring-red-500' : ''}`}>
+                        <span className="text-[9px] uppercase tracking-wider font-bold opacity-70 mb-0.5 truncate">{label}</span>
+                        <span className={`text-xs font-bold ${isWarning ? 'text-red-700 dark:text-red-400' : ''} leading-tight break-words whitespace-normal`}>{value}</span>
                       </div>
                     );
                   })}
