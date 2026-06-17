@@ -6,6 +6,12 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://phishdeep.vercel.app'),
+  applicationName: "PhishDeep",
+  appleWebApp: {
+    title: "PhishDeep",
+    statusBarStyle: "default",
+    capable: true,
+  },
   verification: {
     google: '_b9NX6YFJiCTfMjqqNefgiFxu5oVMIXiDwCl_R-M9s0',
   },
