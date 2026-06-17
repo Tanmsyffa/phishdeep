@@ -7,3 +7,149 @@
     @apply bg-gray-50 text-gray-900;
   }
 }
+
+/* =====================================================
+   ENTERPRISE PDF PRINT STYLES
+   Standard: ISO 19011 / NIST SP 800-115 Report Format
+   ===================================================== */
+@media print {
+  /* --- Page Setup --- */
+  @page {
+    size: A4;
+    margin: 18mm 16mm 20mm 16mm;
+  }
+
+  /* --- Global Reset for Print --- */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  html, body {
+    background: #fff !important;
+    color: #111 !important;
+    font-family: 'Arial', 'Helvetica Neue', sans-serif;
+    font-size: 9pt;
+    line-height: 1.5;
+  }
+
+  /* --- Page Footer (auto-appended) --- */
+  body::after {
+    content: 'PhishDeep Cybersecurity Intelligence Platform  |  CONFIDENTIAL — FOR AUTHORIZED USE ONLY  |  phishdeep.vercel.app';
+    position: fixed;
+    bottom: 8mm;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 7pt;
+    color: #6b7280;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 4px;
+  }
+
+  /* --- Hide non-printable elements --- */
+  nav, header, footer,
+  .print\:hidden,
+  [class*="print:hidden"] {
+    display: none !important;
+  }
+
+  /* --- Main container --- */
+  main, .max-w-5xl {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* --- Section cards: clean bordered boxes --- */
+  .rounded-2xl,
+  .rounded-xl {
+    border-radius: 4px !important;
+  }
+
+  /* --- Background colors: normalize to white/near-white --- */
+  .bg-white, .dark\:bg-slate-900, .bg-gray-50, .bg-slate-900 {
+    background-color: #fff !important;
+  }
+
+  /* --- Text colors for print --- */
+  .text-gray-500, .dark\:text-gray-400, .text-gray-400 {
+    color: #555 !important;
+  }
+
+  .text-gray-900, .dark\:text-white {
+    color: #111 !important;
+  }
+
+  /* --- Borders: keep but use solid gray --- */
+  .border, .border-gray-200, .dark\:border-slate-700, .border-gray-100 {
+    border-color: #d1d5db !important;
+  }
+
+  /* --- Status badge colors: keep semantic colors for print --- */
+  .bg-red-50 { background-color: #fef2f2 !important; }
+  .bg-yellow-50 { background-color: #fefce8 !important; }
+  .bg-green-50 { background-color: #f0fdf4 !important; }
+  .bg-blue-50 { background-color: #eff6ff !important; }
+
+  /* --- Text in status areas --- */
+  .text-red-600, .text-red-700 { color: #dc2626 !important; }
+  .text-yellow-600, .text-yellow-700 { color: #d97706 !important; }
+  .text-green-600, .text-green-700 { color: #16a34a !important; }
+  .text-blue-600, .text-blue-700 { color: #2563eb !important; }
+
+  /* --- Grid: flatten to single column for coherent flow --- */
+  .grid {
+    display: block !important;
+  }
+
+  .lg\:col-span-2 {
+    width: 100% !important;
+  }
+
+  /* --- Tech Stack badges: inline --- */
+  .flex.flex-wrap {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+
+  /* --- Page breaks --- */
+  .print\:break-inside-avoid,
+  [class*="print:break-inside-avoid"] {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* --- Shadows: remove for clean print --- */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* --- Links: show URL for accountability --- */
+  a[href^="http"]::after {
+    content: '';
+  }
+
+  /* --- Progress bars: show as text only --- */
+  .h-1\.5.rounded-full {
+    display: none !important;
+  }
+
+  /* --- Sidebar (dashboard): hide --- */
+  aside {
+    display: none !important;
+  }
+
+  /* --- Force print block for content wrappers --- */
+  .print\:block {
+    display: block !important;
+  }
+
+  .print\:w-full {
+    width: 100% !important;
+  }
+}
+

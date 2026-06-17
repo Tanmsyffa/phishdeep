@@ -70,17 +70,58 @@ export default async function ScanResultPage({ params, searchParams }: { params:
       </div>
 
       {/* Print Header - Only visible on print */}
-      <div className="hidden print:block border-b-2 border-gray-900 pb-4 mb-8">
-        <div className="flex items-end justify-between">
-          <div>
-            <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">PHISHDEEP <span className="text-gray-400 dark:text-gray-500">ANALYSIS REPORT</span></h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Laporan Forensik & Keamanan Siber Resmi</p>
+      <div className="hidden print:block mb-8">
+        {/* Top classification banner */}
+        <div className="bg-gray-900 text-white text-center py-1.5 text-[7pt] font-bold tracking-[0.2em] uppercase mb-6">
+          CONFIDENTIAL — CYBERSECURITY FORENSIC REPORT — AUTHORIZED USE ONLY
+        </div>
+
+        {/* Logo + Title row */}
+        <div className="flex items-start justify-between border-b-2 border-gray-900 pb-5 mb-5">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center shrink-0">
+              <span className="text-white font-black text-lg">PD</span>
+            </div>
+            <div>
+              <div className="text-[8pt] font-bold text-gray-500 tracking-widest uppercase">PhishDeep Intelligence Platform</div>
+              <h1 className="text-[18pt] font-black text-gray-900 tracking-tight leading-tight">Cybersecurity Threat Analysis Report</h1>
+              <div className="text-[8pt] text-gray-500 mt-0.5">Automated Forensic &amp; OSINT Intelligence Report</div>
+            </div>
           </div>
-          <div className="text-right">
-            <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">ID: {scan.id}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">DATE: {new Date(scan.created_at).toLocaleString('id-ID')}</div>
+          <div className="text-right shrink-0">
+            <div className={`text-[9pt] font-black px-3 py-1 rounded mb-2 inline-block ${ isDanger ? 'bg-red-100 text-red-700 border border-red-300' : isSuspicious ? 'bg-yellow-100 text-yellow-700 border border-yellow-300' : 'bg-green-100 text-green-700 border border-green-300' }`}>
+              {isDanger ? '⚠ HIGH RISK' : isSuspicious ? '⚡ SUSPICIOUS' : '✓ CLEAN'}
+            </div>
+            <div className="text-[7.5pt] text-gray-500 font-mono">Report ID: {scan.id}</div>
+            <div className="text-[7.5pt] text-gray-500 font-mono">Generated: {new Date(scan.created_at).toLocaleString('en-GB', { dateStyle: 'long', timeStyle: 'short' })}</div>
           </div>
         </div>
+
+        {/* Key Metadata Table */}
+        <table className="w-full text-[8pt] border border-gray-300 mb-5" style={{ borderCollapse: 'collapse' }}>
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-300 px-3 py-1.5 text-left font-bold text-gray-700 w-1/4">Field</th>
+              <th className="border border-gray-300 px-3 py-1.5 text-left font-bold text-gray-700">Value</th>
+              <th className="border border-gray-300 px-3 py-1.5 text-left font-bold text-gray-700 w-1/4">Field</th>
+              <th className="border border-gray-300 px-3 py-1.5 text-left font-bold text-gray-700">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="border border-gray-300 px-3 py-1.5 font-semibold text-gray-600 bg-gray-50">Target URL</td>
+              <td className="border border-gray-300 px-3 py-1.5 font-mono text-gray-900 break-all">{scan.target_url}</td>
+              <td className="border border-gray-300 px-3 py-1.5 font-semibold text-gray-600 bg-gray-50">Scan Type</td>
+              <td className="border border-gray-300 px-3 py-1.5 text-gray-900">{scan.target_type}</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-300 px-3 py-1.5 font-semibold text-gray-600 bg-gray-50">Risk Score</td>
+              <td className={`border border-gray-300 px-3 py-1.5 font-black ${ isDanger ? 'text-red-700' : isSuspicious ? 'text-yellow-700' : 'text-green-700' }`}>{scan.risk_score} / 100</td>
+              <td className="border border-gray-300 px-3 py-1.5 font-semibold text-gray-600 bg-gray-50">Verdict</td>
+              <td className={`border border-gray-300 px-3 py-1.5 font-bold ${ isDanger ? 'text-red-700' : isSuspicious ? 'text-yellow-700' : 'text-green-700' }`}>{isDanger ? 'MALICIOUS / HIGH RISK' : isSuspicious ? 'SUSPICIOUS — REVIEW REQUIRED' : 'CLEAN — NO SIGNIFICANT THREAT'}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-8 print:block print:w-full">
@@ -497,10 +538,6 @@ export default async function ScanResultPage({ params, searchParams }: { params:
           </div>
         </div>
         
-        {/* Footer for Print Only */}
-        <div className="hidden print:block print:w-full mt-8 pt-4 border-t border-gray-300 text-center text-xs text-gray-500 dark:text-gray-400">
-          Laporan dibuat secara otomatis oleh sistem PhishDeep Security. Dokumen ini sah dan dapat digunakan sebagai referensi audit.
-        </div>
       </div>
     </div>
   );
