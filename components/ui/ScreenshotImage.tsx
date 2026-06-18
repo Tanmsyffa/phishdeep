@@ -21,19 +21,50 @@ const BLOCKED_INDICATORS = [
 
 export default function ScreenshotImage({ src, targetUrl }: { src: string; targetUrl?: string }) {
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
+  const [useFallback, setUseFallback] = useState(false);
+
+  // Determine the current image source
+  const primarySrc = src || "";
+  const fallbackSrc = targetUrl ? `https://image.thum.io/get/width/1200/crop/800/noanimate/${targetUrl}` : "";
+  const currentSrc = (primarySrc && !useFallback) ? primarySrc : fallbackSrc;
+
+  const handleError = () => {
+    if (primarySrc && !useFallback && fallbackSrc) {
+      // Primary failed, try fallback
+      setUseFallback(true);
+      setStatus("loading");
+    } else {
+      setStatus("error");
+    }
+  };
+
+  // If no source at all, directly show error
+  if (!currentSrc) {
+    return (
+      <div className="w-full py-12 flex flex-col items-center justify-center text-center border border-dashed border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-800/50">
+        <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-700 flex items-center justify-center mb-3">
+          <Monitor className="w-6 h-6 text-gray-400 dark:text-slate-500" />
+        </div>
+        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Screenshot tidak tersedia</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500 max-w-xs">
+          Target memblokir akses bot atau URL tidak valid.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full">
       {/* Actual screenshot */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={src}
+        src={currentSrc}
         alt="Screenshot visual situs target"
         className={`w-full rounded-xl object-cover max-h-[380px] transition-opacity duration-300 ${
           status === "ok" ? "opacity-100" : "opacity-0 absolute inset-0 h-0 pointer-events-none"
         }`}
         onLoad={() => setStatus("ok")}
-        onError={() => setStatus("error")}
+        onError={handleError}
       />
 
       {/* Loading skeleton */}
@@ -58,7 +89,7 @@ export default function ScreenshotImage({ src, targetUrl }: { src: string; targe
 
       {/* Blocked page warning overlay — shown on top of visible screenshot when detected */}
       {status === "ok" && (
-        <BlockedPageDetector src={src} />
+        <BlockedPageDetector src={currentSrc} />
       )}
     </div>
   );
