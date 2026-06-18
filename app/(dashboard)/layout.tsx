@@ -4,7 +4,6 @@ import { useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Link from "next/link";
 import { ShieldCheck, Menu, X } from "lucide-react";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 
 export default function DashboardLayout({
   children,
@@ -23,8 +22,7 @@ export default function DashboardLayout({
           </div>
           <span className="font-bold tracking-tight text-base">PhishDeep</span>
         </Link>
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
+        <div className="flex items-center gap-2">
           <button 
             onClick={() => setIsMobileMenuOpen(true)}
             className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-colors"

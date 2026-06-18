@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import { updateProfile, updatePassword } from "./actions";
+import { updateProfile } from "./actions";
 import { createClient } from "@/lib/supabase/client";
-import { CheckCircle, XCircle, Loader2, User, Lock, ShieldCheck } from "lucide-react";
+import { CheckCircle, XCircle, Loader2, User, Lock, ShieldCheck, Image as ImageIcon, Palette } from "lucide-react";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 function Toast({ message, type }: { message: string; type: "success" | "error" }) {
   return (
@@ -20,16 +21,18 @@ function Toast({ message, type }: { message: string; type: "success" | "error" }
 
 export default function SettingsPage() {
   const [profileMsg, setProfileMsg] = useState<{ text: string; type: "success" | "error" } | null>(null);
-  const [passwordMsg, setPasswordMsg] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const [isPendingProfile, startProfileTransition] = useTransition();
-  const [isPendingPassword, startPasswordTransition] = useTransition();
   const [currentName, setCurrentName] = useState("");
+  const [currentAvatar, setCurrentAvatar] = useState("");
 
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user?.user_metadata?.full_name) {
         setCurrentName(user.user_metadata.full_name);
+      }
+      if (user?.user_metadata?.avatar_url) {
+        setCurrentAvatar(user.user_metadata.avatar_url);
       }
     });
   }, []);
@@ -48,20 +51,7 @@ export default function SettingsPage() {
     });
   };
 
-  const handlePasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    setPasswordMsg(null);
-    startPasswordTransition(async () => {
-      const result = await updatePassword(formData);
-      if (result?.error) {
-        setPasswordMsg({ text: result.error, type: "error" });
-      } else if (result?.success) {
-        setPasswordMsg({ text: result.success, type: "success" });
-        (e.target as HTMLFormElement).reset();
-      }
-    });
-  };
+
 
   return (
     <div className="max-w-2xl mx-auto space-y-5">
@@ -82,7 +72,32 @@ export default function SettingsPage() {
           <User className="w-4 h-4 text-primary-500" />
           <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Informasi Profil</h2>
         </div>
-        <form onSubmit={handleProfileSubmit} className="p-5 sm:p-6 space-y-4">
+        <form onSubmit={handleProfileSubmit} className="p-5 sm:p-6 space-y-5">
+          <div className="flex items-center gap-4 mb-2">
+            {currentAvatar ? (
+              <img src={currentAvatar} alt="Profile" className="w-16 h-16 rounded-full object-cover border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800" />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-2xl shrink-0 border border-blue-200 dark:border-blue-800">
+                {(currentName || 'U')[0].toUpperCase()}
+              </div>
+            )}
+            <div className="flex-1">
+              <label htmlFor="avatar_url" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 flex items-center gap-2">
+                <ImageIcon className="w-4 h-4" /> URL Foto Profil
+              </label>
+              <input
+                id="avatar_url"
+                name="avatar_url"
+                type="url"
+                placeholder="https://example.com/avatar.jpg"
+                defaultValue={currentAvatar}
+                key={`avatar-${currentAvatar}`} // force re-render when avatar loads
+                className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+              />
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5">Gunakan URL gambar publik atau biarkan kosong. Profil Google terintegrasi otomatis.</p>
+            </div>
+          </div>
+
           <div>
             <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               Nama Lengkap
@@ -94,12 +109,12 @@ export default function SettingsPage() {
               required
               placeholder="Nama Anda"
               defaultValue={currentName}
-              key={currentName} // force re-render when name loads
+              key={`name-${currentName}`} // force re-render when name loads
               className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
             />
           </div>
           {profileMsg && <Toast message={profileMsg.text} type={profileMsg.type} />}
-          <div className="pt-1">
+          <div className="pt-2">
             <button
               type="submit"
               disabled={isPendingProfile}
@@ -112,54 +127,19 @@ export default function SettingsPage() {
         </form>
       </div>
 
-      {/* Password Card */}
+      {/* Theme Card */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
         <div className="px-5 sm:px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center gap-2">
-          <Lock className="w-4 h-4 text-primary-500" />
-          <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Ubah Password</h2>
+          <Palette className="w-4 h-4 text-primary-500" />
+          <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Tampilan & Tema</h2>
         </div>
-        <form onSubmit={handlePasswordSubmit} className="p-5 sm:p-6 space-y-4">
+        <div className="p-5 sm:p-6 flex items-center justify-between">
           <div>
-            <label htmlFor="new_password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              Password Baru
-            </label>
-            <input
-              id="new_password"
-              name="new_password"
-              type="password"
-              required
-              placeholder="••••••••"
-              minLength={6}
-              className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-            />
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-0.5">Mode Gelap / Terang</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">Sesuaikan tema antarmuka sesuai kenyamanan mata Anda.</p>
           </div>
-          <div>
-            <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              Konfirmasi Password
-            </label>
-            <input
-              id="confirm_password"
-              name="confirm_password"
-              type="password"
-              required
-              placeholder="••••••••"
-              minLength={6}
-              className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-            />
-          </div>
-          <p className="text-xs text-gray-400 dark:text-gray-500">Password minimal 6 karakter.</p>
-          {passwordMsg && <Toast message={passwordMsg.text} type={passwordMsg.type} />}
-          <div className="pt-1">
-            <button
-              type="submit"
-              disabled={isPendingPassword}
-              className="inline-flex items-center gap-2 bg-gray-800 text-white font-semibold py-2.5 px-6 rounded-xl hover:bg-gray-900 transition-colors text-sm shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {isPendingPassword && <Loader2 className="w-4 h-4 animate-spin" />}
-              {isPendingPassword ? "Memperbarui..." : "Ubah Password"}
-            </button>
-          </div>
-        </form>
+          <ThemeToggle />
+        </div>
       </div>
     </div>
   );
