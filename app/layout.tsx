@@ -91,8 +91,28 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="id">
-      <body className={`${inter.className} antialiased text-gray-900 bg-gray-50 dark:bg-slate-950 dark:text-gray-100 transition-colors duration-300`}>
+    <html lang="id" suppressHydrationWarning>
+      <head>
+        {/* Inline script to prevent dark mode FOUC - runs before React hydration */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme');
+                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (theme === 'dark' || (!theme && prefersDark)) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className={`${inter.className} antialiased text-gray-900 bg-gray-50 dark:bg-slate-950 dark:text-gray-100`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

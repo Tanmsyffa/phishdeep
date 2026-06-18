@@ -2,9 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { User } from "@supabase/supabase-js";
 import { logout } from "@/app/auth-actions";
 import { 
   ShieldCheck, 
@@ -20,20 +17,6 @@ import {
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
-  const [user, setUser] = useState<User | null>(null);
-  const supabase = createClient();
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [supabase.auth]);
 
   const isActive = (path: string) => {
     return pathname === path || pathname.startsWith(`${path}/`);
@@ -99,22 +82,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
           <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-snug">Limit <span className="text-gray-800 dark:text-gray-300 font-medium">10 scan / hari</span>. Tanpa biaya tersembunyi.</p>
         </div>
 
-        {/* User Profile */}
-        {user && (
-          <div className="flex items-center gap-3 px-2 py-2">
-            {user.user_metadata?.avatar_url ? (
-              <img src={user.user_metadata.avatar_url} alt="Profile" className="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800" />
-            ) : (
-              <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-sm shrink-0 border border-blue-200 dark:border-blue-800">
-                {(user.user_metadata?.full_name || user.email || 'U')[0].toUpperCase()}
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{user.user_metadata?.full_name || 'Pengguna'}</p>
-              <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
-            </div>
-          </div>
-        )}
+
 
         {/* Logout */}
         <form action={logout}>
