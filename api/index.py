@@ -1301,6 +1301,29 @@ def analyze_link(target_url):
     
     # Final max bounds for score
     final_score = max(0, min(100, risk_score))
+    
+    # Calculate confidence level
+    if risk_score >= 150:
+        confidence = "SANGAT TINGGI (CRITICAL)"
+    elif risk_score >= 80:
+        confidence = "TINGGI (HIGH)"
+    elif risk_score >= 40:
+        confidence = "SEDANG (MEDIUM)"
+    else:
+        confidence = "RENDAH (LOW)"
+        
+    domain_info['raw_risk_score'] = risk_score
+    domain_info['confidence_level'] = confidence
+    
+    # Generate threat summary
+    critical_findings = [d['finding'] for d in details if 'KRITIS' in d['finding'] or 'BAHAYA' in d['finding']]
+    if critical_findings:
+        domain_info['threat_summary'] = f"Ditemukan {len(critical_findings)} indikator ancaman serius. {' '.join(critical_findings[:2])}"
+    elif risk_score > 50:
+        domain_info['threat_summary'] = "Situs memiliki banyak indikator mencurigakan namun tidak ada ancaman pasti (Taktik abu-abu/Greyware)."
+    else:
+        domain_info['threat_summary'] = "Tidak ditemukan indikator ancaman phishing atau malware yang signifikan."
+
     return final_score, details, extracted_code, domain_info, frameworks, redirect_chain, screenshot_url
 
 
