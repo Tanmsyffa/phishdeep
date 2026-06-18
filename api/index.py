@@ -102,7 +102,9 @@ def check_safe_browsing(url: str):
 
 def check_abuseipdb(ip: str) -> dict:
     """Check IP reputation via AbuseIPDB API."""
-    api_key = os.environ.get('ABUSEIPDB_API_KEY', '8446cc4abaf1adc667dc50e87b9afd89d85be8b26ecb6022d04833c91767103a')
+    api_key = os.environ.get('ABUSEIPDB_API_KEY')
+    if not api_key:
+        return {}
     try:
         req = urllib.request.Request(
             f'https://api.abuseipdb.com/api/v2/check?ipAddress={ip}&maxAgeInDays=90&verbose',
@@ -121,6 +123,29 @@ def check_abuseipdb(ip: str) -> dict:
             'isWhitelisted': d.get('isWhitelisted', False),
             'lastReportedAt': d.get('lastReportedAt', ''),
         }
+    except Exception:
+        return {}
+
+
+def check_virustotal(url: str) -> dict:
+    """Check URL against VirusTotal API."""
+    api_key = os.environ.get('VIRUSTOTAL_API_KEY')
+    if not api_key:
+        return {}
+    try:
+        import base64
+        # VirusTotal v3 requires urlsafe base64 without padding for URL ID
+        url_id = base64.urlsafe_b64encode(url.encode()).decode().strip("=")
+        req = urllib.request.Request(
+            f'https://www.virustotal.com/api/v3/urls/{url_id}',
+            headers={'x-apikey': api_key, 'Accept': 'application/json'}
+        )
+        resp = urllib.request.urlopen(req, timeout=6)
+        data = json.loads(resp.read().decode())
+        return data.get('data', {}).get('attributes', {}).get('last_analysis_stats', {})
+    except urllib.error.HTTPError as e:
+        # If URL not found in VT yet, it returns 404
+        return {}
     except Exception:
         return {}
 
@@ -504,15 +529,18 @@ def analyze_link(target_url):
             return ('unshorten', unshorten_url(target_url))
         return ('unshorten', None)  # Not a shortener, skip
 
+    def _task_virustotal():
+        return ('virustotal', check_virustotal(target_url))
+
     osint_tasks = [
         _task_rdap, _task_ip, _task_ssl,
         _task_mx, _task_urlscan,
         _task_spf, _task_dmarc, _task_ttl,
         _task_crt, _task_wayback, _task_safebrowsing,
-        _task_abuseipdb, _task_unshorten,
+        _task_abuseipdb, _task_unshorten, _task_virustotal,
     ]
     osint_results = {}
-    with ThreadPoolExecutor(max_workers=13) as executor:
+    with ThreadPoolExecutor(max_workers=14) as executor:
         futures = {executor.submit(fn): fn.__name__ for fn in osint_tasks}
         try:
             for future in as_completed(futures, timeout=20):
@@ -751,6 +779,24 @@ def analyze_link(target_url):
         details.append({"step": "Google Safe Browsing", "finding": "Domain tidak ditemukan dalam database Google Safe Browsing (Status Bersih)."})
     else:
         domain_info['safe_browsing'] = 'Unchecked'
+
+    # --- Process VirusTotal ---
+    vt_stats = osint_results.get('virustotal', {})
+    if vt_stats:
+        malicious = vt_stats.get('malicious', 0)
+        suspicious = vt_stats.get('suspicious', 0)
+        harmless = vt_stats.get('harmless', 0)
+        domain_info['virustotal_malicious'] = malicious
+        domain_info['virustotal_suspicious'] = suspicious
+        
+        if malicious >= 3:
+            risk_score += 80
+            details.append({"step": "VirusTotal Intelligence", "finding": f"BAHAYA KRITIS: {malicious} engine antivirus di VirusTotal menandai URL ini sebagai BERBAHAYA."})
+        elif malicious > 0 or suspicious > 0:
+            risk_score += 35
+            details.append({"step": "VirusTotal Intelligence", "finding": f"PERINGATAN: {malicious} engine menandai berbahaya dan {suspicious} mencurigakan di VirusTotal."})
+        else:
+            details.append({"step": "VirusTotal Intelligence", "finding": f"Bersih di VirusTotal (Dikonfirmasi oleh {harmless} engine keamanan)."})
 
     # --- Process AbuseIPDB ---
     abuse_data = osint_results.get('abuseipdb', {})
