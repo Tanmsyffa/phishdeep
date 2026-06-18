@@ -150,6 +150,12 @@ export default async function ScanResultPage({ params, searchParams }: { params:
               <td className="border border-gray-300 px-3 py-1.5 font-semibold text-gray-600 bg-gray-50">Verdict</td>
               <td className={`border border-gray-300 px-3 py-1.5 font-bold ${ isDanger ? 'text-red-700' : isSuspicious ? 'text-yellow-700' : 'text-green-700' }`}>{isDanger ? 'MALICIOUS / HIGH RISK' : isSuspicious ? 'SUSPICIOUS — REVIEW REQUIRED' : 'CLEAN — NO SIGNIFICANT THREAT'}</td>
             </tr>
+            <tr>
+              <td className="border border-gray-300 px-3 py-1.5 font-semibold text-gray-600 bg-gray-50">Confidence Level</td>
+              <td className="border border-gray-300 px-3 py-1.5 text-gray-900 font-semibold">{domainInfo.confidence_level || 'N/A'}</td>
+              <td className="border border-gray-300 px-3 py-1.5 font-semibold text-gray-600 bg-gray-50">Threat Summary</td>
+              <td className="border border-gray-300 px-3 py-1.5 text-gray-900">{domainInfo.threat_summary || 'N/A'}</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -170,7 +176,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                   {isDanger ? 'Berisiko Tinggi' : isSuspicious ? 'Perlu Diwaspadai' : 'Terlihat Aman'}
                 </div>
                 <p className={`text-xs leading-relaxed ${isDanger ? 'text-red-700 dark:text-red-400 print:text-black' : isSuspicious ? 'text-yellow-700 dark:text-yellow-400 print:text-black' : 'text-green-700 dark:text-green-400 print:text-black'}`}>
-                  {isDanger ? 'Aktivitas berbahaya terdeteksi. Sistem menyarankan untuk memblokir interaksi dengan target ini segera.' : isSuspicious ? 'Ditemukan beberapa anomali. Harap berhati-hati dan lakukan verifikasi manual.' : 'Tidak ditemukan ancaman signifikan pada saat pemindaian dilakukan.'}
+                  {domainInfo.threat_summary ? domainInfo.threat_summary : (isDanger ? 'Aktivitas berbahaya terdeteksi. Sistem menyarankan untuk memblokir interaksi dengan target ini segera.' : isSuspicious ? 'Ditemukan beberapa anomali. Harap berhati-hati dan lakukan verifikasi manual.' : 'Tidak ditemukan ancaman signifikan pada saat pemindaian dilakukan.')}
                 </p>
               </div>
 
@@ -179,6 +185,11 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                 <div className={`text-2xl sm:text-3xl font-bold flex items-end gap-1 ${isDanger ? 'text-red-600 dark:text-red-400' : isSuspicious ? 'text-yellow-600 dark:text-yellow-400' : 'text-green-600 dark:text-green-400'}`}>
                   {scan.risk_score} <span className="text-sm text-gray-400 dark:text-gray-500 font-normal">/ 100</span>
                 </div>
+                {domainInfo.confidence_level && (
+                  <div className="mt-1 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest print:text-gray-600">
+                    Confidence: {domainInfo.confidence_level.split(' ')[0]}
+                  </div>
+                )}
                 <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-1.5 mt-2 overflow-hidden print:hidden">
                   <div className={`h-1.5 rounded-full ${isDanger ? 'bg-red-500' : isSuspicious ? 'bg-yellow-500' : 'bg-green-500'}`} style={{ width: `${scan.risk_score}%` }}></div>
                 </div>
@@ -336,6 +347,40 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     </div>
                   )}
                 </div>
+
+                {/* Advanced Security Intelligence (VirusTotal & AbuseIPDB) */}
+                {(domainInfo.virustotal_malicious !== undefined || domainInfo.abuseipdb_score !== undefined) && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                    {domainInfo.virustotal_malicious !== undefined && (
+                      <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex items-center gap-3 print:border-gray-300">
+                        <div className="w-8 h-8 rounded bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center shrink-0">
+                          <Activity className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div>
+                          <div className="text-[9px] uppercase font-bold text-gray-500 tracking-wide mb-0.5">VirusTotal Intelligence</div>
+                          <div className="text-xs font-bold text-gray-900 dark:text-white">
+                            <span className={domainInfo.virustotal_malicious > 0 ? "text-red-600" : ""}>{domainInfo.virustotal_malicious} Malicious</span>
+                            <span className="mx-1.5 text-gray-300">|</span>
+                            <span className={domainInfo.virustotal_suspicious > 0 ? "text-yellow-600" : ""}>{domainInfo.virustotal_suspicious} Suspicious</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {domainInfo.abuseipdb_score !== undefined && (
+                      <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex items-center gap-3 print:border-gray-300">
+                        <div className="w-8 h-8 rounded bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center shrink-0">
+                          <ShieldAlert className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                        </div>
+                        <div>
+                          <div className="text-[9px] uppercase font-bold text-gray-500 tracking-wide mb-0.5">AbuseIPDB Score</div>
+                          <div className={`text-xs font-bold ${domainInfo.abuseipdb_score >= 50 ? 'text-red-600' : domainInfo.abuseipdb_score > 0 ? 'text-yellow-600' : 'text-green-600'}`}>
+                            {domainInfo.abuseipdb_score}% <span className="text-gray-400 font-normal">({domainInfo.abuseipdb_reports} laporan)</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Row 4 — Security signals as badges */}
                 <div className="flex flex-wrap gap-2 mt-2 pt-4 border-t border-gray-100 dark:border-slate-700">

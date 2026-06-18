@@ -69,7 +69,9 @@ export default function ExportButtons({ data }: { data: any }) {
     csv += row('Target URL', data.target_url);
     csv += row('Scan Type', data.target_type);
     csv += row('Risk Score', `${data.risk_score} / 100`);
+    csv += row('Confidence Level', domainInfo.confidence_level || 'N/A');
     csv += row('Verdict', verdict);
+    csv += row('Threat Summary', domainInfo.threat_summary || 'N/A');
     csv += row('Scan Date', new Date(data.created_at).toLocaleString('en-GB', { dateStyle: 'long', timeStyle: 'short' }));
     csv += row('');
 
@@ -93,6 +95,12 @@ export default function ExportButtons({ data }: { data: any }) {
       csv += row('SSL Expiry', di.ssl_expiry_date || 'Unknown');
       csv += row('TLD Risk', di.tld_risk || 'Unknown');
       csv += row('Safe Browsing Status', di.safe_browsing || 'Unchecked');
+      if (di.virustotal_malicious !== undefined) {
+        csv += row('VirusTotal Detections', `${di.virustotal_malicious} Malicious | ${di.virustotal_suspicious} Suspicious`);
+      }
+      if (di.abuseipdb_score !== undefined) {
+        csv += row('AbuseIPDB Confidence', `${di.abuseipdb_score}% (${di.abuseipdb_reports} reports)`);
+      }
       csv += row('Wayback First Seen', di.wayback_first_seen || 'N/A');
       csv += row('Wayback Last Seen', di.wayback_last_seen || 'N/A');
       csv += row('SPF Record', di.spf_record || 'Not Found');
