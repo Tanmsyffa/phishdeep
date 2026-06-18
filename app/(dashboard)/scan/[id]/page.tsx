@@ -349,7 +349,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                 </div>
 
                 {/* Advanced Security Intelligence (VirusTotal & AbuseIPDB) */}
-                {(domainInfo.virustotal_malicious !== undefined || domainInfo.abuseipdb_score !== undefined) && (
+                {(domainInfo.virustotal_malicious !== undefined || domainInfo.virustotal_error || domainInfo.abuseipdb_score !== undefined) && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                     {domainInfo.virustotal_malicious !== undefined && (
                       <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex items-center gap-3 print:border-gray-300">
@@ -362,6 +362,19 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                             <span className={domainInfo.virustotal_malicious > 0 ? "text-red-600" : ""}>{domainInfo.virustotal_malicious} Malicious</span>
                             <span className="mx-1.5 text-gray-300">|</span>
                             <span className={domainInfo.virustotal_suspicious > 0 ? "text-yellow-600" : ""}>{domainInfo.virustotal_suspicious} Suspicious</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {domainInfo.virustotal_error && (
+                      <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex items-center gap-3 print:border-gray-300">
+                        <div className="w-8 h-8 rounded bg-gray-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                          <Activity className="w-4 h-4 text-gray-500" />
+                        </div>
+                        <div>
+                          <div className="text-[9px] uppercase font-bold text-gray-500 tracking-wide mb-0.5">VirusTotal Intelligence</div>
+                          <div className="text-[10px] font-semibold text-orange-600 dark:text-orange-400 leading-snug">
+                            ℹ️ {domainInfo.virustotal_error}
                           </div>
                         </div>
                       </div>

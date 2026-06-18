@@ -131,11 +131,11 @@ def check_virustotal(url: str) -> dict:
     """Check URL against VirusTotal API."""
     api_key = os.environ.get('VIRUSTOTAL_API_KEY')
     if not api_key:
-        return {}
+        return {'error': 'VIRUSTOTAL_API_KEY belum dikonfigurasi di environment'}
     try:
         import base64
         # VirusTotal v3 requires urlsafe base64 without padding for URL ID
-        url_id = base64.urlsafe_b64encode(url.encode()).decode().strip("=")
+        url_id = base64.urlsafe_b64encode(url.encode('utf-8')).decode('utf-8').strip("=")
         req = urllib.request.Request(
             f'https://www.virustotal.com/api/v3/urls/{url_id}',
             headers={'x-apikey': api_key, 'Accept': 'application/json'}
@@ -144,10 +144,15 @@ def check_virustotal(url: str) -> dict:
         data = json.loads(resp.read().decode())
         return data.get('data', {}).get('attributes', {}).get('last_analysis_stats', {})
     except urllib.error.HTTPError as e:
-        # If URL not found in VT yet, it returns 404
-        return {}
-    except Exception:
-        return {}
+        if e.code == 404:
+            return {'error': 'URL belum pernah di-scan oleh VirusTotal'}
+        elif e.code == 401:
+            return {'error': 'API Key VirusTotal tidak valid'}
+        elif e.code == 429:
+            return {'error': 'Limit API VirusTotal tercapai (Rate Limit)'}
+        return {'error': f'HTTP Error {e.code}'}
+    except Exception as e:
+        return {'error': str(e)}
 
 
 # Known URL shortener domains
@@ -782,7 +787,9 @@ def analyze_link(target_url):
 
     # --- Process VirusTotal ---
     vt_stats = osint_results.get('virustotal', {})
-    if vt_stats:
+    if 'error' in vt_stats:
+        domain_info['virustotal_error'] = vt_stats['error']
+    elif vt_stats:
         malicious = vt_stats.get('malicious', 0)
         suspicious = vt_stats.get('suspicious', 0)
         harmless = vt_stats.get('harmless', 0)
