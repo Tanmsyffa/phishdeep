@@ -99,6 +99,61 @@ def check_safe_browsing(url: str):
     except Exception:
         return None
 
+
+def check_abuseipdb(ip: str) -> dict:
+    """Check IP reputation via AbuseIPDB API."""
+    api_key = os.environ.get('ABUSEIPDB_API_KEY', '8446cc4abaf1adc667dc50e87b9afd89d85be8b26ecb6022d04833c91767103a')
+    try:
+        req = urllib.request.Request(
+            f'https://api.abuseipdb.com/api/v2/check?ipAddress={ip}&maxAgeInDays=90&verbose',
+            headers={'Key': api_key, 'Accept': 'application/json'}
+        )
+        resp = urllib.request.urlopen(req, timeout=6)
+        data = json.loads(resp.read().decode())
+        d = data.get('data', {})
+        return {
+            'abuseConfidenceScore': d.get('abuseConfidenceScore', 0),
+            'totalReports': d.get('totalReports', 0),
+            'numDistinctUsers': d.get('numDistinctUsers', 0),
+            'countryCode': d.get('countryCode', ''),
+            'isp': d.get('isp', ''),
+            'domain': d.get('domain', ''),
+            'isWhitelisted': d.get('isWhitelisted', False),
+            'lastReportedAt': d.get('lastReportedAt', ''),
+        }
+    except Exception:
+        return {}
+
+
+# Known URL shortener domains
+_URL_SHORTENERS = {
+    'bit.ly', 'tinyurl.com', 't.co', 'ow.ly', 'is.gd', 'buff.ly',
+    's.id', 'short.gg', 'rb.gy', 'cutt.ly', 'tiny.cc', 'shorten.asia',
+    'x.gd', 'v.gd', 't.ly', 'shorturl.at', 'url.ie', 'po.st',
+    'bl.ink', 'snip.ly', 'soo.gd', 'youtu.be', 'go.gl',
+}
+
+def unshorten_url(url: str) -> str:
+    """Follow redirects to get the final URL behind a shortener."""
+    try:
+        import urllib.request as ur
+        visited, check = set(), url
+        for _ in range(8):
+            if check in visited:
+                break
+            visited.add(check)
+            req = ur.Request(check, headers={'User-Agent': 'Mozilla/5.0'})
+            opener = ur.build_opener(ur.HTTPRedirectHandler())
+            resp = opener.open(req, timeout=4)
+            final = resp.url if hasattr(resp, 'url') else check
+            if final and final != check:
+                check = final
+            else:
+                break
+        return check
+    except Exception:
+        return url
+
 def _domain_only(hostname: str) -> str:
     """Extract just the second-level name (e.g. 'google' from 'google.com')."""
     root, tld = _get_root_domain(hostname)
@@ -276,8 +331,28 @@ def analyze_link(target_url):
     else:
         details.append({"step": "Analisis Shannon Entropy", "finding": f"Nama domain wajar (Entropy: {round(entropy, 2)}). Tidak terdeteksi algoritma pengacak (DGA)."})
 
-    # --- TYPO-SQUATTING ENGINE ---
-    TOP_INDO_TARGETS = ['bca.co.id', 'klikbca.com', 'bri.co.id', 'bankmandiri.co.id', 'bni.co.id', 'dana.id', 'gopay.co.id', 'shopee.co.id', 'tokopedia.com']
+    # --- TYPO-SQUATTING ENGINE (Extended: Indonesian banks, fintech, govt, global) ---
+    TOP_INDO_TARGETS = [
+        # Banking
+        'bca.co.id', 'klikbca.com', 'mybca.com', 'bri.co.id', 'brivolt.co.id',
+        'bankmandiri.co.id', 'mandiri.co.id', 'bni.co.id', 'btn.co.id',
+        'cimbniaga.co.id', 'ocbcnisp.com', 'danamon.co.id', 'bankbsi.co.id',
+        'bankbjb.co.id', 'permatabank.com', 'digibank.id',
+        # Fintech / E-wallet
+        'dana.id', 'gopay.co.id', 'ovo.id', 'shopeepay.co.id', 'linkaja.id',
+        'jenius.com', 'flip.id', 'bibit.id', 'ajaib.co.id', 'pluang.com',
+        # E-commerce
+        'tokopedia.com', 'shopee.co.id', 'bukalapak.com', 'lazada.co.id',
+        'blibli.com', 'zalora.co.id', 'jd.id', 'orami.co.id',
+        # Ride-hailing / Tech
+        'gojek.com', 'grab.com', 'traveloka.com', 'tiket.com', 'booking.com',
+        # Government
+        'pajak.go.id', 'djp.go.id', 'bpjs-kesehatan.go.id', 'bpjsketenagakerjaan.go.id',
+        'kemenkes.go.id', 'pln.co.id', 'pertamina.com',
+        # Global
+        'paypal.com', 'apple.com', 'google.com', 'microsoft.com', 'amazon.com',
+        'netflix.com', 'facebook.com', 'instagram.com', 'twitter.com',
+    ]
     import difflib
     is_typo = False
     for target in TOP_INDO_TARGETS:
@@ -415,14 +490,29 @@ def analyze_link(target_url):
     def _task_safebrowsing():
         return ('safebrowsing', check_safe_browsing(target_url))
 
+    def _task_abuseipdb():
+        # Resolve IP first
+        try:
+            ip = socket.gethostbyname(parsed_url.hostname)
+            return ('abuseipdb', check_abuseipdb(ip))
+        except Exception:
+            return ('abuseipdb', {})
+
+    def _task_unshorten():
+        parsed_netloc = urlparse(target_url).netloc.replace('www.', '').split(':')[0]
+        if parsed_netloc in _URL_SHORTENERS:
+            return ('unshorten', unshorten_url(target_url))
+        return ('unshorten', None)  # Not a shortener, skip
+
     osint_tasks = [
         _task_rdap, _task_ip, _task_ssl,
         _task_mx, _task_urlscan,
         _task_spf, _task_dmarc, _task_ttl,
         _task_crt, _task_wayback, _task_safebrowsing,
+        _task_abuseipdb, _task_unshorten,
     ]
     osint_results = {}
-    with ThreadPoolExecutor(max_workers=11) as executor:
+    with ThreadPoolExecutor(max_workers=13) as executor:
         futures = {executor.submit(fn): fn.__name__ for fn in osint_tasks}
         try:
             for future in as_completed(futures, timeout=20):
@@ -661,7 +751,38 @@ def analyze_link(target_url):
         details.append({"step": "Google Safe Browsing", "finding": "Domain tidak ditemukan dalam database Google Safe Browsing (Status Bersih)."})
     else:
         domain_info['safe_browsing'] = 'Unchecked'
-        # Silent fail if API key is not configured
+
+    # --- Process AbuseIPDB ---
+    abuse_data = osint_results.get('abuseipdb', {})
+    if abuse_data:
+        confidence = abuse_data.get('abuseConfidenceScore', 0)
+        total_reports = abuse_data.get('totalReports', 0)
+        distinct_users = abuse_data.get('numDistinctUsers', 0)
+        domain_info['abuseipdb_score'] = confidence
+        domain_info['abuseipdb_reports'] = total_reports
+        if abuse_data.get('isWhitelisted'):
+            details.append({"step": "AbuseIPDB IP Reputation", "finding": f"IP server ada di whitelist AbuseIPDB. Reputasi IP terpercaya (ISP: {abuse_data.get('isp','N/A')})."})
+        elif confidence >= 75:
+            risk_score += 50
+            details.append({"step": "AbuseIPDB IP Reputation [T1583]", "finding": f"BAHAYA KRITIS: IP server memiliki Abuse Confidence Score {confidence}% di AbuseIPDB. Dilaporkan {total_reports}x oleh {distinct_users} pengguna unik. Server ini aktif digunakan untuk aktivitas berbahaya."})
+        elif confidence >= 25:
+            risk_score += 25
+            details.append({"step": "AbuseIPDB IP Reputation", "finding": f"PERINGATAN: IP server memiliki reputasi buruk (Score: {confidence}%, {total_reports} laporan). Kemungkinan hosting yang sering disalahgunakan."})
+        else:
+            details.append({"step": "AbuseIPDB IP Reputation", "finding": f"IP server bersih di AbuseIPDB (Score: {confidence}%, {total_reports} laporan). ISP: {abuse_data.get('isp','N/A')}."})
+
+    # --- Process URL Shortener ---
+    unshortened = osint_results.get('unshorten')
+    if unshortened:
+        final_parsed = urlparse(unshortened)
+        final_domain = final_parsed.netloc.replace('www.', '').split(':')[0]
+        domain_info['unshortened_url'] = unshortened
+        domain_info['unshortened_domain'] = final_domain
+        if final_domain and final_domain != root_domain:
+            risk_score += 20
+            details.append({"step": "URL Shortener Unwrap [T1027]", "finding": f"PERINGATAN: URL menggunakan layanan pemendek yang menyembunyikan domain asli. Setelah dibuka: '{unshortened[:100]}'. Domain asli: '{final_domain}'. Pastikan domain tujuan aman sebelum mengklik."})
+        else:
+            details.append({"step": "URL Shortener Unwrap", "finding": f"URL menggunakan layanan pemendek. Setelah dibuka menuju: '{unshortened[:100]}'. Domain tujuan konsisten."})
 
 
     # Domain Patterns
@@ -967,6 +1088,103 @@ def analyze_link(target_url):
 
                 if len(external_links) > 20:
                     details.append({"step": "Analisis Link Eksternal", "finding": f"Halaman memiliki {len(external_links)} link ke domain eksternal. Volume tinggi bisa mengindikasikan situs spam/link farm."})
+
+                # ── PHISHING KIT FINGERPRINTING ─────────────────────────────────────
+                phishing_kit_score = 0
+                phishing_kit_flags = []
+
+                # 1. Telegram Bot webhook (data dikirim ke Telegram)
+                if 'api.telegram.org/bot' in html_content:
+                    phishing_kit_score += 40
+                    phishing_kit_flags.append("Telegram Bot webhook terdeteksi — data korban dikirim ke akun Telegram penyerang")
+
+                # 2. Anti-bot / Anti-inspect tricks
+                if 'document.oncontextmenu' in html_content or 'event.preventDefault' in html_content:
+                    if 'F12' in html_content or 'DevTools' in html_content or 'inspect' in html_content.lower():
+                        phishing_kit_score += 25
+                        phishing_kit_flags.append("Anti-DevTools/anti-inspect JavaScript terdeteksi — ciri khas kit phishing")
+
+                # 3. Obfuscated JS (base64 eval)
+                if re.search(r'eval\s*\(\s*atob\s*\(', html_content) or re.search(r'eval\s*\(\s*unescape\s*\(', html_content):
+                    phishing_kit_score += 35
+                    phishing_kit_flags.append("JavaScript obfuscation (eval+atob/unescape) terdeteksi — kode disembunyikan agar sulit dianalisis")
+
+                # 4. Open redirect param in forms
+                if re.search(r'[?&](redirect|return|next|goto|url|redir|returnurl)=', html_content, re.IGNORECASE):
+                    phishing_kit_score += 20
+                    phishing_kit_flags.append("Parameter open redirect terdeteksi dalam konten halaman")
+
+                # 5. Fake OTP/Verification overlay pattern
+                otp_patterns = ['masukkan otp', 'kode verifikasi', 'one time password', 'masukkan pin', 'enter otp', 'verification code']
+                if any(p in html_content.lower() for p in otp_patterns):
+                    phishing_kit_score += 30
+                    phishing_kit_flags.append("Formulir OTP/PIN terdeteksi — pola umum pencurian kode verifikasi perbankan")
+
+                # 6. Credential harvest via PHP mailer
+                if re.search(r'mail\s*\(.*?\$_(POST|GET|REQUEST)', html_content) or 'sendmail' in html_content.lower():
+                    phishing_kit_score += 30
+                    phishing_kit_flags.append("Pola PHP mailer untuk harvest credential terdeteksi")
+
+                if phishing_kit_flags:
+                    risk_score += phishing_kit_score
+                    domain_info['phishing_kit_flags'] = phishing_kit_flags
+                    details.append({"step": "Phishing Kit Fingerprint [T1566.002]", "finding": f"KRITIS: Terdeteksi {len(phishing_kit_flags)} indikator phishing kit aktif. Flags: {' | '.join(phishing_kit_flags[:3])}."})
+
+                # ── CONTENT INTENT ANALYSIS (Indonesian-focused) ─────────────────────
+                page_text = soup.get_text(separator=' ', strip=True).lower()
+                intent_score = 0
+                intent_flags = []
+
+                # Urgency/pressure tactics
+                urgency_kw = ['segera', 'sekarang juga', 'dalam 24 jam', 'akun diblokir', 'akun anda dibekukan',
+                              'verifikasi sekarang', 'konfirmasi segera', 'jangan abaikan', 'terakhir kali',
+                              'limited time', 'expires soon', 'act now', 'immediately']
+                found_urgency = [kw for kw in urgency_kw if kw in page_text]
+                if found_urgency:
+                    intent_score += 15
+                    intent_flags.append(f"Kata urgensi/tekanan psikologis: '{', '.join(found_urgency[:3])}'")
+
+                # Prize/lottery scam
+                prize_kw = ['selamat menang', 'anda terpilih', 'klaim hadiah', 'klik untuk klaim',
+                            'congratulations you won', 'claim your prize', 'you have been selected',
+                            'hadiah menanti', 'bonus anda']
+                found_prize = [kw for kw in prize_kw if kw in page_text]
+                if found_prize:
+                    intent_score += 25
+                    intent_flags.append(f"Pola penipuan hadiah/lotre: '{', '.join(found_prize[:2])}'")
+
+                # Credential request phrases
+                cred_kw = ['masukkan nomor rekening', 'masukkan kata sandi', 'masukkan pin atm',
+                           'nomor kartu kredit', 'cvv', 'no rekening', 'kode otp', 'enter your password',
+                           'enter card number', 'social security', 'enter pin']
+                found_cred = [kw for kw in cred_kw if kw in page_text]
+                if found_cred:
+                    intent_score += 20
+                    intent_flags.append(f"Permintaan data sensitif secara eksplisit: '{', '.join(found_cred[:2])}'")
+
+                if intent_flags:
+                    risk_score += intent_score
+                    domain_info['content_intent_flags'] = intent_flags
+                    details.append({"step": "Content Intent Analysis", "finding": f"PERINGATAN: Analisis konten mendeteksi pola manipulatif. Temuan: {' | '.join(intent_flags[:2])}."})
+
+                # ── OPEN REDIRECT DETECTION ──────────────────────────────────────────
+                full_url_lower = target_url.lower()
+                redirect_params = ['?url=', '?redirect=', '?next=', '?goto=', '?returnurl=', '?redir=', '?return=', '?link=']
+                for rp in redirect_params:
+                    if rp in full_url_lower:
+                        try:
+                            from urllib.parse import parse_qs, unquote
+                            qs = parse_qs(urlparse(target_url).query)
+                            param_name = rp.strip('?').strip('=')
+                            for key, vals in qs.items():
+                                if key.lower() in ['url', 'redirect', 'next', 'goto', 'returnurl', 'redir', 'return', 'link']:
+                                    redir_val = unquote(vals[0])
+                                    if redir_val.startswith('http') and root_domain not in urlparse(redir_val).netloc:
+                                        risk_score += 35
+                                        details.append({"step": "Open Redirect [T1027.005]", "finding": f"BAHAYA: URL mengandung parameter open redirect '?{key}=' yang mengarahkan ke domain eksternal: '{urlparse(redir_val).netloc}'. Taktik ini digunakan untuk menipu pengguna."})
+                        except Exception:
+                            pass
+                        break
                     
 
             # Check Set-Cookie headers for backend frameworks
