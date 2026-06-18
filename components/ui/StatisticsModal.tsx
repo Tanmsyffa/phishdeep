@@ -87,8 +87,8 @@ export default function StatisticsModal({ isOpen, onClose, stats }: StatisticsMo
               <BarChart2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-gray-900 dark:text-white">Statistik Lengkap</h2>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400">Semua aktivitas scan Anda</p>
+              <h2 className="text-sm font-bold text-gray-900 dark:text-white">Statistik Komunitas</h2>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400">Data scan dari semua pengguna PhishDeep</p>
             </div>
           </div>
           <button

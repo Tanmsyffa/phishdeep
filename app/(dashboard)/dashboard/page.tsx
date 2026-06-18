@@ -23,7 +23,8 @@ function getGreeting() {
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [scans, setScans] = useState<any[]>([]);
-  const [allScans, setAllScans] = useState<any[]>([]);
+  const [allScans, setAllScans] = useState<any[]>([]); // user's all-time scans
+  const [globalScans, setGlobalScans] = useState<any[]>([]); // ALL users scans (for modal)
   const [trendData, setTrendData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -44,17 +45,22 @@ export default function DashboardPage() {
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
 
-      const [weekRes, allRes] = await Promise.all([
+      const [weekRes, allRes, globalRes] = await Promise.all([
+        // 7-day scans for this user (for trend chart)
         supabase.from('scans').select('*').eq('user_id', user.id)
           .gte('created_at', sevenDaysAgo.toISOString()).order('created_at', { ascending: false }),
-        supabase.from('scans').select('*').eq('user_id', user.id)
-          .neq('status', 'deleted').order('created_at', { ascending: false }),
+        // All-time scans for this user only (for user's own stats in dashboard)
+        supabase.from('scans').select('risk_score, target_type').eq('user_id', user.id)
+          .neq('status', 'deleted'),
+        // All-time scans from ALL users (for global statistics modal)
+        supabase.from('scans').select('risk_score, target_type, target_url, created_at').neq('status', 'deleted'),
       ]);
 
       const weekScans = weekRes.data ?? [];
-      const todayScans = weekScans.filter(s => new Date(s.created_at) >= todayStart && s.status !== 'deleted');
+      const todayScans = weekScans.filter((s: any) => new Date(s.created_at) >= todayStart && s.status !== 'deleted');
       setScans(todayScans);
       setAllScans(allRes.data ?? []);
+      setGlobalScans(globalRes.data ?? []);
 
       // Build 7-day trend
       const trend = [];
@@ -70,9 +76,9 @@ export default function DashboardPage() {
       setTrendData(trend);
       setLoading(false);
 
-      // Show modal once per session
+      // Show modal once per session (only if user has scans or global has scans)
       const seen = sessionStorage.getItem('stats_modal_seen');
-      if (!seen && (allRes.data?.length ?? 0) > 0) {
+      if (!seen && (globalRes.data?.length ?? 0) > 0) {
         setTimeout(() => {
           setShowModal(true);
           sessionStorage.setItem('stats_modal_seen', '1');
@@ -93,6 +99,7 @@ export default function DashboardPage() {
     };
   });
 
+  // User-specific stats (for dashboard cards and charts)
   const allTotal = allScans.length;
   const allDangerous = allScans.filter(s => s.risk_score > 70).length;
   const allSuspicious = allScans.filter(s => s.risk_score > 30 && s.risk_score <= 70).length;
@@ -100,6 +107,15 @@ export default function DashboardPage() {
   const allLink = allScans.filter(s => s.target_type === 'Link').length;
   const allApk = allScans.filter(s => s.target_type === 'APK').length;
   const avgRisk = allTotal > 0 ? allScans.reduce((sum, s) => sum + s.risk_score, 0) / allTotal : 0;
+
+  // Global stats (for statistics modal — all users)
+  const globalTotal = globalScans.length;
+  const globalDangerous = globalScans.filter(s => s.risk_score > 70).length;
+  const globalSuspicious = globalScans.filter(s => s.risk_score > 30 && s.risk_score <= 70).length;
+  const globalSafe = globalScans.filter(s => s.risk_score <= 30).length;
+  const globalLink = globalScans.filter(s => s.target_type === 'Link').length;
+  const globalApk = globalScans.filter(s => s.target_type === 'APK').length;
+  const globalAvgRisk = globalTotal > 0 ? globalScans.reduce((sum, s) => sum + s.risk_score, 0) / globalTotal : 0;
 
   const categories = [
     { type: 'Link', title: 'Statistik Link', icon: <LinkIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />, bg: 'bg-blue-50 dark:bg-blue-900/20' },
@@ -337,22 +353,22 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 p-5 rounded-2xl text-white">
-            <h3 className="font-bold mb-1 text-sm">Mulai Scan Baru</h3>
-            <p className="text-xs text-blue-200 mb-4 leading-relaxed">Analisis link atau APK mencurigakan sekarang.</p>
-            <Link href="/scan" className="block text-center bg-white text-blue-700 font-bold py-2 px-4 rounded-xl text-sm hover:bg-blue-50 transition-colors">
+        <div>
+          <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
+            <h3 className="font-bold mb-1 text-sm text-gray-900 dark:text-white">Mulai Scan Baru</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Analisis link atau APK mencurigakan sekarang.</p>
+            <Link href="/scan" className="block text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl text-sm transition-colors">
               Scan Sekarang →
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Statistics Modal */}
+      {/* Statistics Modal — uses GLOBAL data (all users) */}
       <StatisticsModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        stats={{ total: allTotal, dangerous: allDangerous, suspicious: allSuspicious, safe: allSafe, linkCount: allLink, apkCount: allApk, avgRisk }}
+        stats={{ total: globalTotal, dangerous: globalDangerous, suspicious: globalSuspicious, safe: globalSafe, linkCount: globalLink, apkCount: globalApk, avgRisk: globalAvgRisk }}
       />
     </div>
   );
