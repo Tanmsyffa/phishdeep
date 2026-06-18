@@ -1067,7 +1067,19 @@ def analyze_link(target_url):
     except Exception as e:
         details.append({"step": "Koneksi Jaringan", "finding": f"Gagal menganalisis situs: {str(e)[:200]}"})
     encoded = quote(target_url, safe='')
-    screenshot_url = f"https://api.microlink.io/?url={encoded}&screenshot=true&meta=false&embed=screenshot.url"
+    screenshot_url = ""
+    try:
+        import requests as req_lib
+        ml_api = f"https://api.microlink.io/?url={encoded}&screenshot=true&meta=false"
+        ml_resp = req_lib.get(ml_api, timeout=12)
+        if ml_resp.status_code == 200:
+            ml_data = ml_resp.json()
+            if ml_data.get("status") == "success":
+                sc_url = ml_data.get("data", {}).get("screenshot", {}).get("url", "")
+                if sc_url:
+                    screenshot_url = sc_url
+    except Exception:
+        pass  # Screenshot is optional, don't fail the scan
     
     # Final max bounds for score
     final_score = max(0, min(100, risk_score))

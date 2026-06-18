@@ -466,7 +466,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                   </div>
                   {/* Image Container */}
                   <div className="bg-white dark:bg-slate-900">
-                    <ScreenshotImage src={screenshotUrl} />
+                    <ScreenshotImage src={screenshotUrl} targetUrl={scan.target_url} />
                   </div>
                 </div>
               </div>
