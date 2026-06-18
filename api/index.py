@@ -131,7 +131,7 @@ def check_virustotal(url: str) -> dict:
     """Check URL against VirusTotal API."""
     api_key = os.environ.get('VIRUSTOTAL_API_KEY')
     if not api_key:
-        return {'error': 'VIRUSTOTAL_API_KEY belum dikonfigurasi di environment'}
+        return {}
     try:
         import base64
         import urllib.parse
@@ -161,16 +161,12 @@ def check_virustotal(url: str) -> dict:
                 )
                 urllib.request.urlopen(post_req, timeout=6)
                 return {'error': 'URL baru saja dikirim ke VirusTotal untuk dianalisis. Hasil belum tersedia saat ini (Coba scan ulang beberapa menit lagi).'}
-            except Exception as post_e:
-                return {'error': f'Gagal mengirim URL ke VirusTotal: {str(post_e)}'}
-                
-        elif e.code == 401:
-            return {'error': 'API Key VirusTotal tidak valid'}
-        elif e.code == 429:
-            return {'error': 'Limit API VirusTotal tercapai (Rate Limit)'}
-        return {'error': f'HTTP Error {e.code}'}
-    except Exception as e:
-        return {'error': str(e)}
+            except Exception:
+                return {}
+        # Silently fail for other HTTP errors (401, 429) to avoid showing config issues to end users
+        return {}
+    except Exception:
+        return {}
 
 
 # Known URL shortener domains
