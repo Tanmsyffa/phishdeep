@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { LinkIcon, Smartphone, FileSearch, Image as ImageIcon, ShieldAlert, Loader2, RefreshCw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { checkScanLimit, saveScanResult } from "./actions";
 import { createClient } from "@/lib/supabase/client";
 
-export default function NewScanPage() {
+function ScanForm() {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState("link");
   const [url, setUrl] = useState("");
@@ -276,5 +276,18 @@ export default function NewScanPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NewScanPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center p-12 text-gray-500">
+        <Loader2 className="w-8 h-8 animate-spin text-primary-500 mr-2" />
+        Memuat...
+      </div>
+    }>
+      <ScanForm />
+    </Suspense>
   );
 }
