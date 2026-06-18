@@ -39,7 +39,7 @@ export default function HelpPage() {
       </div>
 
       {/* Quick Tips */}
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 dark:border-blue-800 rounded-2xl p-5 sm:p-6">
+      <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-2xl p-5 sm:p-6">
         <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm sm:text-base">Panduan Cepat</h3>
         <div className="space-y-3">
           {[

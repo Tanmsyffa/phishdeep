@@ -111,38 +111,41 @@ export default function DashboardPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-5 sm:space-y-6">
       {/* Welcome Card */}
-      <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 rounded-2xl p-5 sm:p-6 text-white shadow-lg shadow-blue-500/20 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
+        {/* Avatar */}
         <div className="shrink-0">
           {user?.user_metadata?.avatar_url ? (
             <img
               src={user.user_metadata.avatar_url}
               alt="Profile"
-              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-3 border-white/30 shadow-md"
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-gray-100 dark:border-slate-700 shadow-sm"
             />
           ) : (
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/20 flex items-center justify-center font-bold text-2xl sm:text-3xl border-2 border-white/30 shadow-md">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-2xl sm:text-3xl shadow-sm">
               {(user?.user_metadata?.full_name || user?.email || 'U')[0]?.toUpperCase()}
             </div>
           )}
         </div>
+        {/* Text */}
         <div className="flex-1 min-w-0">
-          <p className="text-blue-200 text-xs sm:text-sm font-medium">{getGreeting()},</p>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white leading-tight truncate">
+          <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium mb-0.5">{getGreeting()},</p>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white leading-tight truncate">
             {user?.user_metadata?.full_name || 'Pengguna'}
           </h1>
-          <p className="text-blue-200 text-xs sm:text-sm mt-1">
-            Berikut ringkasan aktivitas scan Anda hari ini — {todayScanCount > 0 ? `${todayScanCount} scan telah dilakukan.` : 'belum ada scan hari ini.'}
+          <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-1">
+            {todayScanCount > 0 ? `${todayScanCount} scan telah dilakukan hari ini.` : 'Belum ada scan hari ini. Mulai scan sekarang!'}
           </p>
         </div>
+        {/* Button */}
         <button
           onClick={() => setShowModal(true)}
-          className="shrink-0 flex items-center gap-2 bg-white/15 hover:bg-white/25 border border-white/30 text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl transition-all backdrop-blur-sm"
+          className="shrink-0 flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl transition-all"
         >
           <BarChart2 className="w-4 h-4" />
-          <span className="hidden xs:inline">Lihat Statistik</span>
-          <span className="xs:hidden">Statistik</span>
+          Lihat Statistik
         </button>
       </div>
+
 
       {/* Stats Cards grouped by Type */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
