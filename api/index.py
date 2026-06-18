@@ -134,6 +134,7 @@ def check_virustotal(url: str) -> dict:
         return {'error': 'VIRUSTOTAL_API_KEY belum dikonfigurasi di environment'}
     try:
         import base64
+        import urllib.parse
         # VirusTotal v3 requires urlsafe base64 without padding for URL ID
         url_id = base64.urlsafe_b64encode(url.encode('utf-8')).decode('utf-8').strip("=")
         req = urllib.request.Request(
@@ -145,7 +146,24 @@ def check_virustotal(url: str) -> dict:
         return data.get('data', {}).get('attributes', {}).get('last_analysis_stats', {})
     except urllib.error.HTTPError as e:
         if e.code == 404:
-            return {'error': 'URL belum pernah di-scan oleh VirusTotal'}
+            # URL not found in VT, so let's submit it for scanning!
+            try:
+                post_data = urllib.parse.urlencode({'url': url}).encode('utf-8')
+                post_req = urllib.request.Request(
+                    'https://www.virustotal.com/api/v3/urls',
+                    data=post_data,
+                    headers={
+                        'x-apikey': api_key, 
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    method='POST'
+                )
+                urllib.request.urlopen(post_req, timeout=6)
+                return {'error': 'URL baru saja dikirim ke VirusTotal untuk dianalisis. Hasil belum tersedia saat ini (Coba scan ulang beberapa menit lagi).'}
+            except Exception as post_e:
+                return {'error': f'Gagal mengirim URL ke VirusTotal: {str(post_e)}'}
+                
         elif e.code == 401:
             return {'error': 'API Key VirusTotal tidak valid'}
         elif e.code == 429:
