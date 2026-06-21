@@ -207,9 +207,27 @@ export default async function ScanResultPage({ params, searchParams }: { params:
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 print:grid-cols-2 print:break-inside-avoid">
             {/* Domain / WHOIS Box */}
             {Object.keys(domainInfo).length > 0 && (
-              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 print:border-gray-300 print:shadow-none print:break-inside-avoid col-span-full">
-                <h3 className="font-bold text-gray-900 dark:text-white mb-3 text-sm flex items-center gap-2"><Globe className="w-4 h-4 text-primary-500" /> Informasi Domain (RDAP & OSINT)</h3>
+              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 print:border-none print:shadow-none print:p-0 print:mb-4 col-span-full">
+                <h3 className="font-bold text-gray-900 dark:text-white mb-3 text-sm flex items-center gap-2 print:border-b print:border-gray-300 print:pb-1 print:mb-2 print:text-base"><Globe className="w-4 h-4 text-primary-500 print:hidden" /> Informasi Domain (RDAP & OSINT)</h3>
 
+                {/* --- PRINT ONLY: Simple List Format --- */}
+                <div className="hidden print:block text-xs text-black leading-relaxed">
+                  <ul className="columns-2 space-y-1 list-none">
+                    {domainInfo.domain && <li><strong>Domain:</strong> {domainInfo.domain}</li>}
+                    {domainInfo.ip_address && <li><strong>IP Server:</strong> {domainInfo.ip_address}</li>}
+                    {domainInfo.registrar && <li><strong>Registrar:</strong> {domainInfo.registrar}</li>}
+                    {domainInfo.age_days != null && <li><strong>Umur:</strong> {domainInfo.age_days < 365 ? `${domainInfo.age_days} hari` : `${(domainInfo.age_days/365).toFixed(1)} tahun`}</li>}
+                    {domainInfo.creation_date && <li><strong>Terdaftar:</strong> {domainInfo.creation_date}</li>}
+                    {domainInfo.expiry_date && domainInfo.expiry_date !== 'Unknown' && <li><strong>Kadaluarsa:</strong> {domainInfo.expiry_date}</li>}
+                    {domainInfo.ssl_issuer && domainInfo.ssl_issuer !== 'Unknown' && <li><strong>SSL Issuer:</strong> {domainInfo.ssl_issuer}</li>}
+                    {domainInfo.geo_country && <li><strong>Lokasi:</strong> {domainInfo.geo_city}, {domainInfo.geo_country} {domainInfo.geo_isp ? `(${domainInfo.geo_isp})` : ''}</li>}
+                    {domainInfo.urlscan_total !== undefined && <li><strong>URLScan.io:</strong> {domainInfo.urlscan_malicious > 0 ? `${domainInfo.urlscan_malicious} Berbahaya` : 'Bersih'}</li>}
+                    {domainInfo.virustotal_malicious !== undefined && <li><strong>VirusTotal:</strong> {domainInfo.virustotal_malicious} Malicious, {domainInfo.virustotal_suspicious} Suspicious</li>}
+                    {domainInfo.abuseipdb_score !== undefined && <li><strong>AbuseIPDB Score:</strong> {domainInfo.abuseipdb_score}% ({domainInfo.abuseipdb_reports} laporan)</li>}
+                  </ul>
+                </div>
+
+                <div className="print:hidden">
                 {/* Row 1 — Identity */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
                   <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
@@ -445,15 +463,22 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     </a>
                   )}
                 </div>
+                </div>
               </div>
             )}
 
 
             {/* Framework Box */}
             {frameworks.length > 0 && (
-              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 print:border-gray-300 print:shadow-none">
-                <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm flex items-center gap-2"><Server className="w-4 h-4 text-primary-500" /> Teknologi & Stack</h3>
-                <div className="flex flex-wrap gap-2">
+              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 print:border-none print:shadow-none print:p-0 print:mb-4">
+                <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm flex items-center gap-2 print:border-b print:border-gray-300 print:pb-1 print:mb-2 print:text-base"><Server className="w-4 h-4 text-primary-500 print:hidden" /> Teknologi & Stack</h3>
+                
+                {/* --- PRINT ONLY --- */}
+                <div className="hidden print:block text-xs text-black leading-relaxed">
+                  <p>{frameworks.map((fw: string) => fw.replace('PERINGATAN - HEADER TIDAK ADA:', 'Warning Missing Header:')).join(', ')}</p>
+                </div>
+
+                <div className="flex flex-wrap gap-2 print:hidden">
                   {frameworks.map((fw: string, idx: number) => {
                     const colonIdx = fw.indexOf(':');
                     const isColon = colonIdx > -1;
@@ -484,9 +509,19 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
           {/* Redirect Chain */}
           {redirectChain.length > 0 && (
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 print:border-gray-300 print:shadow-none print:break-inside-avoid">
-              <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm flex items-center gap-2"><LinkIcon className="w-4 h-4 text-primary-500" /> Jejak Redirect (Redirect Chain)</h3>
-              <div className="relative pl-4 space-y-4 before:absolute before:inset-y-0 before:left-[11px] before:w-0.5 before:bg-gray-200 dark:before:bg-slate-700">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 print:border-none print:shadow-none print:p-0 print:mb-4 print:break-inside-avoid">
+              <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm flex items-center gap-2 print:border-b print:border-gray-300 print:pb-1 print:mb-2 print:text-base"><LinkIcon className="w-4 h-4 text-primary-500 print:hidden" /> Jejak Redirect (Redirect Chain)</h3>
+              
+              {/* --- PRINT ONLY --- */}
+              <div className="hidden print:block text-xs text-black leading-relaxed font-mono">
+                <ol className="list-decimal list-inside space-y-1">
+                  {redirectChain.map((url: string, idx: number) => (
+                    <li key={idx} className="break-all">{url}</li>
+                  ))}
+                </ol>
+              </div>
+
+              <div className="relative pl-4 space-y-4 before:absolute before:inset-y-0 before:left-[11px] before:w-0.5 before:bg-gray-200 dark:before:bg-slate-700 print:hidden">
                 {redirectChain.map((url: string, idx: number) => (
                   <div key={idx} className="relative flex items-center gap-3">
                     <div className="absolute -left-4 w-2.5 h-2.5 rounded-full bg-primary-500 ring-4 ring-white print:ring-0"></div>
@@ -532,16 +567,37 @@ export default async function ScanResultPage({ params, searchParams }: { params:
           )}
 
           {/* Details Log Section */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden print:border-gray-300 print:shadow-none print:break-inside-avoid">
-            <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 print:bg-white dark:bg-slate-900">
-              <h2 className="font-bold text-gray-900 dark:text-white text-sm flex items-center gap-2">
-                <ShieldAlert className="w-4 h-4 text-primary-500" /> Log Audit Keamanan
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden print:border-none print:shadow-none print:break-inside-avoid">
+            <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 print:border-b print:border-gray-300 print:bg-white print:p-0 print:pb-1 print:mb-2">
+              <h2 className="font-bold text-gray-900 dark:text-white text-sm flex items-center gap-2 print:text-base">
+                <ShieldAlert className="w-4 h-4 text-primary-500 print:hidden" /> Log Audit Keamanan
               </h2>
             </div>
             
-            <div className="p-4 sm:p-5">
+            {/* --- PRINT ONLY --- */}
+            <div className="hidden print:block text-xs text-black leading-relaxed mb-4">
               {details.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2">
+                <ol className="list-decimal list-inside space-y-1.5">
+                  {details.map((item: any, idx: number) => {
+                    const tagMatch = item.step.match(/\[([A-Z0-9.:-]+)\]/);
+                    const tag = tagMatch ? tagMatch[1] : null;
+                    const cleanStep = item.step.replace(/\[([A-Z0-9.:-]+)\]/, '').trim();
+                    return (
+                      <li key={idx} className="break-inside-avoid">
+                        <strong>{cleanStep}</strong> {tag && <span className="text-[10px] ml-1">({tag})</span>}
+                        <div className="ml-4 mt-0.5 text-[11px] text-gray-800">{item.finding}</div>
+                      </li>
+                    )
+                  })}
+                </ol>
+              ) : (
+                <p>Tidak ada detail langkah analisis yang tersedia.</p>
+              )}
+            </div>
+
+            <div className="p-4 sm:p-5 print:hidden">
+              {details.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {details.map((item: any, idx: number) => {
                     // Extract MITRE ATT&CK tag if present (e.g., [T1566] or [T1566.002])
                     const tagMatch = item.step.match(/\[([A-Z0-9.:-]+)\]/);
