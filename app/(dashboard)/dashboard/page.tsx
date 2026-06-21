@@ -45,22 +45,24 @@ export default function DashboardPage() {
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
 
-      const [weekRes, allRes, globalRes] = await Promise.all([
+      const [weekRes, allRes, globalStatsRes] = await Promise.all([
         // 7-day scans for this user (for trend chart)
         supabase.from('scans').select('*').eq('user_id', user.id)
           .gte('created_at', sevenDaysAgo.toISOString()).order('created_at', { ascending: false }),
         // All-time scans for this user only (for user's own stats in dashboard)
         supabase.from('scans').select('risk_score, target_type').eq('user_id', user.id)
           .neq('status', 'deleted'),
-        // All-time scans from ALL users (requires public_stats view to bypass RLS)
-        supabase.from('public_stats').select('risk_score, target_type, target_url, created_at')
+        // All-time scans from ALL users (requires get_public_stats RPC to bypass RLS)
+        supabase.rpc('get_public_stats')
       ]);
 
-      let globalData = globalRes.data;
-      if (globalRes.error) {
-        // Fallback if public_stats view does not exist yet
+      let globalData = [];
+      if (globalStatsRes.error) {
+        // Fallback if RPC does not exist yet
         const fallbackRes = await supabase.from('scans').select('risk_score, target_type, target_url, created_at').neq('status', 'deleted');
-        globalData = fallbackRes.data;
+        globalData = fallbackRes.data || [];
+      } else {
+        globalData = globalStatsRes.data || [];
       }
 
       const weekScans = weekRes.data ?? [];
