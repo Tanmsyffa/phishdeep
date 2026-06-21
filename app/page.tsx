@@ -49,40 +49,86 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="lg:w-1/2 relative">
-                <div className="relative w-full max-w-[600px] mx-auto aspect-[4/3] bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-gray-200 dark:border-slate-700 overflow-hidden">
-                  {/* Browser Mockup */}
-                  <div className="h-10 bg-gray-100 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 flex items-center px-4 gap-2">
-                    <div className="flex gap-1.5">
-                      <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                      <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-                      <div className="w-3 h-3 rounded-full bg-green-400"></div>
+              {/* Browser Mockup - Hidden on Mobile */}
+              <div className="hidden lg:block lg:w-1/2 relative z-10 w-full pl-6">
+                {/* Decorative glow behind mockup */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary-500/20 blur-[100px] -z-10 rounded-full pointer-events-none"></div>
+
+                <div className="relative w-full max-w-[550px] mx-auto bg-slate-900 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-700/50 overflow-hidden group">
+                  
+                  {/* Glassmorphism Browser Top Bar */}
+                  <div className="h-12 bg-slate-800/80 backdrop-blur-md border-b border-slate-700/80 flex items-center px-4 gap-3 relative z-20">
+                    <div className="flex gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+                      <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                      <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
                     </div>
-                    <div className="mx-auto bg-white dark:bg-slate-900 text-xs text-gray-500 dark:text-gray-400 px-4 py-1 rounded-md border border-gray-200 dark:border-slate-700 flex items-center gap-2 w-2/3 truncate">
-                      <span className="text-green-600 dark:text-green-400">🔒</span> https://secure-login-banking.com/login
+                    <div className="mx-auto bg-slate-950/50 text-[11px] text-slate-400 font-mono px-6 py-1.5 rounded-full border border-slate-700/50 flex items-center gap-2 w-3/4 truncate shadow-inner">
+                      <span className="text-red-400">🔓 Not Secure</span> <span className="opacity-30">|</span> https://secure-bca-update.com/login
                     </div>
                   </div>
-                  <div className="p-8 bg-gray-50 dark:bg-slate-800 h-full">
-                    <div className="bg-primary-900 text-white p-4 rounded-t-lg font-bold flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 bg-blue-500 rounded flex items-center justify-center text-xs">B</div>
-                        <span>BANK XYZ</span>
+
+                  {/* Phishing Page Content */}
+                  <div className="relative h-[400px] bg-[#f8fafc] dark:bg-slate-950 flex flex-col items-center pt-8 overflow-hidden">
+                    {/* Fake Bank UI */}
+                    <div className="w-[320px] bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-800 overflow-hidden relative z-10 opacity-70 grayscale-[20%] blur-[0.5px] group-hover:blur-none group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
+                      <div className="bg-blue-600 p-6 text-center">
+                        <div className="w-12 h-12 bg-white rounded-full mx-auto mb-3 flex items-center justify-center text-blue-600 font-black text-2xl shadow-inner">B</div>
+                        <h2 className="text-white font-bold text-lg">Bank Central</h2>
                       </div>
-                      <span className="text-sm font-normal text-gray-300">Internet Banking</span>
-                    </div>
-                    <div className="bg-white dark:bg-slate-900 p-8 border border-gray-200 dark:border-slate-700 rounded-b-lg shadow-sm">
-                      <h3 className="font-bold mb-4">Login ke Internet Banking</h3>
-                      <div className="space-y-4">
-                        <div className="h-10 border border-gray-300 rounded px-3 flex items-center text-sm text-gray-400 dark:text-gray-500">Email atau Username</div>
-                        <div className="h-10 border border-gray-300 rounded px-3 flex items-center text-sm text-gray-400 dark:text-gray-500">Password</div>
-                        <div className="h-10 bg-primary-900 rounded flex items-center justify-center text-white font-medium">Masuk</div>
+                      <div className="p-6 space-y-4">
+                        <div className="space-y-1.5">
+                          <div className="h-3.5 w-20 bg-gray-200 dark:bg-slate-700 rounded-sm"></div>
+                          <div className="h-10 border border-gray-300 dark:border-slate-700 rounded-lg bg-gray-50 dark:bg-slate-800/50"></div>
+                        </div>
+                        <div className="space-y-1.5">
+                          <div className="h-3.5 w-16 bg-gray-200 dark:bg-slate-700 rounded-sm"></div>
+                          <div className="h-10 border border-gray-300 dark:border-slate-700 rounded-lg bg-gray-50 dark:bg-slate-800/50"></div>
+                        </div>
+                        <div className="h-10 bg-blue-600 rounded-lg mt-6 shadow-md shadow-blue-600/20"></div>
                       </div>
                     </div>
-                    
-                    {/* The Red Box Evidence Simulation */}
-                    <div className="absolute top-[35%] left-[10%] right-[10%] bottom-[10%] border-2 md:border-4 border-red-500 border-dashed rounded bg-red-500/10 dark:bg-red-500/20 animate-pulse"></div>
-                    <div className="absolute top-[50%] left-1/2 md:left-auto md:right-4 -translate-x-1/2 md:translate-x-0 -translate-y-1/2 bg-red-600 text-white text-[10px] md:text-xs font-bold px-3 py-2 rounded shadow-lg flex flex-col md:flex-row items-center gap-1 md:gap-2 z-10 w-max max-w-[90%] text-center md:text-left">
-                       <span>Form Login Palsu</span> <span className="font-normal opacity-90">(Masukkan data)</span>
+
+                    {/* Threat Detection Overlay (The Red Box) */}
+                    <div className="absolute top-[12%] left-1/2 -translate-x-1/2 w-[360px] h-[320px] border-2 border-red-500 bg-red-500/10 rounded-xl z-30 pointer-events-none">
+                      
+                      {/* Scanning Line Animation */}
+                      <style dangerouslySetInnerHTML={{__html: `
+                        @keyframes scanLine {
+                          0% { top: 0%; opacity: 0; }
+                          10% { opacity: 1; }
+                          90% { opacity: 1; }
+                          100% { top: 100%; opacity: 0; }
+                        }
+                        .animate-scan {
+                          animation: scanLine 3s ease-in-out infinite;
+                        }
+                      `}} />
+                      <div className="absolute top-0 left-0 right-0 h-0.5 bg-red-500 shadow-[0_0_15px_rgba(239,68,68,1)] animate-scan"></div>
+                      
+                      {/* Corner Accents */}
+                      <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-red-500"></div>
+                      <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-red-500"></div>
+                      <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-red-500"></div>
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-red-500"></div>
+
+                      {/* Tooltip Badge */}
+                      <div className="absolute -right-8 top-12 bg-slate-900/95 backdrop-blur-sm border border-red-500/50 text-white p-3.5 rounded-xl shadow-2xl">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <div className="w-2 h-2 rounded-full bg-red-500 animate-ping"></div>
+                          <span className="text-red-400 font-bold text-[10px] uppercase tracking-widest">Phishing Terdeteksi</span>
+                        </div>
+                        <p className="text-[11px] text-slate-300 max-w-[150px] leading-relaxed">Form login palsu untuk mencuri kredensial.</p>
+                      </div>
+
+                      {/* Secondary Badge */}
+                      <div className="absolute -left-4 bottom-16 bg-slate-900/95 backdrop-blur-sm border border-yellow-500/50 text-white p-3 rounded-xl shadow-2xl">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-yellow-400 font-bold text-[10px] uppercase tracking-widest">Domain Bahaya</span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 max-w-[120px]">Umur domain: 2 hari</p>
+                      </div>
+
                     </div>
                   </div>
                 </div>
