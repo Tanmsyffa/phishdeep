@@ -52,15 +52,22 @@ export default function DashboardPage() {
         // All-time scans for this user only (for user's own stats in dashboard)
         supabase.from('scans').select('risk_score, target_type').eq('user_id', user.id)
           .neq('status', 'deleted'),
-        // All-time scans from ALL users (for global statistics modal)
-        supabase.from('scans').select('risk_score, target_type, target_url, created_at').neq('status', 'deleted'),
+        // All-time scans from ALL users (requires public_stats view to bypass RLS)
+        supabase.from('public_stats').select('risk_score, target_type, target_url, created_at')
       ]);
+
+      let globalData = globalRes.data;
+      if (globalRes.error) {
+        // Fallback if public_stats view does not exist yet
+        const fallbackRes = await supabase.from('scans').select('risk_score, target_type, target_url, created_at').neq('status', 'deleted');
+        globalData = fallbackRes.data;
+      }
 
       const weekScans = weekRes.data ?? [];
       const todayScans = weekScans.filter((s: any) => new Date(s.created_at) >= todayStart && s.status !== 'deleted');
       setScans(todayScans);
       setAllScans(allRes.data ?? []);
-      setGlobalScans(globalRes.data ?? []);
+      setGlobalScans(globalData ?? []);
 
       // Build 7-day trend
       const trend = [];
@@ -273,10 +280,10 @@ export default function DashboardPage() {
             )}
           </div>
           <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
-            <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm">Sebaran Target (7 Hari)</h3>
+            <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm">Sebaran Target (Hari Ini)</h3>
             {(() => {
-              const linkCount = allScans.filter(s => s.target_type === 'Link').length;
-              const apkCount = allScans.filter(s => s.target_type === 'APK').length;
+              const linkCount = scans.filter(s => s.target_type === 'Link').length;
+              const apkCount = scans.filter(s => s.target_type === 'APK').length;
               const total = linkCount + apkCount;
               return (
                 <>
