@@ -16,8 +16,8 @@ export default function DeleteScanButton({ id }: { id: string }) {
       await deleteScan(id)
       setIsDeleting(false)
       setConfirming(false)
-    } catch (e) {
-      setErrorMsg("Gagal dihapus")
+    } catch (e: any) {
+      setErrorMsg(e.message || "Gagal dihapus")
       setIsDeleting(false)
       setTimeout(() => setErrorMsg(""), 3000)
     }
