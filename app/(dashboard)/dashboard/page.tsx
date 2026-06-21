@@ -52,13 +52,13 @@ export default function DashboardPage() {
         // All-time scans for this user only (for user's own stats in dashboard)
         supabase.from('scans').select('risk_score, target_type').eq('user_id', user.id)
           .neq('status', 'deleted'),
-        // All-time scans from ALL users (requires get_public_stats RPC to bypass RLS)
-        supabase.rpc('get_public_stats')
+        // All-time scans from ALL users (requires get_community_scans RPC to bypass RLS)
+        supabase.rpc('get_community_scans')
       ]);
 
       let globalData = [];
       if (globalStatsRes.error) {
-        // Fallback if RPC does not exist yet
+        // Fallback if RPC does not exist yet (it will only return the user's own scans due to RLS)
         const fallbackRes = await supabase.from('scans').select('risk_score, target_type, target_url, created_at').neq('status', 'deleted');
         globalData = fallbackRes.data || [];
       } else {
