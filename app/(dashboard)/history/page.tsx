@@ -4,6 +4,7 @@ import { Eye, ClipboardList } from "lucide-react";
 import DeleteScanButton from "@/components/ui/DeleteScanButton";
 import SearchFilter from "@/components/ui/SearchFilter";
 import Pagination from "@/components/ui/Pagination";
+import { redirect } from "next/navigation";
 
 function getStatusColor(score: number) {
   if (score > 70) return { label: 'Berbahaya', color: 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-800' };
@@ -30,11 +31,14 @@ export default async function HistoryPage({
   const typeFilter = typeof searchParams.type === 'string' ? searchParams.type : 'all';
   const statusFilter = typeof searchParams.status === 'string' ? searchParams.status : 'all';
 
+  const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+
   if (user) {
     try {
       let query = supabase
         .from('scans').select('*', { count: 'exact' })
         .eq('user_id', user.id)
+        .gte('created_at', fortyEightHoursAgo)
         .neq('status', 'deleted');
 
       if (q) query = query.ilike('target_url', `%${q}%`);
@@ -50,6 +54,11 @@ export default async function HistoryPage({
       if (!error && data) {
         scans = data;
         if (count) totalPages = Math.ceil(count / limit);
+        
+        // Fix Pagination Bug: if page > 1 but no scans found, redirect to page 1
+        if (scans.length === 0 && currentPage > 1) {
+          redirect('/history');
+        }
       }
     } catch (err) {
       console.error("Scans table error:", err);

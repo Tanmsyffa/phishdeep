@@ -45,12 +45,15 @@ export default function DashboardPage() {
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
 
+      const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+
       const [weekRes, allRes, globalStatsRes] = await Promise.all([
         // 7-day scans for this user (for trend chart)
         supabase.from('scans').select('*').eq('user_id', user.id)
           .gte('created_at', sevenDaysAgo.toISOString()).order('created_at', { ascending: false }),
-        // All-time scans for this user only (for user's own stats in dashboard)
+        // All-time scans for this user only (for user's own stats in dashboard, limited to 48h)
         supabase.from('scans').select('risk_score, target_type').eq('user_id', user.id)
+          .gte('created_at', fortyEightHoursAgo)
           .neq('status', 'deleted'),
         // All-time scans from ALL users (requires get_community_scans RPC to bypass RLS)
         supabase.rpc('get_community_scans')

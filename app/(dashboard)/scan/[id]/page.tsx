@@ -23,6 +23,28 @@ export default async function ScanResultPage({ params, searchParams }: { params:
     return notFound();
   }
 
+  // 48-hour expiration check
+  const scanDate = new Date(scan.created_at).getTime();
+  const now = Date.now();
+  const hoursDiff = (now - scanDate) / (1000 * 60 * 60);
+
+  if (hoursDiff > 48) {
+    return (
+      <div className="max-w-2xl mx-auto py-20 text-center">
+        <div className="w-20 h-20 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Clock className="w-10 h-10 text-gray-400" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Laporan Kedaluwarsa</h1>
+        <p className="text-gray-500 dark:text-gray-400 mb-8">
+          Demi keamanan dan efisiensi, riwayat dan laporan scan pengguna otomatis dihapus dari akses publik/pribadi setelah 48 jam.
+        </p>
+        <Link href="/history" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-medium transition-colors">
+          Kembali ke Riwayat
+        </Link>
+      </div>
+    );
+  }
+
   const isDanger = scan.risk_score > 70;
   const isSuspicious = scan.risk_score > 30 && scan.risk_score <= 70;
   const isSafe = scan.risk_score <= 30;
