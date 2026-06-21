@@ -14,6 +14,8 @@ export default function DeleteScanButton({ id }: { id: string }) {
     setErrorMsg("")
     try {
       await deleteScan(id)
+      setIsDeleting(false)
+      setConfirming(false)
     } catch (e) {
       setErrorMsg("Gagal dihapus")
       setIsDeleting(false)
