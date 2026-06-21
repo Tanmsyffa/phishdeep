@@ -165,7 +165,7 @@ export default function DashboardPage() {
           className="shrink-0 flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl transition-all"
         >
           <BarChart2 className="w-4 h-4" />
-          Lihat Statistik
+          Statistik Komunitas
         </button>
       </div>
 
