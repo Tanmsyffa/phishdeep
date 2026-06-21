@@ -166,7 +166,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
         <div className="lg:col-span-2 space-y-5 print:w-full">
           
           {/* Summary Box */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 sm:p-6 print:border-gray-300 print:shadow-none print:break-inside-avoid">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 sm:p-6 print:hidden">
             <h2 className="font-bold text-gray-900 dark:text-white mb-4 text-sm sm:text-base print:text-lg">Ringkasan Eksekutif</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               
@@ -208,7 +208,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
             {/* Domain / WHOIS Box */}
             {Object.keys(domainInfo).length > 0 && (
               <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 print:border-none print:shadow-none print:p-0 print:mb-4 col-span-full">
-                <h3 className="font-bold text-gray-900 dark:text-white mb-3 text-sm flex items-center gap-2 print:border-b print:border-gray-300 print:pb-1 print:mb-2 print:text-base"><Globe className="w-4 h-4 text-primary-500 print:hidden" /> Informasi Domain (RDAP & OSINT)</h3>
+                <h3 className="font-bold text-gray-900 dark:text-white mb-3 text-sm flex items-center gap-2 print:border-b print:border-gray-300 print:pb-1 print:mb-2 print:text-base"><Globe className="w-4 h-4 text-primary-500 print:hidden" /> <span className="print:hidden">Informasi Domain (RDAP & OSINT)</span><span className="hidden print:inline">Detail Analisis Keamanan</span></h3>
 
                 {/* --- PRINT ONLY: Simple List Format --- */}
                 <div className="hidden print:block text-xs text-black leading-relaxed">
@@ -471,11 +471,11 @@ export default async function ScanResultPage({ params, searchParams }: { params:
             {/* Framework Box */}
             {frameworks.length > 0 && (
               <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 print:border-none print:shadow-none print:p-0 print:mb-4">
-                <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm flex items-center gap-2 print:border-b print:border-gray-300 print:pb-1 print:mb-2 print:text-base"><Server className="w-4 h-4 text-primary-500 print:hidden" /> Teknologi & Stack</h3>
+                <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm flex items-center gap-2 print:hidden"><Server className="w-4 h-4 text-primary-500 print:hidden" /> Teknologi & Stack</h3>
                 
                 {/* --- PRINT ONLY --- */}
                 <div className="hidden print:block text-xs text-black leading-relaxed">
-                  <p>{frameworks.map((fw: string) => fw.replace('PERINGATAN - HEADER TIDAK ADA:', 'Warning Missing Header:')).join(', ')}</p>
+                  <p><strong>Teknologi & Stack:</strong> {frameworks.map((fw: string) => fw.replace('PERINGATAN - HEADER TIDAK ADA:', 'Warning Missing Header:')).join(', ')}</p>
                 </div>
 
                 <div className="flex flex-wrap gap-2 print:hidden">
@@ -510,10 +510,11 @@ export default async function ScanResultPage({ params, searchParams }: { params:
           {/* Redirect Chain */}
           {redirectChain.length > 0 && (
             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 print:border-none print:shadow-none print:p-0 print:mb-4 print:break-inside-avoid">
-              <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm flex items-center gap-2 print:border-b print:border-gray-300 print:pb-1 print:mb-2 print:text-base"><LinkIcon className="w-4 h-4 text-primary-500 print:hidden" /> Jejak Redirect (Redirect Chain)</h3>
+              <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm flex items-center gap-2 print:hidden"><LinkIcon className="w-4 h-4 text-primary-500 print:hidden" /> Jejak Redirect (Redirect Chain)</h3>
               
               {/* --- PRINT ONLY --- */}
-              <div className="hidden print:block text-xs text-black leading-relaxed font-mono">
+              <div className="hidden print:block text-xs text-black leading-relaxed font-mono mt-2">
+                <p className="font-bold mb-1 font-sans">Jejak Redirect:</p>
                 <ol className="list-decimal list-inside space-y-1">
                   {redirectChain.map((url: string, idx: number) => (
                     <li key={idx} className="break-all">{url}</li>

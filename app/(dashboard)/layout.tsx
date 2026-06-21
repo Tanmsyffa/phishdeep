@@ -15,7 +15,7 @@ export default function DashboardLayout({
   return (
     <div className="flex h-[100dvh] overflow-hidden bg-gray-50 dark:bg-slate-950 flex-col md:flex-row relative print:h-auto print:overflow-visible print:bg-white transition-colors duration-300">
       {/* Mobile Top Bar */}
-      <div className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-slate-900 text-gray-900 dark:text-white z-40 border-b border-gray-200 dark:border-slate-800 transition-colors">
+      <div className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-slate-900 text-gray-900 dark:text-white z-40 border-b border-gray-200 dark:border-slate-800 transition-colors print:hidden">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-blue-600 dark:bg-blue-500 flex items-center justify-center shrink-0">
             <ShieldCheck className="h-4 w-4 text-white" />
