@@ -25,10 +25,10 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
 
   const navLinks = [
     { href: "/dashboard", label: "Dashboard",    icon: <Home className="w-4 h-4" />,       active: isActive('/dashboard') && !pathname.includes('/scan') },
+    { href: "/search",    label: "Cari ID Scan", icon: <Search className="w-4 h-4" />,     active: isActive('/search') },
     { href: "/scan",      label: "Scan Baru",    icon: <ScanLine className="w-4 h-4" />,   active: pathname.includes('/scan') },
     { href: "/history",   label: "Riwayat Scan", icon: <History className="w-4 h-4" />,    active: isActive('/history') },
     { href: "/reports",   label: "Laporan PDF",  icon: <FileText className="w-4 h-4" />,   active: isActive('/reports') },
-    { href: "/search",    label: "Cari ID Scan", icon: <Search className="w-4 h-4" />,     active: isActive('/search') },
     { href: "/settings",  label: "Pengaturan",   icon: <Settings className="w-4 h-4" />,   active: isActive('/settings') },
     { href: "/help",      label: "Bantuan",      icon: <HelpCircle className="w-4 h-4" />, active: isActive('/help') },
   ];
