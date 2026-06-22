@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Target, X, Bell } from 'lucide-react';
+import { Target, X, Bell, Wifi, WifiOff } from 'lucide-react';
 
 interface ScanNotification {
   id: string;
@@ -15,8 +15,11 @@ interface ScanNotification {
 
 const VISIBLE_DURATION_MS = 15000;
 
+type ConnectionStatus = 'connecting' | 'connected' | 'error';
+
 export default function LiveNotifications() {
   const [notifications, setNotifications] = useState<ScanNotification[]>([]);
+  const [connStatus, setConnStatus] = useState<ConnectionStatus>('connecting');
   const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const currentUserIdRef = useRef<string | null>(null);
 
@@ -60,16 +63,21 @@ export default function LiveNotifications() {
     let isMounted = true;
 
     const subscribe = async () => {
+      if (!isMounted) return;
+      setConnStatus('connecting');
+
       // Tunggu user session dulu supaya filter "milik sendiri" bekerja
       const { data: { user } } = await supabase.auth.getUser();
       if (!isMounted) return;
       currentUserIdRef.current = user?.id ?? null;
 
       // Hapus channel lama jika ada
-      if (channel) await supabase.removeChannel(channel);
+      if (channel) {
+        try { await supabase.removeChannel(channel); } catch (_) {}
+      }
 
       channel = supabase
-        .channel('community-scans-realtime-v2')
+        .channel(`live-scans-${Date.now()}`)
         .on(
           'postgres_changes',
           {
@@ -80,26 +88,35 @@ export default function LiveNotifications() {
           (payload) => {
             const newRow = payload.new as any;
 
-            // Jangan tampilkan notif untuk scan diri sendiri
-            if (newRow.user_id === currentUserIdRef.current) return;
             // Skip scan yang dihapus
             if (newRow.status === 'deleted') return;
 
+            // Jangan tampilkan notif untuk scan diri sendiri
+            if (currentUserIdRef.current && newRow.user_id === currentUserIdRef.current) return;
+
             const notif: ScanNotification = {
-              id: Math.random().toString(36).substr(2, 9),
+              id: `notif-${newRow.id || Math.random().toString(36).substr(2, 9)}`,
               target_url: newRow.target_url,
               user_name: newRow.user_name || 'Seorang pengguna',
               created_at: newRow.created_at,
               risk_score: newRow.risk_score ?? 0,
             };
 
-            setNotifications(prev => [...prev, notif]);
+            setNotifications(prev => {
+              // Hindari duplikat
+              if (prev.some(n => n.id === notif.id)) return prev;
+              return [...prev, notif];
+            });
             scheduleRemoval(notif.id);
           }
         )
         .subscribe((status, err) => {
-          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-            console.warn('[LiveNotif] Realtime disconnected:', status, err);
+          if (!isMounted) return;
+          if (status === 'SUBSCRIBED') {
+            setConnStatus('connected');
+          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+            console.warn('[LiveNotif] Realtime status:', status, err);
+            setConnStatus('error');
             // Coba reconnect setelah 5 detik
             retryTimeout = setTimeout(() => {
               if (isMounted) subscribe();
@@ -113,14 +130,32 @@ export default function LiveNotifications() {
     return () => {
       isMounted = false;
       clearTimeout(retryTimeout);
-      if (channel) supabase.removeChannel(channel);
+      try { if (channel) supabase.removeChannel(channel); } catch (_) {}
       timersRef.current.forEach(t => clearTimeout(t));
     };
   }, [scheduleRemoval]);
 
-
   return (
     <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col gap-3 pointer-events-none">
+      {/* Status koneksi Realtime */}
+      <div className="flex justify-end pointer-events-none">
+        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border backdrop-blur-sm transition-all ${
+          connStatus === 'connected'
+            ? 'bg-green-50/90 dark:bg-green-900/30 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400'
+            : connStatus === 'error'
+            ? 'bg-red-50/90 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400'
+            : 'bg-gray-50/90 dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 text-gray-500'
+        }`}>
+          {connStatus === 'connected' ? (
+            <><span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /><Wifi className="w-3 h-3" /> Live</>
+          ) : connStatus === 'error' ? (
+            <><span className="w-1.5 h-1.5 rounded-full bg-red-500" /><WifiOff className="w-3 h-3" /> Reconnecting...</>
+          ) : (
+            <><span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-pulse" /> Connecting...</>
+          )}
+        </div>
+      </div>
+
       <AnimatePresence>
         {notifications.map((notif) => (
           <motion.div
