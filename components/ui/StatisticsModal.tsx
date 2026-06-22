@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { X, ShieldAlert, AlertCircle, CheckCircle, Link as LinkIcon, Smartphone, BarChart2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { X, ShieldAlert, AlertCircle, CheckCircle, Link as LinkIcon, Smartphone, BarChart2, Search, ExternalLink, Copy, Check } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 interface StatisticsModalProps {
   isOpen: boolean;
@@ -50,7 +52,6 @@ function DonutChart({ dangerous, suspicious, safe, total }: { dangerous: number;
         startAngle += sliceAngle + gap;
       });
     }
-    // punch hole
     ctx.beginPath(); ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
     ctx.globalCompositeOperation = "destination-out";
     ctx.fillStyle = "rgba(0,0,0,1)"; ctx.fill();
@@ -60,12 +61,42 @@ function DonutChart({ dangerous, suspicious, safe, total }: { dangerous: number;
   return <canvas ref={canvasRef} width={120} height={120} />;
 }
 
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <button onClick={handleCopy} className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors shrink-0" title="Salin ID">
+      {copied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
+    </button>
+  );
+}
+
 export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: StatisticsModalProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResult, setSearchResult] = useState<any>(null);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const router = useRouter();
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     if (isOpen) { document.addEventListener("keydown", onKey); document.body.style.overflow = "hidden"; }
     return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
   }, [isOpen, onClose]);
+
+  // Reset search state when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchQuery("");
+      setSearchResult(null);
+      setSearchError(null);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -74,35 +105,69 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
   const riskBg = avgRisk > 70 ? "bg-red-500" : avgRisk > 30 ? "bg-yellow-500" : "bg-green-500";
   const riskLabel = avgRisk > 70 ? "Tinggi" : avgRisk > 30 ? "Sedang" : "Rendah";
 
-  // Mengelompokkan scan berdasarkan URL untuk mencari frekuensi
+  // Kelompokkan scan berdasarkan URL + simpan semua ID-nya
   const groupedScans = scans.reduce((acc: any, scan: any) => {
-    if (!acc[scan.target_url]) {
-      acc[scan.target_url] = { ...scan, count: 0 };
+    const key = scan.target_url;
+    if (!acc[key]) {
+      acc[key] = { ...scan, count: 0, ids: [] };
     }
-    acc[scan.target_url].count += 1;
-    // Keep the most recent scan's risk score and name
-    if (new Date(scan.created_at) > new Date(acc[scan.target_url].created_at)) {
-      acc[scan.target_url].risk_score = scan.risk_score;
-      acc[scan.target_url].user_name = scan.user_name || 'Seorang pengguna';
-      acc[scan.target_url].created_at = scan.created_at;
+    acc[key].count += 1;
+    acc[key].ids.push(scan.id);
+    if (new Date(scan.created_at) > new Date(acc[key].created_at)) {
+      acc[key].risk_score = scan.risk_score;
+      acc[key].user_name = scan.user_name || 'Seorang pengguna';
+      acc[key].created_at = scan.created_at;
+      acc[key].id = scan.id; // most recent ID
     }
     return acc;
   }, {});
 
-  // Sort berdasarkan waktu terbaru
-  const historyList = Object.values(groupedScans).sort((a: any, b: any) => 
+  const historyList = Object.values(groupedScans).sort((a: any, b: any) =>
     new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  ).slice(0, 10); // Ambil 10 teratas
+  ).slice(0, 15);
+
+  // Cari scan berdasarkan ID
+  const handleSearch = async () => {
+    const q = searchQuery.trim();
+    if (!q) return;
+
+    setIsSearching(true);
+    setSearchResult(null);
+    setSearchError(null);
+
+    // Cek apakah format UUID valid
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(q)) {
+      setSearchError("Format ID tidak valid. Pastikan ID berupa UUID lengkap.");
+      setIsSearching(false);
+      return;
+    }
+
+    const supabase = createClient();
+    const { data, error } = await supabase.rpc('get_scan_by_id', { scan_id: q });
+
+    if (error || !data || data.length === 0) {
+      setSearchError("Scan dengan ID tersebut tidak ditemukan atau sudah dihapus.");
+    } else {
+      setSearchResult(data[0]);
+    }
+    setIsSearching(false);
+  };
+
+  const handleViewDetail = (scanId: string) => {
+    onClose();
+    router.push(`/scan/${scanId}`);
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Modal — fixed size, allow scroll on body */}
+      {/* Modal */}
       <div className="relative w-full max-w-xl max-h-[90vh] flex flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-slate-800">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-slate-800 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
               <BarChart2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
@@ -121,6 +186,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
           </button>
         </div>
 
+        {/* Scrollable body */}
         <div className="p-5 space-y-4 overflow-y-auto">
           {/* Top metrics row */}
           <div className="grid grid-cols-4 gap-3">
@@ -138,9 +204,8 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
             ))}
           </div>
 
-          {/* Bottom two columns */}
+          {/* Chart + Stats row */}
           <div className="grid grid-cols-2 gap-4">
-            {/* Left: Donut chart */}
             <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4">
               <p className="text-xs font-bold text-gray-700 dark:text-gray-200 mb-3">Distribusi Hasil</p>
               {total > 0 ? (
@@ -167,9 +232,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
               )}
             </div>
 
-            {/* Right: Type + Risk */}
             <div className="space-y-3">
-              {/* Jenis target */}
               <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4">
                 <p className="text-xs font-bold text-gray-700 dark:text-gray-200 mb-3">Jenis Target</p>
                 <div className="space-y-2.5">
@@ -189,8 +252,6 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
                   ))}
                 </div>
               </div>
-
-              {/* Avg Risk */}
               <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4">
                 <p className="text-xs font-bold text-gray-700 dark:text-gray-200 mb-2">Rata-rata Risiko</p>
                 <div className="flex items-end gap-1 mb-2">
@@ -207,8 +268,75 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
             </div>
           </div>
 
+          {/* Search by Scan ID */}
+          <div className="border-t border-gray-100 dark:border-slate-800 pt-4">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+              <Search className="w-4 h-4 text-blue-500" />
+              Cari Berdasarkan ID Scan
+            </h3>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                placeholder="Masukkan UUID scan (contoh: xxxxxxxx-xxxx-...)"
+                className="flex-1 text-xs bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <button
+                onClick={handleSearch}
+                disabled={isSearching || !searchQuery.trim()}
+                className="px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-slate-700 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1 shrink-0"
+              >
+                {isSearching ? (
+                  <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <Search className="w-3 h-3" />
+                )}
+                Cari
+              </button>
+            </div>
+
+            {/* Search Result */}
+            {searchError && (
+              <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-xs text-red-600 dark:text-red-400">
+                {searchError}
+              </div>
+            )}
+            {searchResult && (() => {
+              const isDanger = searchResult.risk_score > 70;
+              const isSusp = searchResult.risk_score > 30 && searchResult.risk_score <= 70;
+              const dotColor = isDanger ? "bg-red-500" : isSusp ? "bg-yellow-500" : "bg-green-500";
+              const resultText = isDanger ? "Berbahaya" : isSusp ? "Mencurigakan" : "Aman";
+              return (
+                <div className="mt-3 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                  <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2">Scan Ditemukan</p>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <span className={`w-2 h-2 rounded-full shrink-0 ${dotColor}`} />
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{searchResult.target_url}</p>
+                      </div>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                        Oleh <span className="font-medium">{searchResult.user_name || 'Pengguna'}</span> · {resultText} · Skor {searchResult.risk_score}/100
+                      </p>
+                      <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 font-mono">{searchResult.id}</p>
+                    </div>
+                    <button
+                      onClick={() => handleViewDetail(searchResult.id)}
+                      className="shrink-0 flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      Lihat
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+
           {/* Riwayat Scan Komunitas */}
-          <div className="mt-6 pt-4 border-t border-gray-100 dark:border-slate-800">
+          <div className="border-t border-gray-100 dark:border-slate-800 pt-4">
             <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3">Riwayat Terakhir Komunitas</h3>
             {historyList.length === 0 ? (
               <p className="text-xs text-gray-500 text-center py-4">Belum ada riwayat scan.</p>
@@ -216,27 +344,39 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
               <div className="space-y-2">
                 {historyList.map((item: any, idx: number) => {
                   const isDanger = item.risk_score > 70;
-                  const isSuspicious = item.risk_score > 30 && item.risk_score <= 70;
-                  const dotColor = isDanger ? "bg-red-500" : isSuspicious ? "bg-yellow-500" : "bg-green-500";
-                  const resultText = isDanger ? "Berbahaya" : isSuspicious ? "Mencurigakan" : "Aman";
-                  
+                  const isSusp = item.risk_score > 30 && item.risk_score <= 70;
+                  const dotColor = isDanger ? "bg-red-500" : isSusp ? "bg-yellow-500" : "bg-green-500";
+                  const resultText = isDanger ? "Berbahaya" : isSusp ? "Mencurigakan" : "Aman";
+
                   return (
-                    <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700">
-                      <div className="flex-1 min-w-0 mr-4">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className={`w-2 h-2 rounded-full shrink-0 ${dotColor}`} />
-                          <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                            {item.target_url}
+                    <div key={idx} className="p-3 rounded-xl bg-gray-50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <span className={`w-2 h-2 rounded-full shrink-0 ${dotColor}`} />
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{item.target_url}</p>
+                          </div>
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                            Oleh <span className="font-medium text-gray-700 dark:text-gray-300">{item.user_name || 'Seorang pengguna'}</span> · {resultText}
                           </p>
+                          {/* Tampilkan ID scan terbaru */}
+                          <div className="flex items-center gap-1 mt-1">
+                            <span className="text-[10px] font-mono text-gray-400 dark:text-gray-500 truncate max-w-[180px]">ID: {item.id}</span>
+                            <CopyButton text={item.id} />
+                          </div>
                         </div>
-                        <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
-                          Di-scan oleh <span className="font-medium text-gray-700 dark:text-gray-300">{item.user_name || 'Seorang pengguna'}</span> • Hasil: {resultText}
-                        </p>
-                      </div>
-                      <div className="shrink-0 flex flex-col items-end">
-                        <span className="inline-flex items-center justify-center px-2 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 text-[10px] font-bold rounded-md">
-                          {item.count}x Di-scan
-                        </span>
+                        <div className="shrink-0 flex flex-col items-end gap-1.5">
+                          <span className="inline-flex items-center justify-center px-2 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 text-[10px] font-bold rounded-md">
+                            {item.count}x
+                          </span>
+                          <button
+                            onClick={() => handleViewDetail(item.id)}
+                            className="flex items-center gap-0.5 text-[10px] text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                          >
+                            <ExternalLink className="w-2.5 h-2.5" />
+                            Detail
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );

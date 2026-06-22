@@ -12,12 +12,25 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
   if (!user) return <div className="text-center py-12">Anda harus login untuk melihat halaman ini.</div>;
 
-  const { data: scan, error } = await supabase
+  // Coba ambil scan milik sendiri terlebih dahulu
+  let isOwner = true;
+  const { data: ownScan, error: ownError } = await supabase
     .from('scans')
     .select('*')
     .eq('id', params.id)
     .eq('user_id', user.id)
     .single();
+
+  let scan = ownScan;
+
+  // Jika bukan milik sendiri, coba ambil via RPC publik (community lookup)
+  if (ownError || !ownScan) {
+    isOwner = false;
+    const { data: communityData, error: communityError } = await supabase.rpc('get_scan_by_id', { scan_id: params.id });
+    if (!communityError && communityData && communityData.length > 0) {
+      scan = communityData[0];
+    }
+  }
 
   // Ambil riwayat komunitas untuk perbandingan historis
   const { data: communityScans } = await supabase.rpc('get_community_scans');
@@ -28,23 +41,23 @@ export default async function ScanResultPage({ params, searchParams }: { params:
       s.target_url === scan.target_url && 
       new Date(s.created_at).getTime() < new Date(scan.created_at).getTime()
     );
-    // Sort berdasarkan yang paling baru dari riwayat masa lalu
     if (historical.length > 0) {
       historical.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       previousScan = historical[0];
     }
   }
 
-  if (error || !scan) {
+  if (!scan) {
     return notFound();
   }
 
-  // 48-hour expiration check
+  // 48-hour expiration check (HANYA untuk pemilik asli)
+  // Untuk akses komunitas (isOwner = false), tetap izinkan melihat
   const scanDate = new Date(scan.created_at).getTime();
   const now = Date.now();
   const hoursDiff = (now - scanDate) / (1000 * 60 * 60);
 
-  if (hoursDiff > 48) {
+  if (isOwner && hoursDiff > 48) {
     return (
       <div className="max-w-2xl mx-auto py-20 text-center">
         <div className="w-20 h-20 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -82,10 +95,26 @@ export default async function ScanResultPage({ params, searchParams }: { params:
         <script dangerouslySetInnerHTML={{ __html: 'window.onload = function() { window.print(); }' }} />
       )}
 
+      {/* Community View Banner */}
+      {!isOwner && (
+        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-2xl flex items-start gap-3 print:hidden">
+          <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center shrink-0">
+            <Globe className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-blue-900 dark:text-blue-100">Akses Komunitas</h3>
+            <p className="text-xs text-blue-700 dark:text-blue-300 mt-0.5">
+              Anda sedang melihat detail scan yang dilakukan oleh <span className="font-bold">{scan.user_name || 'pengguna lain'}</span>. 
+              Beberapa aksi spesifik seperti menghapus atau mengulang scan telah dinonaktifkan.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Top Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-5 sm:mb-6 print:hidden">
-        <Link href="/history" className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-white flex items-center gap-2 transition-colors group self-start">
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Kembali ke Riwayat
+        <Link href="/dashboard" className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-white flex items-center gap-2 transition-colors group self-start">
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Kembali ke Dashboard
         </Link>
         <div className="flex items-center gap-2 text-sm flex-wrap">
           <span className="text-gray-400 dark:text-gray-500 text-xs font-mono bg-gray-100 dark:bg-slate-800 px-2 py-0.5 rounded">#{params.id.split('-')[0]}</span>
@@ -104,7 +133,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
               <CheckCircle className="w-3.5 h-3.5" /> Aman
             </span>
           )}
-          <ReScanButton targetUrl={scan.target_url} targetType={scan.target_type} />
+          {isOwner && <ReScanButton targetUrl={scan.target_url} targetType={scan.target_type} />}
           <ExportButtons data={scan} />
         </div>
       </div>
