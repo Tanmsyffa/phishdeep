@@ -24,12 +24,12 @@ export async function updateProfile(formData: FormData) {
     if (!ext || !['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)) {
       ext = avatarFile.type.split('/').pop() || 'jpg'
     }
-    const filePath = `avatars/${user.id}.${ext}`
+    const filePath = `${user.id}.${ext}`
     const arrayBuffer = await avatarFile.arrayBuffer()
     const buffer = new Uint8Array(arrayBuffer)
 
     const { error: uploadError } = await supabase.storage
-      .from('scans')
+      .from('avatars')
       .upload(filePath, buffer, {
         contentType: avatarFile.type,
         upsert: true,
@@ -40,7 +40,7 @@ export async function updateProfile(formData: FormData) {
     }
 
     const { data: { publicUrl } } = supabase.storage
-      .from('scans')
+      .from('avatars')
       .getPublicUrl(filePath)
 
     avatarUrl = `${publicUrl}?v=${Date.now()}`
