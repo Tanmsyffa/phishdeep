@@ -63,7 +63,16 @@ export default function SettingsPage() {
         setProfileMsg({ text: result.error, type: "error" });
       } else if (result?.success) {
         setProfileMsg({ text: result.success, type: "success" });
-        if (result.avatarUrl) {
+        // Refresh sesi klien untuk mendapatkan metadata user terbaru dari Supabase
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.refreshSession().then(
+          async () => supabase.auth.getUser()
+        );
+        const freshAvatar = user?.user_metadata?.avatar_url;
+        if (freshAvatar) {
+          // Tambahkan cache-buster agar browser tidak menampilkan versi lama
+          setCurrentAvatar(`${freshAvatar.split('?')[0]}?v=${Date.now()}`);
+        } else if (result.avatarUrl) {
           setCurrentAvatar(result.avatarUrl);
         }
         setPreviewUrl(null);
