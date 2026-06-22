@@ -220,26 +220,35 @@ export default function DashboardPage() {
           <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base mb-1">Tren Analisis (7 Hari)</h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Perbandingan total scan vs ancaman berbahaya harian.</p>
           {(() => {
-            const maxVal = Math.max(...trendData.map(t => t.total), 1);
+            let chartMax = Math.max(...trendData.map(t => t.total), 4);
+            // Bulatkan ke atas ke bilangan genap terdekat agar titik tengah presisi
+            if (chartMax % 2 !== 0) chartMax += 1;
+            // Atau jika sangat besar, bulatkan ke kelipatan 10
+            if (chartMax > 10) {
+              chartMax = Math.ceil(chartMax / 10) * 10;
+            }
+
             return (
               <>
-                <div className="flex gap-2">
-                  <div className="w-6 shrink-0 flex flex-col justify-between items-end text-[9px] text-gray-400 dark:text-gray-500 font-medium" style={{ height: `${CHART_H}px` }}>
-                    <span>{maxVal}</span><span>{Math.round(maxVal / 2)}</span><span>0</span>
+                <div className="flex gap-2 mt-4">
+                  <div className="w-6 shrink-0 relative text-[9px] text-gray-400 dark:text-gray-500 font-medium" style={{ height: `${CHART_H}px` }}>
+                    <span className="absolute right-1 -translate-y-1/2" style={{ top: '0%' }}>{chartMax}</span>
+                    <span className="absolute right-1 -translate-y-1/2" style={{ top: '50%' }}>{chartMax / 2}</span>
+                    <span className="absolute right-1 -translate-y-1/2" style={{ top: '100%' }}>0</span>
                   </div>
                   <div className="flex-1 relative border-l border-b border-gray-100 dark:border-slate-700" style={{ height: `${CHART_H}px` }}>
                     <div className="absolute left-0 right-0 border-t border-dashed border-gray-100 dark:border-slate-700" style={{ top: '0%' }} />
                     <div className="absolute left-0 right-0 border-t border-dashed border-gray-100 dark:border-slate-700" style={{ top: '50%' }} />
                     <div className="absolute inset-0 flex items-end justify-around px-1 pb-0">
                       {trendData.map((t, idx) => {
-                        const barH = maxVal > 0 ? Math.max(Math.round((t.total / maxVal) * CHART_H), t.total > 0 ? 4 : 0) : 0;
+                        const barH = chartMax > 0 ? Math.max(Math.round((t.total / chartMax) * CHART_H), t.total > 0 ? 4 : 0) : 0;
                         const dangH = t.total > 0 && t.bahaya > 0 ? Math.round((t.bahaya / t.total) * barH) : 0;
                         return (
-                          <div key={idx} className="flex flex-col items-center justify-end group" style={{ height: `${CHART_H}px`, minWidth: '12px', flex: 1 }}>
+                          <div key={idx} className="flex flex-col items-center justify-end group z-10" style={{ height: `${CHART_H}px`, minWidth: '12px', flex: 1 }}>
                             <div className="w-full flex justify-center">
                               {barH > 0 ? (
-                                <div className="w-4 sm:w-5 lg:w-6 rounded-t-sm relative overflow-hidden bg-blue-200 dark:bg-blue-500/50 group-hover:bg-blue-300 dark:group-hover:bg-blue-500/70 transition-colors cursor-default" style={{ height: `${barH}px` }}>
-                                  {dangH > 0 && <div className="absolute bottom-0 left-0 right-0 bg-red-400 dark:bg-red-500" style={{ height: `${dangH}px` }} />}
+                                <div className="w-4 sm:w-5 lg:w-6 rounded-t-sm relative bg-blue-200 dark:bg-blue-500/50 group-hover:bg-blue-300 dark:group-hover:bg-blue-500/70 transition-colors cursor-default" style={{ height: `${barH}px` }}>
+                                  {dangH > 0 && <div className="absolute bottom-0 left-0 right-0 bg-red-400 dark:bg-red-500 rounded-b-sm" style={{ height: `${dangH}px` }} />}
                                   <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[9px] py-1 px-1.5 rounded pointer-events-none whitespace-nowrap transition-opacity shadow-lg z-20">{t.total}S / {t.bahaya}B</div>
                                 </div>
                               ) : (
