@@ -19,69 +19,97 @@ function Toast({ message, type }: { message: string; type: "success" | "error" }
   );
 }
 
+// Avatar component dengan fallback ke inisial jika gambar gagal load
+function AvatarDisplay({ url, name, onCameraClick }: { url: string | null; name: string; onCameraClick: () => void }) {
+  const [imgError, setImgError] = useState(false);
+
+  // Reset error state setiap kali URL berubah (upload foto baru)
+  useEffect(() => {
+    setImgError(false);
+  }, [url]);
+
+  return (
+    <div className="relative shrink-0">
+      {url && !imgError ? (
+        <img
+          src={url}
+          alt="Foto Profil"
+          onError={() => setImgError(true)}
+          className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-slate-800 shadow-lg"
+        />
+      ) : (
+        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white flex items-center justify-center font-bold text-3xl shadow-lg border-4 border-white dark:border-slate-800">
+          {(name || 'U')[0].toUpperCase()}
+        </div>
+      )}
+      <button
+        type="button"
+        onClick={onCameraClick}
+        className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-md transition-colors border-2 border-white dark:border-slate-800"
+      >
+        <Camera className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
+
 export default function SettingsPage() {
   const [profileMsg, setProfileMsg] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const [isPendingProfile, startProfileTransition] = useTransition();
   const [currentName, setCurrentName] = useState("");
-  const [currentAvatar, setCurrentAvatar] = useState("");
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  // URL yang ditampilkan — bisa preview base64 atau URL Supabase
+  const [displayUrl, setDisplayUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user?.user_metadata?.full_name) {
-        setCurrentName(user.user_metadata.full_name);
-      }
+      if (user?.user_metadata?.full_name) setCurrentName(user.user_metadata.full_name);
       if (user?.user_metadata?.avatar_url) {
-        setCurrentAvatar(user.user_metadata.avatar_url);
+        // Tambahkan cache-buster pada load awal agar versi terbaru selalu ditampilkan
+        const base = user.user_metadata.avatar_url.split('?')[0];
+        setDisplayUrl(`${base}?v=${Date.now()}`);
       }
     });
   }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result) {
-          setPreviewUrl(e.target.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+    // Tampilkan preview base64 secara instan
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      if (ev.target?.result) setDisplayUrl(ev.target.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleProfileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     setProfileMsg(null);
+
     startProfileTransition(async () => {
       const result = await updateProfile(formData);
+
       if (result?.error) {
         setProfileMsg({ text: result.error, type: "error" });
-      } else if (result?.success) {
+        return;
+      }
+
+      if (result?.success) {
         setProfileMsg({ text: result.success, type: "success" });
-        // Refresh sesi klien untuk mendapatkan metadata user terbaru dari Supabase
-        const supabase = createClient();
-        const { data: { user } } = await supabase.auth.refreshSession().then(
-          async () => supabase.auth.getUser()
-        );
-        const freshAvatar = user?.user_metadata?.avatar_url;
-        if (freshAvatar) {
-          // Tambahkan cache-buster agar browser tidak menampilkan versi lama
-          setCurrentAvatar(`${freshAvatar.split('?')[0]}?v=${Date.now()}`);
-        } else if (result.avatarUrl) {
-          setCurrentAvatar(result.avatarUrl);
+
+        // Jika ada URL baru dari server (foto baru di-upload), gunakan langsung
+        if (result.avatarUrl) {
+          const baseUrl = result.avatarUrl.split('?')[0];
+          setDisplayUrl(`${baseUrl}?v=${Date.now()}`);
         }
-        setPreviewUrl(null);
+
         if (fileInputRef.current) fileInputRef.current.value = "";
       }
     });
   };
-
-  const displayAvatar = previewUrl || currentAvatar;
 
   return (
     <div className="max-w-2xl mx-auto space-y-5">
@@ -102,31 +130,14 @@ export default function SettingsPage() {
           <User className="w-4 h-4 text-primary-500" />
           <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Informasi Profil</h2>
         </div>
-        <form ref={formRef} onSubmit={handleProfileSubmit} className="p-5 sm:p-6 space-y-6">
+        <form onSubmit={handleProfileSubmit} className="p-5 sm:p-6 space-y-6">
           {/* Avatar Upload */}
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
-            {/* Avatar Preview */}
-            <div className="relative shrink-0">
-              {displayAvatar ? (
-                <img
-                  src={displayAvatar}
-                  alt="Profile"
-                  className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-slate-800 shadow-lg"
-                />
-              ) : (
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white flex items-center justify-center font-bold text-3xl shadow-lg border-4 border-white dark:border-slate-800">
-                  {(currentName || 'U')[0].toUpperCase()}
-                </div>
-              )}
-              {/* Camera button overlay */}
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-md transition-colors border-2 border-white dark:border-slate-800"
-              >
-                <Camera className="w-4 h-4" />
-              </button>
-            </div>
+            <AvatarDisplay
+              url={displayUrl}
+              name={currentName}
+              onCameraClick={() => fileInputRef.current?.click()}
+            />
 
             {/* Upload instruction */}
             <div className="flex-1 text-center sm:text-left">
@@ -143,12 +154,9 @@ export default function SettingsPage() {
                 <Camera className="w-3.5 h-3.5" />
                 Pilih Foto
               </button>
-              {previewUrl && (
-                <p className="text-xs text-green-600 dark:text-green-400 mt-2 font-medium">✓ Foto baru siap diupload</p>
-              )}
             </div>
 
-            {/* Hidden file input - accepts camera and gallery on mobile */}
+            {/* Hidden file input */}
             <input
               ref={fileInputRef}
               id="avatar_file"
