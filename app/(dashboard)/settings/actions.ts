@@ -40,7 +40,7 @@ export async function updateProfile(formData: FormData) {
       .from('scans')
       .getPublicUrl(filePath)
 
-    avatarUrl = publicUrl
+    avatarUrl = `${publicUrl}?v=${Date.now()}`
   }
 
   const { error } = await supabase.auth.updateUser({

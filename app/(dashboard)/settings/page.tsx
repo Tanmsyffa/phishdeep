@@ -147,7 +147,6 @@ export default function SettingsPage() {
               name="avatar_file"
               type="file"
               accept="image/*"
-              capture="user"
               onChange={handleFileChange}
               className="hidden"
             />
