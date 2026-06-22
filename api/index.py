@@ -242,6 +242,10 @@ def get_rdap_info(domain):
     # 1. Try python-whois first
     try:
         import whois
+        import logging as _logging
+        # Suppress noisy socket error logs from the whois library
+        _logging.getLogger('whois.whois').setLevel(_logging.CRITICAL)
+
         w = whois.whois(domain)
         
         if getattr(w, 'registrar', None):
