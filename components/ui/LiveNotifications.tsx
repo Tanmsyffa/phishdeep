@@ -55,48 +55,69 @@ export default function LiveNotifications() {
   // Subscribe ke Supabase Realtime
   useEffect(() => {
     const supabase = createClient();
+    let channel: ReturnType<typeof supabase.channel>;
+    let retryTimeout: ReturnType<typeof setTimeout>;
+    let isMounted = true;
 
-    // Dapatkan user saat ini agar kita tidak tampilkan notif untuk diri sendiri
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    const subscribe = async () => {
+      // Tunggu user session dulu supaya filter "milik sendiri" bekerja
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!isMounted) return;
       currentUserIdRef.current = user?.id ?? null;
-    });
 
-    const channel = supabase
-      .channel('community-scans-realtime')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'scans',
-        },
-        (payload) => {
-          const newRow = payload.new as any;
+      // Hapus channel lama jika ada
+      if (channel) await supabase.removeChannel(channel);
 
-          // Jangan tampilkan notif untuk scan diri sendiri
-          if (newRow.user_id === currentUserIdRef.current) return;
-          // Skip scan yang dihapus
-          if (newRow.status === 'deleted') return;
+      channel = supabase
+        .channel('community-scans-realtime-v2')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'scans',
+          },
+          (payload) => {
+            const newRow = payload.new as any;
 
-          const notif: ScanNotification = {
-            id: Math.random().toString(36).substr(2, 9),
-            target_url: newRow.target_url,
-            user_name: newRow.user_name || 'Seorang pengguna',
-            created_at: newRow.created_at,
-            risk_score: newRow.risk_score ?? 0,
-          };
+            // Jangan tampilkan notif untuk scan diri sendiri
+            if (newRow.user_id === currentUserIdRef.current) return;
+            // Skip scan yang dihapus
+            if (newRow.status === 'deleted') return;
 
-          setNotifications(prev => [...prev, notif]);
-          scheduleRemoval(notif.id);
-        }
-      )
-      .subscribe();
+            const notif: ScanNotification = {
+              id: Math.random().toString(36).substr(2, 9),
+              target_url: newRow.target_url,
+              user_name: newRow.user_name || 'Seorang pengguna',
+              created_at: newRow.created_at,
+              risk_score: newRow.risk_score ?? 0,
+            };
+
+            setNotifications(prev => [...prev, notif]);
+            scheduleRemoval(notif.id);
+          }
+        )
+        .subscribe((status, err) => {
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            console.warn('[LiveNotif] Realtime disconnected:', status, err);
+            // Coba reconnect setelah 5 detik
+            retryTimeout = setTimeout(() => {
+              if (isMounted) subscribe();
+            }, 5000);
+          }
+        });
+    };
+
+    subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      isMounted = false;
+      clearTimeout(retryTimeout);
+      if (channel) supabase.removeChannel(channel);
       timersRef.current.forEach(t => clearTimeout(t));
     };
   }, [scheduleRemoval]);
+
 
   return (
     <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col gap-3 pointer-events-none">
