@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, AlertTriangle, ShieldAlert, RefreshCw, CheckCircle, Globe, Server, Link as LinkIcon, Monitor, Calendar, Clock, Shield, Lock, History, Search, FileText, Activity, Layers, Tag } from "lucide-react";
+import { ArrowLeft, AlertTriangle, ShieldAlert, RefreshCw, CheckCircle, Globe, Server, Link as LinkIcon, Monitor, Calendar, Clock, Shield, Lock, History, Search, FileText, Activity, Layers, Tag, History as HistoryIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ExportButtons from "@/components/ui/ExportButtons";
 import ReScanButton from "@/components/ui/ReScanButton";
@@ -18,6 +18,22 @@ export default async function ScanResultPage({ params, searchParams }: { params:
     .eq('id', params.id)
     .eq('user_id', user.id)
     .single();
+
+  // Ambil riwayat komunitas untuk perbandingan historis
+  const { data: communityScans } = await supabase.rpc('get_community_scans');
+  
+  let previousScan = null;
+  if (scan && communityScans && communityScans.length > 0) {
+    const historical = communityScans.filter((s: any) => 
+      s.target_url === scan.target_url && 
+      new Date(s.created_at).getTime() < new Date(scan.created_at).getTime()
+    );
+    // Sort berdasarkan yang paling baru dari riwayat masa lalu
+    if (historical.length > 0) {
+      historical.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      previousScan = historical[0];
+    }
+  }
 
   if (error || !scan) {
     return notFound();
@@ -92,6 +108,28 @@ export default async function ScanResultPage({ params, searchParams }: { params:
           <ExportButtons data={scan} />
         </div>
       </div>
+
+      {/* Historical Comparison Alert */}
+      {previousScan && (
+        <div className="mb-4 flex items-start gap-3 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-800/60 rounded-2xl p-4 animate-in fade-in slide-in-from-top-2 print:hidden">
+          <div className="w-9 h-9 bg-blue-100 dark:bg-blue-500/20 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+            <HistoryIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-blue-800 dark:text-blue-400 mb-0.5">Riwayat Ditemukan</h3>
+            <p className="text-xs text-blue-700 dark:text-blue-400/80 leading-relaxed">
+              Target ini pernah di-scan oleh <span className="font-bold">{previousScan.user_name || 'Seorang pengguna'}</span> pada <strong>{new Date(previousScan.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</strong> dengan skor risiko awal <span className="font-bold">{previousScan.risk_score}</span>. 
+              {scan.risk_score > previousScan.risk_score ? (
+                <span className="text-red-600 dark:text-red-400 font-medium"> Tingkat ancaman telah meningkat sejak scan terakhir!</span>
+              ) : scan.risk_score < previousScan.risk_score ? (
+                <span className="text-green-600 dark:text-green-400 font-medium"> Skor risiko telah menurun sejak scan terakhir.</span>
+              ) : (
+                <span className="text-gray-600 dark:text-gray-400"> Tidak ada perubahan signifikan pada tingkat ancaman.</span>
+              )}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Danger Alert Banner */}
       {isDanger && (

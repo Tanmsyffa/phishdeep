@@ -4,6 +4,7 @@ import { useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Link from "next/link";
 import { ShieldCheck, Menu, X } from "lucide-react";
+import LiveNotifications from "@/components/ui/LiveNotifications";
 
 export default function DashboardLayout({
   children,
@@ -14,6 +15,7 @@ export default function DashboardLayout({
 
   return (
     <div className="flex h-[100dvh] overflow-hidden bg-gray-50 dark:bg-slate-950 flex-col md:flex-row relative print:h-auto print:overflow-visible print:bg-white transition-colors duration-300">
+      <LiveNotifications />
       {/* Mobile Top Bar */}
       <div className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-slate-900 text-gray-900 dark:text-white z-40 border-b border-gray-200 dark:border-slate-800 transition-colors print:hidden">
         <Link href="/" className="flex items-center gap-2">

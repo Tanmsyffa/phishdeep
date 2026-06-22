@@ -381,6 +381,7 @@ export default function DashboardPage() {
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         stats={{ total: globalTotal, dangerous: globalDangerous, suspicious: globalSuspicious, safe: globalSafe, linkCount: globalLink, apkCount: globalApk, avgRisk: globalAvgRisk }}
+        scans={globalScans}
       />
     </div>
   );

@@ -15,6 +15,7 @@ interface StatisticsModalProps {
     apkCount: number;
     avgRisk: number;
   };
+  scans?: any[];
 }
 
 function DonutChart({ dangerous, suspicious, safe, total }: { dangerous: number; suspicious: number; safe: number; total: number }) {
@@ -59,7 +60,7 @@ function DonutChart({ dangerous, suspicious, safe, total }: { dangerous: number;
   return <canvas ref={canvasRef} width={120} height={120} />;
 }
 
-export default function StatisticsModal({ isOpen, onClose, stats }: StatisticsModalProps) {
+export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: StatisticsModalProps) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     if (isOpen) { document.addEventListener("keydown", onKey); document.body.style.overflow = "hidden"; }
@@ -73,13 +74,33 @@ export default function StatisticsModal({ isOpen, onClose, stats }: StatisticsMo
   const riskBg = avgRisk > 70 ? "bg-red-500" : avgRisk > 30 ? "bg-yellow-500" : "bg-green-500";
   const riskLabel = avgRisk > 70 ? "Tinggi" : avgRisk > 30 ? "Sedang" : "Rendah";
 
+  // Mengelompokkan scan berdasarkan URL untuk mencari frekuensi
+  const groupedScans = scans.reduce((acc: any, scan: any) => {
+    if (!acc[scan.target_url]) {
+      acc[scan.target_url] = { ...scan, count: 0 };
+    }
+    acc[scan.target_url].count += 1;
+    // Keep the most recent scan's risk score and name
+    if (new Date(scan.created_at) > new Date(acc[scan.target_url].created_at)) {
+      acc[scan.target_url].risk_score = scan.risk_score;
+      acc[scan.target_url].user_name = scan.user_name || 'Seorang pengguna';
+      acc[scan.target_url].created_at = scan.created_at;
+    }
+    return acc;
+  }, {});
+
+  // Sort berdasarkan waktu terbaru
+  const historyList = Object.values(groupedScans).sort((a: any, b: any) => 
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  ).slice(0, 10); // Ambil 10 teratas
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Modal — fixed size, no scroll */}
-      <div className="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 overflow-hidden">
+      {/* Modal — fixed size, allow scroll on body */}
+      <div className="relative w-full max-w-xl max-h-[90vh] flex flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-slate-800">
           <div className="flex items-center gap-2.5">
@@ -100,7 +121,7 @@ export default function StatisticsModal({ isOpen, onClose, stats }: StatisticsMo
           </button>
         </div>
 
-        <div className="p-5 space-y-4">
+        <div className="p-5 space-y-4 overflow-y-auto">
           {/* Top metrics row */}
           <div className="grid grid-cols-4 gap-3">
             {[
@@ -184,6 +205,44 @@ export default function StatisticsModal({ isOpen, onClose, stats }: StatisticsMo
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Riwayat Scan Komunitas */}
+          <div className="mt-6 pt-4 border-t border-gray-100 dark:border-slate-800">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3">Riwayat Terakhir Komunitas</h3>
+            {historyList.length === 0 ? (
+              <p className="text-xs text-gray-500 text-center py-4">Belum ada riwayat scan.</p>
+            ) : (
+              <div className="space-y-2">
+                {historyList.map((item: any, idx: number) => {
+                  const isDanger = item.risk_score > 70;
+                  const isSuspicious = item.risk_score > 30 && item.risk_score <= 70;
+                  const dotColor = isDanger ? "bg-red-500" : isSuspicious ? "bg-yellow-500" : "bg-green-500";
+                  const resultText = isDanger ? "Berbahaya" : isSuspicious ? "Mencurigakan" : "Aman";
+                  
+                  return (
+                    <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700">
+                      <div className="flex-1 min-w-0 mr-4">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`w-2 h-2 rounded-full shrink-0 ${dotColor}`} />
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                            {item.target_url}
+                          </p>
+                        </div>
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                          Di-scan oleh <span className="font-medium text-gray-700 dark:text-gray-300">{item.user_name || 'Seorang pengguna'}</span> • Hasil: {resultText}
+                        </p>
+                      </div>
+                      <div className="shrink-0 flex flex-col items-end">
+                        <span className="inline-flex items-center justify-center px-2 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 text-[10px] font-bold rounded-md">
+                          {item.count}x Di-scan
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>

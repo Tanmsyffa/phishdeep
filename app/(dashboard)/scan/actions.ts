@@ -52,6 +52,7 @@ export async function saveScanResult(targetUrl: string, targetType: string, resu
     .from('scans')
     .insert({
       user_id: user.id,
+      user_name: user.user_metadata?.full_name || 'Anonymous',
       target_url: targetUrl,
       target_type: targetType,
       risk_score: riskScore,
