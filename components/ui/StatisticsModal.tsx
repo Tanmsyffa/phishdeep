@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { X, ShieldAlert, AlertCircle, CheckCircle, Link as LinkIcon, Smartphone, BarChart2, Search, ExternalLink, Copy, Check } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { X, ShieldAlert, AlertCircle, CheckCircle, Link as LinkIcon, Smartphone, BarChart2, ExternalLink, Copy, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface StatisticsModalProps {
@@ -77,10 +76,6 @@ function CopyButton({ text }: { text: string }) {
 }
 
 export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: StatisticsModalProps) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResult, setSearchResult] = useState<any>(null);
-  const [searchError, setSearchError] = useState<string | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -88,15 +83,6 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
     if (isOpen) { document.addEventListener("keydown", onKey); document.body.style.overflow = "hidden"; }
     return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
   }, [isOpen, onClose]);
-
-  // Reset search state when modal closes
-  useEffect(() => {
-    if (!isOpen) {
-      setSearchQuery("");
-      setSearchResult(null);
-      setSearchError(null);
-    }
-  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -125,34 +111,6 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
   const historyList = Object.values(groupedScans).sort((a: any, b: any) =>
     new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   ).slice(0, 15);
-
-  // Cari scan berdasarkan ID
-  const handleSearch = async () => {
-    const q = searchQuery.trim();
-    if (!q) return;
-
-    setIsSearching(true);
-    setSearchResult(null);
-    setSearchError(null);
-
-    // Cek apakah format UUID valid
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(q)) {
-      setSearchError("Format ID tidak valid. Pastikan ID berupa UUID lengkap.");
-      setIsSearching(false);
-      return;
-    }
-
-    const supabase = createClient();
-    const { data, error } = await supabase.rpc('get_scan_by_id', { scan_id: q });
-
-    if (error || !data || data.length === 0) {
-      setSearchError("Scan dengan ID tersebut tidak ditemukan atau sudah dihapus.");
-    } else {
-      setSearchResult(data[0]);
-    }
-    setIsSearching(false);
-  };
 
   const handleViewDetail = (scanId: string) => {
     onClose();
@@ -268,72 +226,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
             </div>
           </div>
 
-          {/* Search by Scan ID */}
-          <div className="border-t border-gray-100 dark:border-slate-800 pt-4">
-            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-              <Search className="w-4 h-4 text-blue-500" />
-              Cari Berdasarkan ID Scan
-            </h3>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                placeholder="Masukkan UUID scan (contoh: xxxxxxxx-xxxx-...)"
-                className="flex-1 text-xs bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <button
-                onClick={handleSearch}
-                disabled={isSearching || !searchQuery.trim()}
-                className="px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-slate-700 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1 shrink-0"
-              >
-                {isSearching ? (
-                  <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <Search className="w-3 h-3" />
-                )}
-                Cari
-              </button>
-            </div>
 
-            {/* Search Result */}
-            {searchError && (
-              <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-xs text-red-600 dark:text-red-400">
-                {searchError}
-              </div>
-            )}
-            {searchResult && (() => {
-              const isDanger = searchResult.risk_score > 70;
-              const isSusp = searchResult.risk_score > 30 && searchResult.risk_score <= 70;
-              const dotColor = isDanger ? "bg-red-500" : isSusp ? "bg-yellow-500" : "bg-green-500";
-              const resultText = isDanger ? "Berbahaya" : isSusp ? "Mencurigakan" : "Aman";
-              return (
-                <div className="mt-3 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-                  <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2">Scan Ditemukan</p>
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <span className={`w-2 h-2 rounded-full shrink-0 ${dotColor}`} />
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{searchResult.target_url}</p>
-                      </div>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                        Oleh <span className="font-medium">{searchResult.user_name || 'Pengguna'}</span> · {resultText} · Skor {searchResult.risk_score}/100
-                      </p>
-                      <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 font-mono">{searchResult.id}</p>
-                    </div>
-                    <button
-                      onClick={() => handleViewDetail(searchResult.id)}
-                      className="shrink-0 flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors"
-                    >
-                      <ExternalLink className="w-3 h-3" />
-                      Lihat
-                    </button>
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
 
           {/* Riwayat Scan Komunitas */}
           <div className="border-t border-gray-100 dark:border-slate-800 pt-4">
