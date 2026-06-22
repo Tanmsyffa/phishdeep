@@ -34,7 +34,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Daftar rute yang dilindungi (wajib login)
-  const protectedRoutes = ['/dashboard', '/scan', '/history', '/settings']
+  const protectedRoutes = ['/dashboard', '/scan', '/history', '/settings', '/reports', '/search']
   const isProtectedRoute = protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))
 
   // Rute autentikasi (tidak boleh diakses jika sudah login)
