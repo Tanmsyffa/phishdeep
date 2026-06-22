@@ -11,7 +11,7 @@
 
 ## 🚀 Teknologi yang Digunakan
 - **Frontend**: Next.js 14 (App Router), React, Tailwind CSS
-- **Backend (API)**: Python (Flask), Playwright (untuk rendering bukti visual), BeautifulSoup
+- **Backend (API)**: Python (Flask), BeautifulSoup, Microlink API (untuk rendering bukti visual)
 - **Database & Auth**: Supabase (PostgreSQL, Authentication)
 - **Deployment**: Vercel
 
@@ -46,7 +46,6 @@ Buat virtual environment dan install dependensi Python:
 python -m venv venv
 source venv/bin/activate  # Untuk Windows: venv\Scripts\activate
 pip install -r requirements.txt
-playwright install  # Untuk mengunduh browser bawaan Playwright
 ```
 
 ### 4. Menjalankan Aplikasi

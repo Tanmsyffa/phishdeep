@@ -90,7 +90,7 @@ export default function DashboardPage() {
 
       // Show modal once per session (only if user has scans or global has scans)
       const seen = sessionStorage.getItem('stats_modal_seen');
-      if (!seen && (globalRes.data?.length ?? 0) > 0) {
+      if (!seen && globalData.length > 0) {
         setTimeout(() => {
           setShowModal(true);
           sessionStorage.setItem('stats_modal_seen', '1');

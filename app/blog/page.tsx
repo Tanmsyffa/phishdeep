@@ -57,8 +57,8 @@ export default function BlogPage() {
               <div className="flex items-center gap-4 sm:gap-6 mt-2">
                 {[
                   { label: "Artikel", val: articles.length },
-                  { label: "Kategori", val: [...new Set(articles.map(a => a.category))].length },
-                  { label: "Penulis", val: [...new Set(articles.map(a => a.author))].length },
+                  { label: "Kategori", val: Array.from(new Set(articles.map(a => a.category))).length },
+                  { label: "Penulis", val: Array.from(new Set(articles.map(a => a.author))).length },
                 ].map(s => (
                   <div key={s.label} className="text-center">
                     <p className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white">{s.val}</p>

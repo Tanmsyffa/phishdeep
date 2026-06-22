@@ -1,15 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   rewrites: async () => {
-    return [
-      {
-        source: '/api/:path*',
-        destination:
-          process.env.NODE_ENV === 'development'
-            ? 'http://127.0.0.1:5328/api/:path*'
-            : '/api/',
-      },
-    ]
+    if (process.env.NODE_ENV === 'development') {
+      return [
+        {
+          source: '/api/:path*',
+          destination: 'http://127.0.0.1:5328/api/:path*',
+        },
+      ]
+    }
+    return []
   },
   async headers() {
     return [
@@ -32,12 +32,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'pnduuwrrikfzpratfwxv.supabase.co' },
     ],
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+
 };
 
 export default nextConfig;

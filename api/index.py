@@ -187,7 +187,7 @@ def unshorten_url(url: str) -> str:
                 break
             visited.add(check)
             req = ur.Request(check, headers={'User-Agent': 'Mozilla/5.0'})
-            opener = ur.build_opener(ur.HTTPRedirectHandler())
+            opener = ur.build_opener(SafeRedirectHandler())
             resp = opener.open(req, timeout=4)
             final = resp.url if hasattr(resp, 'url') else check
             if final and final != check:
@@ -222,6 +222,12 @@ def is_safe_url(url):
     except Exception:
         # If hostname resolution fails or it's invalid, block it
         return False
+
+class SafeRedirectHandler(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if not is_safe_url(newurl):
+            raise urllib.error.URLError(f"Redirect blocked: {newurl} resolves to unsafe IP (SSRF prevention).")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 def get_rdap_info(domain):
     """Lookup domain info via python-whois (primary) with RDAP fallback."""
@@ -965,7 +971,7 @@ def analyze_link(target_url):
                 hop_req = urllib.request.Request(check_url, headers=headers)
                 # Gunakan redirect handler default untuk tracing cepat
                 opener = urllib.request.build_opener(
-                    urllib.request.HTTPRedirectHandler(),
+                    SafeRedirectHandler(),
                     urllib.request.HTTPSHandler(context=ctx)
                 )
                 hop_response = opener.open(hop_req, timeout=2)
@@ -987,7 +993,8 @@ def analyze_link(target_url):
         import time
         start_time = time.time()
         try:
-            response = urllib.request.urlopen(req, timeout=4, context=ctx)
+            opener = urllib.request.build_opener(SafeRedirectHandler(), urllib.request.HTTPSHandler(context=ctx))
+            response = opener.open(req, timeout=4)
             html_content = response.read().decode('utf-8', errors='ignore')
             resp_headers = response.headers
             status_code = response.getcode()

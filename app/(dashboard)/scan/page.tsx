@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { LinkIcon, Smartphone, FileSearch, Image as ImageIcon, ShieldAlert, Loader2, RefreshCw } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import { LinkIcon, Smartphone, ShieldAlert, Loader2 } from "lucide-react";
 import { checkScanLimit, saveScanResult } from "./actions";
 import { createClient } from "@/lib/supabase/client";
 
@@ -78,7 +77,6 @@ function ScanForm() {
 
       setScanStatusMsg("Menjalankan Analisis Forensik Asli...");
       
-      let scanResult;
       // Try calling Vercel Python Function
       const res = await fetch('/api/scan', {
         method: 'POST',
@@ -93,7 +91,7 @@ function ScanForm() {
         } catch(e) {}
         throw new Error(errorTxt);
       }
-      scanResult = await res.json();
+      const scanResult = await res.json();
 
       setScanStatusMsg("Menyimpan hasil laporan...");
       
