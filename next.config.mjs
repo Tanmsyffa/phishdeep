@@ -21,7 +21,7 @@ const nextConfig = {
           { key: 'X-XSS-Protection', value: '1; mode=block' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
-          { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://api.microlink.io https://lh3.googleusercontent.com; font-src 'self' data:; connect-src 'self' https://pnduuwrrikfzpratfwxv.supabase.co;" }
+          { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://api.microlink.io https://lh3.googleusercontent.com https://pnduuwrrikfzpratfwxv.supabase.co; font-src 'self' data:; connect-src 'self' https://pnduuwrrikfzpratfwxv.supabase.co;" }
         ],
       },
     ]
@@ -29,6 +29,7 @@ const nextConfig = {
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'api.microlink.io' },
+      { protocol: 'https', hostname: 'pnduuwrrikfzpratfwxv.supabase.co' },
     ],
   },
   eslint: {
