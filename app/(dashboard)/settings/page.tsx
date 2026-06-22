@@ -43,8 +43,13 @@ export default function SettingsPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const objectUrl = URL.createObjectURL(file);
-      setPreviewUrl(objectUrl);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          setPreviewUrl(e.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
 

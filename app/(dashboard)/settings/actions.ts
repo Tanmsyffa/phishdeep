@@ -20,7 +20,10 @@ export async function updateProfile(formData: FormData) {
 
   // Upload new avatar if provided
   if (avatarFile && avatarFile.size > 0) {
-    const ext = avatarFile.name.split('.').pop() ?? 'jpg'
+    let ext = avatarFile.name.includes('.') ? avatarFile.name.split('.').pop()?.toLowerCase() : null
+    if (!ext || !['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)) {
+      ext = avatarFile.type.split('/').pop() || 'jpg'
+    }
     const filePath = `avatars/${user.id}.${ext}`
     const arrayBuffer = await avatarFile.arrayBuffer()
     const buffer = new Uint8Array(arrayBuffer)
