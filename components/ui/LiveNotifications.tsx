@@ -45,11 +45,11 @@ export default function LiveNotifications() {
 
         setNotifications(prev => [...prev, ...newNotifs]);
 
-        // Auto remove setiap notifikasi setelah 6 detik
+        // Auto remove setiap notifikasi setelah 20 detik agar user sempat melihat
         newNotifs.forEach((notif: any) => {
           setTimeout(() => {
             removeNotification(notif.id);
-          }, 6000);
+          }, 20000);
         });
       }
     };
