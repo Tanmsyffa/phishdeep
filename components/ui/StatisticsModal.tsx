@@ -112,10 +112,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
     new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   ).slice(0, 15);
 
-  const handleViewDetail = (scanId: string) => {
-    onClose();
-    router.push(`/scan/${scanId}`);
-  };
+
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true">
@@ -262,13 +259,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
                           <span className="inline-flex items-center justify-center px-2 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 text-[10px] font-bold rounded-md">
                             {item.count}x
                           </span>
-                          <button
-                            onClick={() => handleViewDetail(item.id)}
-                            className="flex items-center gap-0.5 text-[10px] text-blue-600 dark:text-blue-400 hover:underline font-medium"
-                          >
-                            <ExternalLink className="w-2.5 h-2.5" />
-                            Detail
-                          </button>
+
                         </div>
                       </div>
                     </div>
