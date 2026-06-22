@@ -63,17 +63,11 @@ export default function SettingsPage() {
         setProfileMsg({ text: result.error, type: "error" });
       } else if (result?.success) {
         setProfileMsg({ text: result.success, type: "success" });
-        // Update the displayed avatar if a new one was uploaded
-        if (previewUrl) {
-          // We'll refresh user data to get the new URL from Supabase
-          const supabase = createClient();
-          await supabase.auth.refreshSession();
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user?.user_metadata?.avatar_url) {
-            setCurrentAvatar(user.user_metadata.avatar_url);
-          }
-          setPreviewUrl(null);
+        if (result.avatarUrl) {
+          setCurrentAvatar(result.avatarUrl);
         }
+        setPreviewUrl(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
       }
     });
   };

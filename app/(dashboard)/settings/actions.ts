@@ -53,9 +53,11 @@ export async function updateProfile(formData: FormData) {
     }
   })
 
-  if (error) return { error: error.message }
+  if (error) {
+    return { error: `Gagal update profil: ${error.message}` }
+  }
 
   revalidatePath('/settings')
   revalidatePath('/dashboard')
-  return { success: "Profil berhasil diperbarui." }
+  return { success: "Profil berhasil diperbarui.", avatarUrl }
 }
