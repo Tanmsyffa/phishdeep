@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     const chromiumArgs = await chromium.args;
 
     browser = await puppeteer.launch({
-      args: isLocal ? puppeteer.defaultArgs() : chromiumArgs,
+      args: (isLocal ? puppeteer.defaultArgs() : chromiumArgs) as string[],
       defaultViewport: { width: 1280, height: 800 },
       executablePath: isLocal ? localExecutablePath : await chromium.executablePath(),
       headless: true,
