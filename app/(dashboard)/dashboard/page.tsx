@@ -43,6 +43,9 @@ export default function DashboardPage() {
   const [, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
+  // Compute today's WIB date string at render time — used for chart "today" highlight
+  const todayWIBStr = toWIBDateStr(new Date());
+
   useEffect(() => {
     const supabase = createClient();
 
@@ -55,7 +58,8 @@ export default function DashboardPage() {
       // "6 days ago" in WIB = WIB midnight of that day = UTC equivalent
       const nowForRange = new Date();
       const nowWIBStr = toWIBDateStr(nowForRange); // e.g. "2026-06-23"
-      const todayWIBStr = nowWIBStr;
+      // todayWIBStr is already computed at component scope — use the same value
+      const localTodayWIBStr = nowWIBStr;
 
       // Build 7-day window: oldest day WIB midnight in UTC
       const sevenDaysAgoUTC = new Date(`${nowWIBStr}T00:00:00+07:00`);
@@ -83,7 +87,7 @@ export default function DashboardPage() {
       // Filter today's scans using explicit WIB date comparison
       const todayScans = weekScans.filter((s: any) => {
         if (s.status === 'deleted') return false;
-        return toWIBDateStr(parseUTC(s.created_at)) === todayWIBStr;
+        return toWIBDateStr(parseUTC(s.created_at)) === localTodayWIBStr;
       });
       setScans(todayScans);
 
@@ -109,7 +113,8 @@ export default function DashboardPage() {
           return toWIBDateStr(parseUTC(s.created_at)) === wibDay;
         });
 
-        trend.push({ dayName, total: dayScans.length, bahaya: dayScans.filter((s: any) => s.risk_score > 70).length });
+        const [, mm, dd] = wibDay.split('-');
+        trend.push({ dayName, total: dayScans.length, bahaya: dayScans.filter((s: any) => s.risk_score > 70).length, wibDay, dateLabel: `${parseInt(dd)}/${parseInt(mm)}` });
       }
       setTrendData(trend);
       setLoading(false);
@@ -262,18 +267,26 @@ export default function DashboardPage() {
                     <div className="absolute left-0 right-0 border-t border-dashed border-gray-100 dark:border-slate-700" style={{ top: '50%' }} />
                     <div className="absolute inset-0 flex items-end justify-around px-1 pb-0">
                       {trendData.map((t, idx) => {
+                        const isToday = t.wibDay === todayWIBStr;
                         const barH = chartMax > 0 ? Math.max(Math.round((t.total / chartMax) * CHART_H), t.total > 0 ? 4 : 0) : 0;
                         const dangH = t.total > 0 && t.bahaya > 0 ? Math.round((t.bahaya / t.total) * barH) : 0;
                         return (
                           <div key={idx} className="flex flex-col items-center justify-end group z-10" style={{ height: `${CHART_H}px`, minWidth: '12px', flex: 1 }}>
                             <div className="w-full flex justify-center">
                               {barH > 0 ? (
-                                <div className="w-4 sm:w-5 lg:w-6 rounded-t-sm relative bg-blue-200 dark:bg-blue-500/50 group-hover:bg-blue-300 dark:group-hover:bg-blue-500/70 transition-colors cursor-default" style={{ height: `${barH}px` }}>
+                                <div
+                                  className={`w-4 sm:w-5 lg:w-6 rounded-t-sm relative transition-colors cursor-default ${
+                                    isToday
+                                      ? 'bg-blue-400 dark:bg-blue-400 group-hover:bg-blue-500 dark:group-hover:bg-blue-300'
+                                      : 'bg-blue-200 dark:bg-blue-500/50 group-hover:bg-blue-300 dark:group-hover:bg-blue-500/70'
+                                  }`}
+                                  style={{ height: `${barH}px` }}
+                                >
                                   {dangH > 0 && <div className="absolute bottom-0 left-0 right-0 bg-red-400 dark:bg-red-500 rounded-b-sm" style={{ height: `${dangH}px` }} />}
                                   <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[9px] py-1 px-1.5 rounded pointer-events-none whitespace-nowrap transition-opacity shadow-lg z-20">{t.total}S / {t.bahaya}B</div>
                                 </div>
                               ) : (
-                                <div className="w-4 sm:w-5 lg:w-6 h-0.5 bg-gray-100 dark:bg-slate-800 rounded-sm" />
+                                <div className={`w-4 sm:w-5 lg:w-6 h-0.5 rounded-sm ${isToday ? 'bg-blue-200 dark:bg-blue-600/40' : 'bg-gray-100 dark:bg-slate-800'}`} />
                               )}
                             </div>
                           </div>
@@ -283,11 +296,19 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="flex justify-around pl-8 mt-1.5">
-                  {trendData.map((t, idx) => (
-                    <div key={idx} className="flex-1 text-center">
-                      <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">{t.dayName}</span>
-                    </div>
-                  ))}
+                  {trendData.map((t, idx) => {
+                    const isToday = t.wibDay === todayWIBStr;
+                    return (
+                      <div key={idx} className="flex-1 text-center">
+                        <span className={`text-[10px] font-semibold block ${isToday ? 'text-blue-500 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                          {t.dayName}
+                        </span>
+                        <span className={`text-[8px] block mt-0.5 ${isToday ? 'text-blue-400 dark:text-blue-500 font-bold' : 'text-gray-400 dark:text-gray-600'}`}>
+                          {isToday ? '● Hari ini' : t.dateLabel}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
                 <div className="flex gap-4 mt-3 text-[10px] font-medium justify-center border-t border-gray-100 dark:border-slate-700 pt-3 text-gray-600 dark:text-gray-300">
                   <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-blue-200 dark:bg-blue-500/50 rounded-sm inline-block" /> Total Scan</div>
