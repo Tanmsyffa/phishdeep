@@ -1405,7 +1405,6 @@ def analyze_link(target_url):
                 pass
 
     except urllib.error.URLError as e:
-        risk_score += 40
         reason_str = str(e.reason)
         # Enhanced network error classification
         if 'SSL' in reason_str or 'certificate' in reason_str.lower():
