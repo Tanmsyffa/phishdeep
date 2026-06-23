@@ -12,6 +12,20 @@ function getStatusColor(score: number) {
   return { label: 'Aman', color: 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border-green-100 dark:border-green-800' };
 }
 
+// Helper: convert any timestamp string to WIB date string "YYYY-MM-DD"
+const wibFmt = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Asia/Jakarta',
+  year: 'numeric', month: '2-digit', day: '2-digit',
+});
+function toWIBDateStr(date: Date): string {
+  return wibFmt.format(date); // returns "2026-06-23"
+}
+function parseUTC(utcStr: string): Date {
+  // Ensure string is parsed as UTC
+  const iso = utcStr.endsWith('Z') || utcStr.includes('+') ? utcStr : `${utcStr}Z`;
+  return new Date(iso);
+}
+
 function getGreeting() {
   const hour = new Date().getHours();
   if (hour < 12) return "Selamat pagi";
@@ -37,27 +51,27 @@ export default function DashboardPage() {
       setUser(user);
       if (!user) { setLoading(false); return; }
 
-      // Fetch today's scans
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-      sevenDaysAgo.setHours(0, 0, 0, 0);
+      // Compute 7-day window start in WIB:
+      // "6 days ago" in WIB = WIB midnight of that day = UTC equivalent
+      const nowForRange = new Date();
+      const nowWIBStr = toWIBDateStr(nowForRange); // e.g. "2026-06-23"
+      const todayWIBStr = nowWIBStr;
 
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
-
-
+      // Build 7-day window: oldest day WIB midnight in UTC
+      const sevenDaysAgoUTC = new Date(`${nowWIBStr}T00:00:00+07:00`);
+      sevenDaysAgoUTC.setDate(sevenDaysAgoUTC.getDate() - 6);
 
       const [weekRes, globalStatsRes] = await Promise.all([
-        // 7-day scans for this user (for trend chart)
+        // 7-day scans for this user (for trend chart) — query uses UTC comparison
         supabase.from('scans').select('*').eq('user_id', user.id)
-          .gte('created_at', sevenDaysAgo.toISOString()).order('created_at', { ascending: false }),
+          .gte('created_at', sevenDaysAgoUTC.toISOString()).order('created_at', { ascending: false }),
         // All-time scans from ALL users (requires get_community_scans RPC to bypass RLS)
         supabase.rpc('get_community_scans')
       ]);
 
       let globalData = [];
       if (globalStatsRes.error) {
-        // Fallback if RPC does not exist yet (it will only return the user's own scans due to RLS)
+        // Fallback if RPC does not exist yet
         const fallbackRes = await supabase.from('scans').select('risk_score, target_type, target_url, created_at').neq('status', 'deleted');
         globalData = fallbackRes.data || [];
       } else {
@@ -65,34 +79,34 @@ export default function DashboardPage() {
       }
 
       const weekScans = weekRes.data ?? [];
+
+      // Filter today's scans using explicit WIB date comparison
       const todayScans = weekScans.filter((s: any) => {
         if (s.status === 'deleted') return false;
-        // Ensure created_at is treated as UTC
-        const dateString = s.created_at.endsWith('Z') || s.created_at.includes('+') ? s.created_at : `${s.created_at}Z`;
-        return new Date(dateString) >= todayStart;
+        return toWIBDateStr(parseUTC(s.created_at)) === todayWIBStr;
       });
       setScans(todayScans);
 
       setGlobalScans(globalData ?? []);
 
-      // Build 7-day trend
+      // Build 7-day trend using WIB date strings
       const trend = [];
-      const now = new Date();
+      // Generate WIB date strings for the 7-day window
+      const wibDays: string[] = [];
       for (let i = 6; i >= 0; i--) {
-        const d = new Date(now);
+        const d = new Date(`${nowWIBStr}T12:00:00+07:00`); // noon WIB to avoid DST edge cases
         d.setDate(d.getDate() - i);
-        const dayName = d.toLocaleDateString('id-ID', { weekday: 'short' });
-        const targetYear = d.getFullYear();
-        const targetMonth = d.getMonth();
-        const targetDate = d.getDate();
+        wibDays.push(toWIBDateStr(d));
+      }
+
+      for (const wibDay of wibDays) {
+        // Day name from WIB date string
+        const dayDate = new Date(`${wibDay}T12:00:00+07:00`);
+        const dayName = dayDate.toLocaleDateString('id-ID', { weekday: 'short', timeZone: 'Asia/Jakarta' });
 
         const dayScans = weekScans.filter((s: any) => {
           if (s.status === 'deleted') return false;
-          const dateString = s.created_at.endsWith('Z') || s.created_at.includes('+') ? s.created_at : `${s.created_at}Z`;
-          const scanDate = new Date(dateString);
-          return scanDate.getFullYear() === targetYear &&
-                 scanDate.getMonth() === targetMonth &&
-                 scanDate.getDate() === targetDate;
+          return toWIBDateStr(parseUTC(s.created_at)) === wibDay;
         });
 
         trend.push({ dayName, total: dayScans.length, bahaya: dayScans.filter((s: any) => s.risk_score > 70).length });
