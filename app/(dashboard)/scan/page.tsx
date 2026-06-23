@@ -78,11 +78,13 @@ function ScanForm() {
 
       setScanStatusMsg("Menjalankan Analisis Forensik Asli...");
       
+      const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+
       // Try calling Vercel Python Function
       const res = await fetch('/api/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ target: targetUrl, type: activeTab })
+        body: JSON.stringify({ target: targetUrl, type: activeTab, baseUrl })
       });
       if (!res.ok) {
         let errorTxt = "Target tidak dapat dijangkau atau analisis terhenti.";

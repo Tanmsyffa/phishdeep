@@ -419,7 +419,7 @@ def get_rdap_info(domain):
     return domain_info
 
 
-def analyze_link(target_url):
+def analyze_link(target_url, base_url=""):
     details = []
     risk_score = 0
     extracted_code = ""
@@ -1076,14 +1076,39 @@ def analyze_link(target_url):
         
         import time
         start_time = time.time()
+        html_content = ""
+        resp_headers = {}
+        status_code = 0
         try:
-            opener = urllib.request.build_opener(SafeRedirectHandler(), urllib.request.HTTPSHandler(context=ctx))
-            response = opener.open(req, timeout=4)
-            html_content = response.read().decode('utf-8', errors='ignore')
-            resp_headers = response.headers
-            status_code = response.getcode()
-            latency = int((time.time() - start_time) * 1000)
-            details.append({"step": "Koneksi Jaringan", "finding": f"Koneksi berhasil (HTTP {status_code}). Waktu respons: {latency}ms."})
+            # --- WAF Bypass Headless Mode ---
+            if base_url:
+                try:
+                    scrape_req = urllib.request.Request(
+                        f"{base_url}/api/scrape",
+                        data=json.dumps({"url": target_url}).encode('utf-8'),
+                        headers={'Content-Type': 'application/json'}
+                    )
+                    scrape_resp = urllib.request.urlopen(scrape_req, timeout=18)
+                    scrape_data = json.loads(scrape_resp.read().decode('utf-8'))
+                    if scrape_data.get('status') == 'success' and scrape_data.get('html'):
+                        html_content = scrape_data.get('html')
+                        if scrape_data.get('screenshot'):
+                            screenshot_url = scrape_data.get('screenshot')
+                        status_code = 200
+                        latency = int((time.time() - start_time) * 1000)
+                        details.append({"step": "Koneksi Jaringan", "finding": f"Koneksi berhasil (WAF Bypass Active). Latensi: {latency}ms."})
+                except Exception as e:
+                    pass # Silently fallback to urllib
+
+            if not html_content:
+                opener = urllib.request.build_opener(SafeRedirectHandler(), urllib.request.HTTPSHandler(context=ctx))
+                response = opener.open(req, timeout=4)
+                html_content = response.read().decode('utf-8', errors='ignore')
+                resp_headers = response.headers
+                status_code = response.getcode()
+                latency = int((time.time() - start_time) * 1000)
+                details.append({"step": "Koneksi Jaringan", "finding": f"Koneksi berhasil (HTTP {status_code}). Waktu respons: {latency}ms."})
+
         except urllib.error.HTTPError as e:
             latency = int((time.time() - start_time) * 1000)
             status_code = e.code
@@ -2011,7 +2036,8 @@ def scan():
             if parsed.scheme in ('javascript', 'data', 'vbscript'):
                 return jsonify({"status": "error", "message": "Protokol URL tidak diizinkan."}), 400
 
-            risk_score, details, extracted_code, domain_info, frameworks, redirect_chain, screenshot_url = analyze_link(target)
+            base_url = data.get('baseUrl', '')
+            risk_score, details, extracted_code, domain_info, frameworks, redirect_chain, screenshot_url = analyze_link(target, base_url)
         elif scan_type.lower() == 'apk':
             risk_score, details, extracted_code, domain_info, frameworks, redirect_chain, screenshot_url = analyze_file(target, scan_type)
         else:
