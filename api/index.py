@@ -28,16 +28,17 @@ app = Flask(__name__)
 # ---------------------------------------------------------------------------
 _MULTI_TLDS = {
     'co.id', 'or.id', 'net.id', 'ac.id', 'sch.id', 'web.id', 'biz.id',
-    'co.uk', 'org.uk', 'me.uk', 'net.uk', 'ltd.uk',
-    'com.au', 'net.au', 'org.au', 'id.au',
-    'co.in', 'net.in', 'org.in', 'ac.in',
-    'com.br', 'net.br', 'org.br', 'gov.br',
-    'co.nz', 'net.nz', 'org.nz',
-    'co.za', 'org.za', 'net.za',
-    'co.jp', 'ne.jp', 'or.jp',
-    'com.sg', 'net.sg', 'org.sg',
-    'com.my', 'net.my', 'org.my',
-    'com.ph', 'net.ph', 'org.ph',
+    'go.id', 'mil.id', 'my.id', 'desa.id', 'ponpes.id',
+    'co.uk', 'org.uk', 'me.uk', 'net.uk', 'ltd.uk', 'gov.uk', 'ac.uk',
+    'com.au', 'net.au', 'org.au', 'id.au', 'gov.au', 'edu.au',
+    'co.in', 'net.in', 'org.in', 'ac.in', 'gov.in',
+    'com.br', 'net.br', 'org.br', 'gov.br', 'edu.br',
+    'co.nz', 'net.nz', 'org.nz', 'govt.nz',
+    'co.za', 'org.za', 'net.za', 'gov.za',
+    'co.jp', 'ne.jp', 'or.jp', 'go.jp', 'ac.jp',
+    'com.sg', 'net.sg', 'org.sg', 'gov.sg', 'edu.sg',
+    'com.my', 'net.my', 'org.my', 'gov.my', 'edu.my',
+    'com.ph', 'net.ph', 'org.ph', 'gov.ph', 'edu.ph',
 }
 
 def _get_root_domain(hostname: str) -> tuple[str, str]:
@@ -1198,7 +1199,6 @@ def analyze_link(target_url):
                 # Extract forms to check for external POST actions
                 forms = soup.find_all('form')
                 form_actions = []
-                root_domain = parsed_url.hostname.split('.')[-2] + '.' + parsed_url.hostname.split('.')[-1]
                 for form in forms:
                     action = form.get('action')
                     if action and action.startswith('http') and root_domain not in action.lower():
