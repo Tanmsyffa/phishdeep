@@ -23,10 +23,10 @@ function getGreeting() {
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [scans, setScans] = useState<any[]>([]);
-  const [allScans, setAllScans] = useState<any[]>([]); // user's all-time scans
+
   const [globalScans, setGlobalScans] = useState<any[]>([]); // ALL users scans (for modal)
   const [trendData, setTrendData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
@@ -45,16 +45,12 @@ export default function DashboardPage() {
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
 
-      const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
 
-      const [weekRes, allRes, globalStatsRes] = await Promise.all([
+
+      const [weekRes, globalStatsRes] = await Promise.all([
         // 7-day scans for this user (for trend chart)
         supabase.from('scans').select('*').eq('user_id', user.id)
           .gte('created_at', sevenDaysAgo.toISOString()).order('created_at', { ascending: false }),
-        // All-time scans for this user only (for user's own stats in dashboard, limited to 48h)
-        supabase.from('scans').select('risk_score, target_type').eq('user_id', user.id)
-          .gte('created_at', fortyEightHoursAgo)
-          .neq('status', 'deleted'),
         // All-time scans from ALL users (requires get_community_scans RPC to bypass RLS)
         supabase.rpc('get_community_scans')
       ]);
@@ -71,7 +67,7 @@ export default function DashboardPage() {
       const weekScans = weekRes.data ?? [];
       const todayScans = weekScans.filter((s: any) => new Date(s.created_at) >= todayStart && s.status !== 'deleted');
       setScans(todayScans);
-      setAllScans(allRes.data ?? []);
+
       setGlobalScans(globalData ?? []);
 
       // Build 7-day trend
@@ -112,13 +108,8 @@ export default function DashboardPage() {
   });
 
   // User-specific stats (for dashboard cards and charts)
-  const allTotal = allScans.length;
-  const allDangerous = allScans.filter(s => s.risk_score > 70).length;
-  const allSuspicious = allScans.filter(s => s.risk_score > 30 && s.risk_score <= 70).length;
-  const allSafe = allScans.filter(s => s.risk_score <= 30).length;
-  const allLink = allScans.filter(s => s.target_type === 'Link').length;
-  const allApk = allScans.filter(s => s.target_type === 'APK').length;
-  const avgRisk = allTotal > 0 ? allScans.reduce((sum, s) => sum + s.risk_score, 0) / allTotal : 0;
+
+
 
   // Global stats (for statistics modal — all users)
   const globalTotal = globalScans.length;

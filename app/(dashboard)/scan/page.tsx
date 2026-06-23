@@ -27,7 +27,7 @@ function ScanForm() {
       setUrl(decodeURIComponent(rescanUrl));
       if (rescanType) setActiveTab(rescanType.toLowerCase() === 'apk' ? 'apk' : 'link');
     }
-  }, []);
+  }, [searchParams]);
 
   const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
 
@@ -71,8 +71,9 @@ function ScanForm() {
         if (uploadError) throw new Error("Gagal mengunggah file");
         
         uploadedFilePath = filePath;
-        const { data: { publicUrl } } = supabase.storage.from('scans').getPublicUrl(filePath);
-        targetUrl = publicUrl; // Python will analyze this URL
+        const { data: signedData, error: signedError } = await supabase.storage.from('scans').createSignedUrl(filePath, 300);
+        if (signedError || !signedData?.signedUrl) throw new Error("Gagal membuat URL aman sementara untuk analisis");
+        targetUrl = signedData.signedUrl;
       }
 
       setScanStatusMsg("Menjalankan Analisis Forensik Asli...");
@@ -88,7 +89,7 @@ function ScanForm() {
         try {
            const errData = await res.json();
            if (errData.message) errorTxt = errData.message;
-        } catch(e) {}
+        } catch {}
         throw new Error(errorTxt);
       }
       const scanResult = await res.json();

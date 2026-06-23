@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { X, ShieldAlert, AlertCircle, CheckCircle, Link as LinkIcon, Smartphone, BarChart2, ExternalLink, Copy, Check } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { X, ShieldAlert, AlertCircle, CheckCircle, Link as LinkIcon, Smartphone, BarChart2, Copy, Check } from "lucide-react";
 
 interface StatisticsModalProps {
   isOpen: boolean;
@@ -76,7 +75,7 @@ function CopyButton({ text }: { text: string }) {
 }
 
 export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: StatisticsModalProps) {
-  const router = useRouter();
+
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };

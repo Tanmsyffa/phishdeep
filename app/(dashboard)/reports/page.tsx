@@ -85,7 +85,7 @@ export default async function ReportsPage({
           {filteredScans.map((scan: any) => {
             const isDanger = scan.risk_score > 70;
             const isSuspicious = scan.risk_score > 30 && scan.risk_score <= 70;
-            const isSafe = scan.risk_score <= 30;
+
             const dateStr = new Date(scan.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
             
             return (

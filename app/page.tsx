@@ -1,8 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { ArrowRight, CheckCircle2, ShieldCheck, FileText, Link as LinkIcon, Smartphone, FileSearch } from "lucide-react";
+import { ArrowRight, CheckCircle2, ShieldCheck, FileText, Link as LinkIcon, Smartphone } from "lucide-react";
 
 export default function Home() {
   return (

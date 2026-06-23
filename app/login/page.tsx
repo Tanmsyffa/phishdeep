@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { signInWithGoogle } from '@/app/auth-actions'
 import { ShieldCheck, AlertCircle, ArrowLeft, Lock, Fingerprint, ShieldAlert } from 'lucide-react'
-import BackButton from '@/components/ui/BackButton'
 
 export default function LoginPage({
   searchParams,

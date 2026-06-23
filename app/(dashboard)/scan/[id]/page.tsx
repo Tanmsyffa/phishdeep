@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, AlertTriangle, ShieldAlert, RefreshCw, CheckCircle, Globe, Server, Link as LinkIcon, Monitor, Calendar, Clock, Shield, Lock, History, Search, FileText, Activity, Layers, Tag, History as HistoryIcon } from "lucide-react";
+import { ArrowLeft, AlertTriangle, ShieldAlert, RefreshCw, CheckCircle, Globe, Server, Link as LinkIcon, Monitor, Calendar, Clock, Shield, Lock, History, Search, FileText, Activity, Tag, History as HistoryIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ExportButtons from "@/components/ui/ExportButtons";
 import ReScanButton from "@/components/ui/ReScanButton";

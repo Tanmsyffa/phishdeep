@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -90,11 +91,14 @@ export default function RootLayout({
     },
   };
 
+  const nonce = headers().get('x-nonce') || '';
+
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id" className="scroll-smooth" suppressHydrationWarning>
       <head>
         {/* Inline script to prevent dark mode FOUC - runs before React hydration */}
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
@@ -114,6 +118,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} antialiased text-gray-900 bg-gray-50 dark:bg-slate-950 dark:text-gray-100`}>
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />

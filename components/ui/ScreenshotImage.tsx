@@ -3,21 +3,7 @@
 import { useState } from "react";
 import { Monitor, AlertTriangle } from "lucide-react";
 
-// Known blocked/WAF page patterns that appear in screenshots
-const BLOCKED_INDICATORS = [
-  "your request has been blocked",
-  "access denied",
-  "403 forbidden",
-  "cloudflare",
-  "ray id",
-  "attention required",
-  "just a moment",
-  "ddos protection",
-  "please wait",
-  "security check",
-  "enable cookies",
-  "bot protection",
-];
+
 
 export default function ScreenshotImage({ src, targetUrl }: { src: string; targetUrl?: string }) {
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
@@ -89,7 +75,7 @@ export default function ScreenshotImage({ src, targetUrl }: { src: string; targe
 
       {/* Blocked page warning overlay — shown on top of visible screenshot when detected */}
       {status === "ok" && (
-        <BlockedPageDetector src={currentSrc} />
+        <BlockedPageDetector />
       )}
     </div>
   );
@@ -100,7 +86,7 @@ export default function ScreenshotImage({ src, targetUrl }: { src: string; targe
  * appears to show a WAF/CDN block page.
  * Uses an image analysis heuristic via a hidden canvas.
  */
-function BlockedPageDetector({ src }: { src: string }) {
+function BlockedPageDetector() {
   // We can't read pixel data from cross-origin images.
   // Instead, show a subtle notice that the captured page may be a block screen.
   // The actual detection happens at the backend level; here we add a UI affordance.

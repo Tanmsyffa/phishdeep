@@ -9,7 +9,7 @@ export default async function AboutPage() {
   const supabase = createClient();
 
   // Gunakan RPC (Remote Procedure Call) agar bisa membypass RLS (Row Level Security)
-  const { data: rpcData, error } = await supabase.rpc("get_public_stats");
+  const { data: rpcData } = await supabase.rpc("get_public_stats");
 
   let totalScans = 0;
   let totalThreats = 0;

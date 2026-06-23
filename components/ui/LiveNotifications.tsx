@@ -61,7 +61,7 @@ export default function LiveNotifications() {
     let channel: ReturnType<typeof supabase.channel>;
     let retryTimeout: ReturnType<typeof setTimeout>;
     let isMounted = true;
-
+    const currentTimers = timersRef.current;
     const subscribe = async () => {
       if (!isMounted) return;
       setConnStatus('connecting');
@@ -73,7 +73,7 @@ export default function LiveNotifications() {
 
       // Hapus channel lama jika ada
       if (channel) {
-        try { await supabase.removeChannel(channel); } catch (_) {}
+        try { await supabase.removeChannel(channel); } catch {}
       }
 
       channel = supabase
@@ -130,8 +130,8 @@ export default function LiveNotifications() {
     return () => {
       isMounted = false;
       clearTimeout(retryTimeout);
-      try { if (channel) supabase.removeChannel(channel); } catch (_) {}
-      timersRef.current.forEach(t => clearTimeout(t));
+      try { if (channel) supabase.removeChannel(channel); } catch {}
+      currentTimers.forEach(t => clearTimeout(t));
     };
   }, [scheduleRemoval]);
 

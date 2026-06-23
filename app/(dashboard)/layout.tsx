@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Link from "next/link";
-import { ShieldCheck, Menu, X } from "lucide-react";
+import { ShieldCheck, Menu } from "lucide-react";
 import LiveNotifications from "@/components/ui/LiveNotifications";
 
 export default function DashboardLayout({

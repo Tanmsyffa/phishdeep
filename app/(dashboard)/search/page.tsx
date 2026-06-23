@@ -102,7 +102,6 @@ export default function SearchPage() {
       {searchResult && (() => {
         const isDanger = searchResult.risk_score > 70;
         const isSusp = searchResult.risk_score > 30 && searchResult.risk_score <= 70;
-        const isSafe = searchResult.risk_score <= 30;
 
         return (
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4">
