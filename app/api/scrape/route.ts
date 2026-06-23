@@ -24,10 +24,11 @@ export async function POST(req: Request) {
       defaultViewport: { width: 1280, height: 800 },
       executablePath: isLocal ? localExecutablePath : await chromium.executablePath(),
       headless: true,
-      ignoreHTTPSErrors: true,
     });
 
     const page = await browser.newPage();
+    // Bypass SSL errors at page level
+    await page.setBypassCSP(true);
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36');
     
     // Set timeout to 12s to avoid Vercel 15s hard limit
