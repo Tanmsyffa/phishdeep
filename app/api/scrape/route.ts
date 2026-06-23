@@ -17,11 +17,14 @@ export async function POST(req: Request) {
 
     console.log(`Starting headless browser for ${url}... Local Mode: ${isLocal}`);
 
+    const chromiumArgs = await chromium.args;
+    const chromiumHeadless = chromium.headless;
+
     browser = await puppeteer.launch({
-      args: isLocal ? puppeteer.defaultArgs() : chromium.args,
+      args: isLocal ? puppeteer.defaultArgs() : chromiumArgs,
       defaultViewport: { width: 1280, height: 800 },
       executablePath: isLocal ? localExecutablePath : await chromium.executablePath(),
-      headless: isLocal ? true : chromium.headless,
+      headless: isLocal ? true : chromiumHeadless,
       ignoreHTTPSErrors: true,
     });
 
