@@ -458,49 +458,99 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                 {/* Advanced Security Intelligence (VirusTotal & AbuseIPDB) */}
                 {(domainInfo.virustotal_malicious !== undefined || domainInfo.virustotal_error || domainInfo.abuseipdb_score !== undefined) && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                    {domainInfo.virustotal_malicious !== undefined && (
-                      <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex items-center gap-3 print:border-gray-300">
-                        <div className="w-8 h-8 rounded bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center shrink-0">
-                          <Activity className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                        </div>
-                        <div>
-                          <div className="text-[9px] uppercase font-bold text-gray-500 tracking-wide mb-0.5">VirusTotal Intelligence</div>
-                          <div className="text-xs font-bold text-gray-900 dark:text-white">
-                            <span className={domainInfo.virustotal_malicious > 0 ? "text-red-600" : ""}>{domainInfo.virustotal_malicious} Malicious</span>
-                            <span className="mx-1.5 text-gray-300">|</span>
-                            <span className={domainInfo.virustotal_suspicious > 0 ? "text-yellow-600" : ""}>{domainInfo.virustotal_suspicious} Suspicious</span>
+                    {/* VirusTotal - result card */}
+                    {domainInfo.virustotal_malicious !== undefined && (() => {
+                      const mal = domainInfo.virustotal_malicious as number;
+                      const susp = domainInfo.virustotal_suspicious as number;
+                      const total = domainInfo.virustotal_total as number || 0;
+                      const harmless = domainInfo.virustotal_harmless as number || 0;
+                      const pct = total > 0 ? Math.round(((mal + susp) / total) * 100) : 0;
+                      const isCritical = mal >= 5 || (total > 0 && mal / total >= 0.1);
+                      const isWarn = !isCritical && (mal >= 2 || susp >= 5);
+                      const isNotice = !isCritical && !isWarn && (mal > 0 || susp > 0);
+                      const isClean = mal === 0 && susp === 0;
+                      const accentColor = isCritical ? 'bg-red-500' : isWarn ? 'bg-orange-500' : isNotice ? 'bg-amber-400' : 'bg-emerald-500';
+                      const textColor = isCritical ? 'text-red-600 dark:text-red-400' : isWarn ? 'text-orange-600 dark:text-orange-400' : isNotice ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400';
+                      const bgAccent = isCritical ? 'bg-red-50 dark:bg-red-900/20' : isWarn ? 'bg-orange-50 dark:bg-orange-900/20' : isNotice ? 'bg-amber-50 dark:bg-amber-900/20' : 'bg-emerald-50 dark:bg-emerald-900/20';
+                      return (
+                        <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-300">
+                          <div className="flex items-start gap-3">
+                            <div className={`w-8 h-8 rounded flex items-center justify-center shrink-0 ${bgAccent}`}>
+                              <Activity className={`w-4 h-4 ${textColor}`} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between mb-0.5">
+                                <div className="text-[9px] uppercase font-bold text-gray-500 tracking-wide">VirusTotal</div>
+                                {domainInfo.virustotal_permalink && (
+                                  <a
+                                    href={domainInfo.virustotal_permalink as string}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[9px] text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline underline-offset-2 transition-colors print:hidden"
+                                  >
+                                    Lihat laporan ↗
+                                  </a>
+                                )}
+                              </div>
+                              <div className={`text-xs font-bold ${textColor} mb-1.5`}>
+                                {isClean
+                                  ? <span>✓ Bersih <span className="font-normal text-gray-400">({harmless} engine aman)</span></span>
+                                  : <span><span className={mal > 0 ? 'text-red-600' : ''}>{mal} Malicious</span><span className="mx-1 text-gray-300">·</span><span className={susp > 0 ? 'text-amber-500' : ''}>{susp} Suspicious</span><span className="font-normal text-gray-400 ml-1">/ {total}</span></span>
+                                }
+                              </div>
+                              {/* Threat gauge bar */}
+                              {total > 0 && (
+                                <div className="w-full h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                  <div
+                                    className={`h-full rounded-full transition-all ${accentColor}`}
+                                    style={{ width: `${Math.max(pct, mal + susp > 0 ? 4 : 0)}%` }}
+                                  />
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
+                      );
+                    })()}
+
+                    {/* VirusTotal - error/pending card */}
                     {domainInfo.virustotal_error && (
-                      <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex items-center gap-3 print:border-gray-300">
-                        <div className="w-8 h-8 rounded bg-gray-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
-                          <Activity className="w-4 h-4 text-gray-500" />
+                      <div className="bg-white dark:bg-slate-900 border border-orange-100 dark:border-orange-900/40 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex items-start gap-3 print:border-gray-300">
+                        <div className="w-8 h-8 rounded bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center shrink-0">
+                          <Activity className="w-4 h-4 text-orange-500" />
                         </div>
                         <div>
-                          <div className="text-[9px] uppercase font-bold text-gray-500 tracking-wide mb-0.5">VirusTotal Intelligence</div>
+                          <div className="text-[9px] uppercase font-bold text-gray-500 tracking-wide mb-0.5">VirusTotal</div>
                           <div className="text-[10px] font-semibold text-orange-600 dark:text-orange-400 leading-snug">
-                            ℹ️ {domainInfo.virustotal_error}
+                            ⏳ {domainInfo.virustotal_error}
                           </div>
                         </div>
                       </div>
                     )}
+
+                    {/* AbuseIPDB card */}
                     {domainInfo.abuseipdb_score !== undefined && (
                       <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex items-center gap-3 print:border-gray-300">
                         <div className="w-8 h-8 rounded bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center shrink-0">
                           <ShieldAlert className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                         </div>
-                        <div>
+                        <div className="flex-1 min-w-0">
                           <div className="text-[9px] uppercase font-bold text-gray-500 tracking-wide mb-0.5">AbuseIPDB Score</div>
-                          <div className={`text-xs font-bold ${domainInfo.abuseipdb_score >= 50 ? 'text-red-600' : domainInfo.abuseipdb_score > 0 ? 'text-yellow-600' : 'text-green-600'}`}>
+                          <div className={`text-xs font-bold ${(domainInfo.abuseipdb_score as number) >= 50 ? 'text-red-600' : (domainInfo.abuseipdb_score as number) > 0 ? 'text-yellow-600' : 'text-green-600'}`}>
                             {domainInfo.abuseipdb_score}% <span className="text-gray-400 font-normal">({domainInfo.abuseipdb_reports} laporan)</span>
+                          </div>
+                          <div className="w-full h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden mt-1.5">
+                            <div
+                              className={`h-full rounded-full ${(domainInfo.abuseipdb_score as number) >= 50 ? 'bg-red-500' : (domainInfo.abuseipdb_score as number) > 0 ? 'bg-yellow-400' : 'bg-green-500'}`}
+                              style={{ width: `${Math.max(domainInfo.abuseipdb_score as number, (domainInfo.abuseipdb_score as number) > 0 ? 4 : 0)}%` }}
+                            />
                           </div>
                         </div>
                       </div>
                     )}
                   </div>
                 )}
+
 
                 {/* Row 4 — Security signals as badges */}
                 <div className="flex flex-wrap gap-2 mt-2 pt-4 border-t border-gray-100 dark:border-slate-700">

@@ -128,45 +128,107 @@ def check_abuseipdb(ip: str) -> dict:
 
 
 def check_virustotal(url: str) -> dict:
-    """Check URL against VirusTotal API."""
+    """Check URL against VirusTotal API v3.
+    
+    Improvements:
+    - After 404 (new URL), submits and polls the analysis endpoint up to 3x
+    - Returns richer data: malicious, suspicious, harmless, undetected, total, permalink
+    - Handles rate limit (429) gracefully with a user-facing message
+    """
+    import base64
+    import urllib.parse
+    import time
+
     api_key = os.environ.get('VIRUSTOTAL_API_KEY')
     if not api_key:
         return {}
+
+    headers = {'x-apikey': api_key, 'Accept': 'application/json'}
+    url_id = base64.urlsafe_b64encode(url.encode('utf-8')).decode('utf-8').strip("=")
+    permalink = f"https://www.virustotal.com/gui/url/{url_id}"
+
+    def parse_stats(stats: dict, source: str = 'last_analysis_stats') -> dict:
+        total = sum(stats.values()) if stats else 0
+        return {
+            'malicious':  stats.get('malicious', 0),
+            'suspicious': stats.get('suspicious', 0),
+            'harmless':   stats.get('harmless', 0),
+            'undetected': stats.get('undetected', 0),
+            'total':      total,
+            'permalink':  permalink,
+        }
+
+    # --- Step 1: Look up cached result ---
     try:
-        import base64
-        import urllib.parse
-        # VirusTotal v3 requires urlsafe base64 without padding for URL ID
-        url_id = base64.urlsafe_b64encode(url.encode('utf-8')).decode('utf-8').strip("=")
         req = urllib.request.Request(
             f'https://www.virustotal.com/api/v3/urls/{url_id}',
-            headers={'x-apikey': api_key, 'Accept': 'application/json'}
+            headers=headers
         )
-        resp = urllib.request.urlopen(req, timeout=6)
+        resp = urllib.request.urlopen(req, timeout=10)
         data = json.loads(resp.read().decode())
-        return data.get('data', {}).get('attributes', {}).get('last_analysis_stats', {})
+        attrs = data.get('data', {}).get('attributes', {})
+        stats = attrs.get('last_analysis_stats', {})
+        if stats:
+            return parse_stats(stats)
     except urllib.error.HTTPError as e:
         if e.code == 404:
-            # URL not found in VT, so let's submit it for scanning!
-            try:
-                post_data = urllib.parse.urlencode({'url': url}).encode('utf-8')
-                post_req = urllib.request.Request(
-                    'https://www.virustotal.com/api/v3/urls',
-                    data=post_data,
-                    headers={
-                        'x-apikey': api_key, 
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    method='POST'
-                )
-                urllib.request.urlopen(post_req, timeout=6)
-                return {'error': 'URL baru saja dikirim ke VirusTotal untuk dianalisis. Hasil belum tersedia saat ini (Coba scan ulang beberapa menit lagi).'}
-            except Exception:
-                return {}
-        # Silently fail for other HTTP errors (401, 429) to avoid showing config issues to end users
+            pass  # URL is new — fall through to submit
+        elif e.code == 429:
+            return {'error': 'Batas permintaan VirusTotal tercapai. Hasil akan tersedia pada scan berikutnya.'}
+        elif e.code == 401:
+            return {}  # Silent — don't expose API key issues
+        else:
+            return {}
+    except Exception:
+        return {}
+
+    # --- Step 2: Submit new URL for analysis ---
+    try:
+        post_data = urllib.parse.urlencode({'url': url}).encode('utf-8')
+        post_req = urllib.request.Request(
+            'https://www.virustotal.com/api/v3/urls',
+            data=post_data,
+            headers={
+                'x-apikey': api_key,
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            method='POST'
+        )
+        submit_resp = urllib.request.urlopen(post_req, timeout=10)
+        submit_data = json.loads(submit_resp.read().decode())
+        analysis_id = submit_data.get('data', {}).get('id', '')
+    except urllib.error.HTTPError as e:
+        if e.code == 429:
+            return {'error': 'Batas permintaan VirusTotal tercapai. Hasil akan tersedia pada scan berikutnya.'}
         return {}
     except Exception:
         return {}
+
+    # --- Step 3: Poll analysis until completed (max 3 × 12s = 36s) ---
+    if analysis_id:
+        for attempt in range(3):
+            time.sleep(12)
+            try:
+                poll_req = urllib.request.Request(
+                    f'https://www.virustotal.com/api/v3/analyses/{analysis_id}',
+                    headers=headers
+                )
+                poll_resp = urllib.request.urlopen(poll_req, timeout=10)
+                poll_data = json.loads(poll_resp.read().decode())
+                poll_attrs = poll_data.get('data', {}).get('attributes', {})
+                if poll_attrs.get('status') == 'completed':
+                    stats = poll_attrs.get('stats', {})
+                    if stats:
+                        return parse_stats(stats)
+            except urllib.error.HTTPError as e:
+                if e.code == 429:
+                    break  # Rate limited — stop polling
+            except Exception:
+                continue  # Network glitch — try again
+
+    return {'error': 'URL baru dianalisis VirusTotal (hasil menyusul). Coba scan ulang dalam beberapa menit.'}
+
 
 
 # Known URL shortener domains
@@ -814,20 +876,36 @@ def analyze_link(target_url):
     if 'error' in vt_stats:
         domain_info['virustotal_error'] = vt_stats['error']
     elif vt_stats:
-        malicious = vt_stats.get('malicious', 0)
+        malicious  = vt_stats.get('malicious', 0)
         suspicious = vt_stats.get('suspicious', 0)
-        harmless = vt_stats.get('harmless', 0)
-        domain_info['virustotal_malicious'] = malicious
+        harmless   = vt_stats.get('harmless', 0)
+        undetected = vt_stats.get('undetected', 0)
+        total      = vt_stats.get('total', malicious + suspicious + harmless + undetected)
+        permalink  = vt_stats.get('permalink', '')
+
+        domain_info['virustotal_malicious']  = malicious
         domain_info['virustotal_suspicious'] = suspicious
-        
-        if malicious >= 3:
-            risk_score += 80
-            details.append({"step": "VirusTotal Intelligence", "finding": f"BAHAYA KRITIS: {malicious} engine antivirus di VirusTotal menandai URL ini sebagai BERBAHAYA."})
-        elif malicious > 0 or suspicious > 0:
-            risk_score += 35
-            details.append({"step": "VirusTotal Intelligence", "finding": f"PERINGATAN: {malicious} engine menandai berbahaya dan {suspicious} mencurigakan di VirusTotal."})
+        domain_info['virustotal_harmless']   = harmless
+        domain_info['virustotal_total']      = total
+        if permalink:
+            domain_info['virustotal_permalink'] = permalink
+
+        # Proportional scoring — avoids over-penalising 1-of-90 noisy detection
+        if total > 0:
+            mal_ratio = malicious / total
+            if malicious >= 5 or mal_ratio >= 0.10:
+                risk_score += 80
+                details.append({"step": "VirusTotal Intelligence", "finding": f"BAHAYA KRITIS: {malicious}/{total} engine antivirus menandai URL ini sebagai BERBAHAYA."})
+            elif malicious >= 2 or suspicious >= 5:
+                risk_score += 45
+                details.append({"step": "VirusTotal Intelligence", "finding": f"PERINGATAN TINGGI: {malicious} engine berbahaya, {suspicious} mencurigakan (dari {total} engine)."})
+            elif malicious > 0 or suspicious > 0:
+                risk_score += 20
+                details.append({"step": "VirusTotal Intelligence", "finding": f"PERHATIAN: {malicious} berbahaya, {suspicious} mencurigakan dari {total} engine. Kemungkinan false positive — verifikasi manual disarankan."})
+            else:
+                details.append({"step": "VirusTotal Intelligence", "finding": f"Bersih di VirusTotal: 0/{total} engine mendeteksi ancaman ({harmless} engine mengkonfirmasi aman)."})
         else:
-            details.append({"step": "VirusTotal Intelligence", "finding": f"Bersih di VirusTotal (Dikonfirmasi oleh {harmless} engine keamanan)."})
+            details.append({"step": "VirusTotal Intelligence", "finding": f"Bersih di VirusTotal ({harmless} engine mengkonfirmasi aman)."})
 
     # --- Process AbuseIPDB ---
     abuse_data = osint_results.get('abuseipdb', {})
