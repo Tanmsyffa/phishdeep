@@ -65,7 +65,12 @@ export default function DashboardPage() {
       }
 
       const weekScans = weekRes.data ?? [];
-      const todayScans = weekScans.filter((s: any) => new Date(s.created_at) >= todayStart && s.status !== 'deleted');
+      const todayScans = weekScans.filter((s: any) => {
+        if (s.status === 'deleted') return false;
+        // Ensure created_at is treated as UTC
+        const dateString = s.created_at.endsWith('Z') || s.created_at.includes('+') ? s.created_at : `${s.created_at}Z`;
+        return new Date(dateString) >= todayStart;
+      });
       setScans(todayScans);
 
       setGlobalScans(globalData ?? []);
@@ -77,8 +82,19 @@ export default function DashboardPage() {
         const d = new Date(now);
         d.setDate(d.getDate() - i);
         const dayName = d.toLocaleDateString('id-ID', { weekday: 'short' });
-        const dateStr = d.toISOString().split('T')[0];
-        const dayScans = weekScans.filter(s => s.status !== 'deleted' && s.created_at.startsWith(dateStr));
+        const targetYear = d.getFullYear();
+        const targetMonth = d.getMonth();
+        const targetDate = d.getDate();
+
+        const dayScans = weekScans.filter((s: any) => {
+          if (s.status === 'deleted') return false;
+          const dateString = s.created_at.endsWith('Z') || s.created_at.includes('+') ? s.created_at : `${s.created_at}Z`;
+          const scanDate = new Date(dateString);
+          return scanDate.getFullYear() === targetYear &&
+                 scanDate.getMonth() === targetMonth &&
+                 scanDate.getDate() === targetDate;
+        });
+
         trend.push({ dayName, total: dayScans.length, bahaya: dayScans.filter((s: any) => s.risk_score > 70).length });
       }
       setTrendData(trend);
