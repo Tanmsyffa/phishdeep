@@ -136,9 +136,14 @@ function ScanForm() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <header className="mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">Scan Baru</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Pilih jenis file atau masukkan link yang ingin di-scan</p>
+      <header className="mb-6 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-500/15 flex items-center justify-center shrink-0">
+          <Smartphone className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Scan Baru</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Pilih jenis file atau masukkan link target</p>
+        </div>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-8">
@@ -151,30 +156,33 @@ function ScanForm() {
             </div>
           )}
 
-          <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden transition-colors backdrop-blur-2xl">
-            <div className="flex border-b border-gray-200/50 dark:border-white/5 overflow-x-auto">
-              <button
-                type="button"
-                onClick={() => setActiveTab('link')}
-                className={`flex-1 py-3.5 px-4 text-sm font-semibold flex items-center justify-center gap-2 whitespace-nowrap transition-colors border-b-2 ${
-                  activeTab === 'link' 
-                  ? 'border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-500' 
-                  : 'border-transparent text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800'
-                }`}
-              >
-                <LinkIcon className="w-4 h-4 shrink-0" /> Link
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('apk')}
-                className={`flex-1 py-3.5 px-4 text-sm font-semibold flex items-center justify-center gap-2 whitespace-nowrap transition-colors border-b-2 ${
-                  activeTab === 'apk' 
-                  ? 'border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-500' 
-                  : 'border-transparent text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800'
-                }`}
-              >
-                <Smartphone className="w-4 h-4 shrink-0" /> APK
-              </button>
+          <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 rounded-3xl border border-gray-200/50 dark:border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] overflow-hidden backdrop-blur-xl">
+            {/* iOS Segmented Control Tab */}
+            <div className="p-4 sm:p-6 pb-0">
+              <div className="flex bg-gray-100/80 dark:bg-white/5 rounded-full p-1 border border-gray-200/50 dark:border-white/5 relative">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('link')}
+                  className={`flex-1 py-2 px-4 text-sm font-semibold flex items-center justify-center gap-2 rounded-full transition-all duration-300 relative z-10 ${
+                    activeTab === 'link' 
+                    ? 'text-gray-900 dark:text-white shadow-sm bg-white dark:bg-ios-cardDark border border-gray-200/50 dark:border-white/10' 
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 border border-transparent'
+                  }`}
+                >
+                  <LinkIcon className="w-4 h-4 shrink-0" /> Link
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('apk')}
+                  className={`flex-1 py-2 px-4 text-sm font-semibold flex items-center justify-center gap-2 rounded-full transition-all duration-300 relative z-10 ${
+                    activeTab === 'apk' 
+                    ? 'text-gray-900 dark:text-white shadow-sm bg-white dark:bg-ios-cardDark border border-gray-200/50 dark:border-white/10' 
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 border border-transparent'
+                  }`}
+                >
+                  <Smartphone className="w-4 h-4 shrink-0" /> APK
+                </button>
+              </div>
             </div>
 
             <div className="p-4 sm:p-8">
@@ -197,41 +205,44 @@ function ScanForm() {
                 </div>
               ) : activeTab === 'link' ? (
                 <form onSubmit={handleScan}>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">URL Target</label>
+                  <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2 ml-1">URL Target</label>
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <input 
-                      type="text" 
-                      placeholder="contoh-link.com atau https://contoh.com" 
-                      className="flex-1 border border-gray-200 dark:border-white/10 bg-white/60 dark:bg-white/5 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-shadow text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 backdrop-blur-sm"
-                      value={url}
-                      onChange={(e) => setUrl(e.target.value)}
-                      disabled={isScanning}
-                      required
-                    />
+                    <div className="relative flex-1">
+                      <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input 
+                        type="text" 
+                        placeholder="contoh.com atau https://contoh.com" 
+                        className="w-full border border-gray-200/80 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 rounded-full pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        disabled={isScanning}
+                        required
+                      />
+                    </div>
                     <button 
                       type="submit" 
-                      disabled={isScanning}
-                      className="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors shadow-sm text-sm disabled:opacity-50 active:scale-95"
+                      disabled={isScanning || !url.trim()}
+                      className="w-full sm:w-auto bg-blue-600 text-white px-7 py-3.5 rounded-full font-semibold hover:bg-blue-700 transition-all shadow-sm text-sm disabled:opacity-50 active:scale-95 shrink-0"
                     >
                       Scan Sekarang
                     </button>
                   </div>
                 </form>
               ) : (
-                <form onSubmit={handleScan} className="border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-xl p-8 sm:p-12 text-center hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer relative">
+                <form onSubmit={handleScan} className="border border-dashed border-gray-300 dark:border-white/20 bg-gray-50/50 dark:bg-white/5 rounded-3xl p-8 sm:p-12 text-center hover:bg-gray-100/50 dark:hover:bg-white/10 transition-colors cursor-pointer relative group">
                   <input 
                     type="file" 
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed" 
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-20" 
                     onChange={handleFileChange}
                     disabled={isScanning}
                     required
                   />
-                  <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Smartphone className="w-8 h-8" />
+                  <div className="w-16 h-16 bg-white dark:bg-ios-cardDark rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-100 dark:border-white/5 group-hover:scale-105 transition-transform">
+                    <Smartphone className="w-7 h-7 text-blue-500" />
                   </div>
-                  <h3 className="font-medium text-gray-900 dark:text-white mb-1">{file ? file.name : 'Upload File Anda'}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-4">{file ? 'File siap untuk dipindai (Maks 25MB)' : 'Tarik dan letakkan file di sini atau klik (Maks 25MB)'}</p>
-                  <button type="submit" disabled={isScanning || !file} className="text-white font-medium text-sm border bg-blue-600 px-6 py-2 rounded-full hover:bg-blue-700 transition-colors disabled:opacity-50 relative z-10 cursor-pointer active:scale-95">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-1.5">{file ? file.name : 'Upload File Anda'}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">{file ? 'File siap dipindai (Maks 25MB)' : 'Tarik file ke sini atau klik (Maks 25MB)'}</p>
+                  <button type="submit" disabled={isScanning || !file} className="text-white font-semibold text-sm bg-blue-600 px-8 py-3 rounded-full hover:bg-blue-700 transition-all disabled:opacity-50 relative z-30 cursor-pointer active:scale-95 shadow-sm">
                     {file ? 'Mulai Scan' : 'Pilih File'}
                   </button>
                 </form>
@@ -255,22 +266,23 @@ function ScanForm() {
 
           {/* Info cards - visible on all screens */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <div className="bg-white/40 dark:bg-blue-500/5 p-5 rounded-3xl border border-white/50 dark:border-blue-800/30 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-sm">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 bg-white dark:bg-ios-cardDark rounded-full flex items-center justify-center text-blue-600 shadow-sm shrink-0">
-                  <ShieldAlert className="w-4 h-4" />
+            <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl p-5 rounded-3xl border border-gray-200/50 dark:border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
+              <div className="flex items-center gap-3 mb-2.5">
+                <div className="w-8 h-8 bg-blue-50 dark:bg-blue-500/15 rounded-full flex items-center justify-center shrink-0">
+                  <ShieldAlert className="w-4 h-4 text-blue-500" />
                 </div>
                 <h3 className="font-bold text-gray-900 dark:text-white text-sm">Analisis Nyata</h3>
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
-                Analisis file/URL <strong>secara langsung</strong>, bukan simulasi. Maks. <strong>25MB</strong>. File dihapus setelah analisis.
+              <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed pl-11">
+                Analisis file/URL <strong>secara langsung</strong>, bukan simulasi. Maks <strong>25MB</strong>.
               </p>
             </div>
-            <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl p-5 rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-              <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-2">Tips Aman</h3>
-              <ul className="space-y-1.5 text-xs text-gray-600 dark:text-gray-300">
-                <li className="flex gap-2"><span className="text-green-500 font-bold shrink-0">✓</span> Jangan masukkan data pribadi di situs mencurigakan.</li>
-                <li className="flex gap-2"><span className="text-green-500 font-bold shrink-0">✓</span> PhishDeep tidak menyimpan file Anda secara permanen.</li>
+            
+            <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl p-5 rounded-3xl border border-gray-200/50 dark:border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
+              <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-3">Tips Aman</h3>
+              <ul className="space-y-2 text-xs text-gray-500 dark:text-gray-400">
+                <li className="flex gap-2.5"><span className="w-4 h-4 rounded-full bg-green-500/20 text-green-600 flex items-center justify-center font-bold shrink-0">✓</span> Jangan input data pribadi di situs mencurigakan.</li>
+                <li className="flex gap-2.5"><span className="w-4 h-4 rounded-full bg-green-500/20 text-green-600 flex items-center justify-center font-bold shrink-0">✓</span> File akan dihapus otomatis pasca-analisis.</li>
               </ul>
             </div>
           </div>
