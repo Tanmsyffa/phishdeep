@@ -43,7 +43,7 @@ export default function SearchFilter({
         <input
           type="text"
           placeholder="Cari target URL atau nama..."
-          className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow placeholder-gray-400 dark:placeholder-gray-500"
+          className="w-full pl-9 pr-4 py-2.5 bg-gray-50/80 dark:bg-white/5 border border-gray-200/60 dark:border-white/10 text-gray-900 dark:text-white rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all placeholder-gray-400 dark:placeholder-gray-500 backdrop-blur-xl"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => {
@@ -62,7 +62,7 @@ export default function SearchFilter({
                 setType(e.target.value);
                 handleUpdate(query, e.target.value, status);
               }}
-              className="w-full appearance-none border border-gray-200 dark:border-slate-800 rounded-xl pl-3 pr-8 py-2 text-sm bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow cursor-pointer"
+              className="w-full appearance-none border border-gray-200/60 dark:border-white/10 rounded-full pl-4 pr-8 py-2.5 text-sm bg-gray-50/80 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all cursor-pointer backdrop-blur-xl font-medium"
             >
               <option value="all">Semua Jenis</option>
               <option value="Link">Link</option>
@@ -83,7 +83,7 @@ export default function SearchFilter({
                 setStatus(e.target.value);
                 handleUpdate(query, type, e.target.value);
               }}
-              className="w-full appearance-none border border-gray-200 dark:border-slate-800 rounded-xl pl-3 pr-8 py-2 text-sm bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow cursor-pointer"
+              className="w-full appearance-none border border-gray-200/60 dark:border-white/10 rounded-full pl-4 pr-8 py-2.5 text-sm bg-gray-50/80 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all cursor-pointer backdrop-blur-xl font-medium"
             >
               <option value="all">Semua Hasil</option>
               <option value="Aman">Aman</option>

@@ -20,7 +20,7 @@ export default function Pagination({ totalPages, currentPage }: { totalPages: nu
     <div className="flex items-center justify-center gap-2 mt-8">
       <Link
         href={createPageURL(currentPage - 1)}
-        className={`p-2 rounded-lg border ${currentPage <= 1 ? 'pointer-events-none opacity-50 border-gray-100 dark:border-slate-800 text-gray-400' : 'border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-300'} transition-colors`}
+        className={`p-2 rounded-lg border ${currentPage <= 1 ? 'pointer-events-none opacity-50 border-gray-100 dark:border-white\/10 text-gray-400' : 'border-gray-200 dark:border-white\/10 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-300'} transition-colors`}
       >
         <ChevronLeft className="w-5 h-5" />
       </Link>
@@ -31,7 +31,7 @@ export default function Pagination({ totalPages, currentPage }: { totalPages: nu
 
       <Link
         href={createPageURL(currentPage + 1)}
-        className={`p-2 rounded-lg border ${currentPage >= totalPages ? 'pointer-events-none opacity-50 border-gray-100 dark:border-slate-800 text-gray-400' : 'border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-300'} transition-colors`}
+        className={`p-2 rounded-lg border ${currentPage >= totalPages ? 'pointer-events-none opacity-50 border-gray-100 dark:border-white\/10 text-gray-400' : 'border-gray-200 dark:border-white\/10 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-300'} transition-colors`}
       >
         <ChevronRight className="w-5 h-5" />
       </Link>

@@ -27,7 +27,7 @@ export default function ScreenshotImage({ src, targetUrl }: { src: string; targe
   // If no source at all, directly show error
   if (!currentSrc) {
     return (
-      <div className="w-full py-12 flex flex-col items-center justify-center text-center border border-dashed border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-800/50">
+      <div className="w-full py-12 flex flex-col items-center justify-center text-center border border-dashed border-gray-200 dark:border-white\/10 rounded-xl bg-gray-50 dark:bg-white\/5/50">
         <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-700 flex items-center justify-center mb-3">
           <Monitor className="w-6 h-6 text-gray-400 dark:text-slate-500" />
         </div>
@@ -55,14 +55,14 @@ export default function ScreenshotImage({ src, targetUrl }: { src: string; targe
 
       {/* Loading skeleton */}
       {status === "loading" && (
-        <div className="w-full h-48 bg-gray-100 dark:bg-slate-800 animate-pulse rounded-xl flex items-center justify-center">
+        <div className="w-full h-48 bg-gray-100 dark:bg-white\/5 animate-pulse rounded-xl flex items-center justify-center">
           <Monitor className="w-8 h-8 text-gray-300 dark:text-slate-600" />
         </div>
       )}
 
       {/* Error / not available fallback */}
       {status === "error" && (
-        <div className="w-full py-12 flex flex-col items-center justify-center text-center border border-dashed border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-800/50">
+        <div className="w-full py-12 flex flex-col items-center justify-center text-center border border-dashed border-gray-200 dark:border-white\/10 rounded-xl bg-gray-50 dark:bg-white\/5/50">
           <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-700 flex items-center justify-center mb-3">
             <Monitor className="w-6 h-6 text-gray-400 dark:text-slate-500" />
           </div>

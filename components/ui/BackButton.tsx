@@ -15,12 +15,12 @@ export default function BackButton({ label = "Kembali", className = "" }: BackBu
     <button
       onClick={() => router.back()}
       className={`
-        inline-flex items-center gap-2 px-4 py-2 rounded-xl
-        bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-sm
+        inline-flex items-center gap-2 px-4 py-2 rounded-full
+        bg-gray-50/80 dark:bg-white/5 border border-gray-200/60 dark:border-white/10 backdrop-blur-xl shadow-sm
         text-sm font-medium text-gray-600 dark:text-gray-300
         transition-all duration-200
-        hover:text-primary-600 dark:hover:text-primary-400 hover:border-primary-200 dark:hover:border-primary-800 hover:bg-blue-50/60 dark:hover:bg-slate-700 hover:shadow-md
-        active:scale-95 active:bg-blue-100/60 dark:active:bg-slate-600 active:text-primary-700 dark:active:text-primary-300 active:border-primary-300 dark:active:border-primary-700
+        hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-200/60 dark:hover:border-blue-500/30 hover:bg-blue-50/60 dark:hover:bg-white/10 hover:shadow-md
+        active:scale-95 active:bg-blue-100/60 dark:active:bg-white/15 active:text-blue-700 dark:active:text-blue-300
         group select-none
         ${className}
       `}

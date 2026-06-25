@@ -46,7 +46,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="pt-6 border-t border-gray-100 dark:border-slate-800 text-center text-xs sm:text-sm text-gray-400 dark:text-gray-500">
+        <div className="pt-6 border-t border-gray-100 dark:border-white\/10 text-center text-xs sm:text-sm text-gray-400 dark:text-gray-500">
           &copy; {new Date().getFullYear()} PhishDeep. Hak Cipta Dilindungi.
         </div>
       </div>

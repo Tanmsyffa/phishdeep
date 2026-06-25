@@ -170,16 +170,16 @@ export default function ExportButtons({ data }: { data: any }) {
     <div className="relative inline-block text-left w-full sm:w-auto mt-2 sm:mt-0" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full sm:w-auto bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 px-5 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm text-sm"
+        className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-full transition-all flex items-center justify-center gap-2 shadow-sm text-sm active:scale-95"
       >
         <Download className="w-4 h-4" /> Download Laporan <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 sm:right-0 left-0 sm:left-auto mt-2 w-full sm:w-52 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-gray-100 dark:border-slate-800 z-50 overflow-hidden origin-top animate-in fade-in zoom-in-95">
+        <div className="absolute right-0 sm:right-0 left-0 sm:left-auto mt-2 w-full sm:w-52 bg-white dark:bg-[#1c1c1e] backdrop-blur-xl rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.15)] border border-gray-100/80 dark:border-white/10 z-50 overflow-hidden origin-top animate-in fade-in zoom-in-95">
           <button
             onClick={handleExportPDF}
-            className="w-full text-left px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary-600 dark:hover:text-primary-400 transition-colors flex items-center gap-3 font-medium"
+            className="w-full text-left px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-3 font-medium"
           >
             <FileText className="w-4 h-4 text-red-500 shrink-0" />
             <div>
@@ -187,10 +187,10 @@ export default function ExportButtons({ data }: { data: any }) {
               <div className="text-[10px] text-gray-400 dark:text-gray-500">Laporan forensik visual</div>
             </div>
           </button>
-          <div className="border-t border-gray-100 dark:border-slate-800"></div>
+          <div className="border-t border-gray-100 dark:border-white\/10"></div>
           <button
             onClick={handleExportCSV}
-            className="w-full text-left px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary-600 dark:hover:text-primary-400 transition-colors flex items-center gap-3 font-medium"
+            className="w-full text-left px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-3 font-medium"
           >
             <FileSpreadsheet className="w-4 h-4 text-green-500 shrink-0" />
             <div>

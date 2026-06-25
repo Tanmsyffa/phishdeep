@@ -91,7 +91,7 @@ export default async function HistoryPage({
 
       {filteredScans.length === 0 ? (
         <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl p-10 sm:p-16 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-          <div className="w-14 h-14 bg-gray-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 bg-gray-50 dark:bg-white\/5 rounded-full flex items-center justify-center mx-auto mb-4">
             <Eye className="w-7 h-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
           </div>
           <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-2">Tidak Ada Hasil</h2>
@@ -111,7 +111,7 @@ export default async function HistoryPage({
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">
-                    <span className="bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-md font-medium">{row.jenis}</span>
+                    <span className="bg-gray-100 dark:bg-white\/5 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-md font-medium">{row.jenis}</span>
                     <span>{row.tanggal}</span>
                   </div>
                   <div className="flex items-center gap-1">

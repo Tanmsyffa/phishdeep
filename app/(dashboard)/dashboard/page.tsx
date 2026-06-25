@@ -286,7 +286,7 @@ export default function DashboardPage() {
                                   <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[9px] py-1 px-1.5 rounded pointer-events-none whitespace-nowrap transition-opacity shadow-lg z-20">{t.total}S / {t.bahaya}B</div>
                                 </div>
                               ) : (
-                                <div className={`w-4 sm:w-5 lg:w-6 h-0.5 rounded-sm ${isToday ? 'bg-blue-200 dark:bg-blue-600/40' : 'bg-gray-100 dark:bg-slate-800'}`} />
+                                <div className={`w-4 sm:w-5 lg:w-6 h-0.5 rounded-sm ${isToday ? 'bg-blue-200 dark:bg-blue-600/40' : 'bg-gray-100 dark:bg-white\/5'}`} />
                               )}
                             </div>
                           </div>
@@ -327,7 +327,7 @@ export default function DashboardPage() {
               <span className="text-gray-500 dark:text-gray-400">Terpakai</span>
               <span className="font-bold text-gray-900 dark:text-white">{todayScanCount} / 10</span>
             </div>
-            <div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-2 mb-3 overflow-hidden">
+            <div className="w-full bg-gray-100 dark:bg-white\/5 rounded-full h-2 mb-3 overflow-hidden">
               <div className={`h-2 rounded-full transition-all ${todayScanCount >= 10 ? 'bg-red-500' : todayScanCount >= 7 ? 'bg-yellow-500' : 'bg-blue-500'}`} style={{ width: `${Math.min((todayScanCount / 10) * 100, 100)}%` }} />
             </div>
             <p className="text-xs text-gray-400 dark:text-gray-500">Reset setiap tengah malam (00:00 WIB).</p>
@@ -343,7 +343,7 @@ export default function DashboardPage() {
               const total = linkCount + apkCount;
               return (
                 <>
-                  <div className="flex h-3 rounded-full overflow-hidden mb-4 bg-gray-100 dark:bg-slate-800">
+                  <div className="flex h-3 rounded-full overflow-hidden mb-4 bg-gray-100 dark:bg-white\/5">
                     {linkCount > 0 && <div style={{ width: `${(linkCount / total) * 100}%` }} className="bg-blue-500 transition-all" />}
                     {apkCount > 0 && <div style={{ width: `${(apkCount / total) * 100}%` }} className="bg-green-500 transition-all" />}
                   </div>

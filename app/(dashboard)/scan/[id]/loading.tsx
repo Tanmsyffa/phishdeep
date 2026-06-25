@@ -4,8 +4,8 @@ export default function ScanResultLoading() {
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-pulse">
       <div className="flex justify-between items-center mb-6">
-        <div className="w-32 h-6 bg-gray-200 dark:bg-slate-800 rounded"></div>
-        <div className="w-48 h-10 bg-gray-200 dark:bg-slate-800 rounded-xl"></div>
+        <div className="w-32 h-6 bg-gray-200 dark:bg-white\/5 rounded"></div>
+        <div className="w-48 h-10 bg-gray-200 dark:bg-white\/5 rounded-xl"></div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

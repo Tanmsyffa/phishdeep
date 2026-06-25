@@ -35,17 +35,17 @@ function AvatarDisplay({ url, name, onCameraClick }: { url: string | null; name:
           src={url}
           alt="Foto Profil"
           onError={() => setImgError(true)}
-          className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-slate-800 shadow-lg"
+          className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-white\/10 shadow-lg"
         />
       ) : (
-        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white flex items-center justify-center font-bold text-3xl shadow-lg border-4 border-white dark:border-slate-800">
+        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white flex items-center justify-center font-bold text-3xl shadow-lg border-4 border-white dark:border-white\/10">
           {(name || 'U')[0].toUpperCase()}
         </div>
       )}
       <button
         type="button"
         onClick={onCameraClick}
-        className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-md transition-colors border-2 border-white dark:border-slate-800"
+        className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-md transition-colors border-2 border-white dark:border-white\/10"
       >
         <Camera className="w-4 h-4" />
       </button>

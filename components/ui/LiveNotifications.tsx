@@ -142,7 +142,7 @@ export default function LiveNotifications() {
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border backdrop-blur-md shadow-sm pointer-events-auto ${
               connStatus === 'error'
                 ? 'bg-red-50/95 dark:bg-red-950/80 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400'
-                : 'bg-white/80 dark:bg-slate-900/80 border-gray-200 dark:border-slate-700 text-gray-500 dark:text-gray-400'
+                : 'bg-white/80 dark:bg-[#1c1c1e]/80 border-gray-200 dark:border-white\/10 text-gray-500 dark:text-gray-400'
             }`}
           >
             {connStatus === 'error' ? (
@@ -166,7 +166,7 @@ export default function LiveNotifications() {
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 40, scale: 0.9, transition: { duration: 0.18 } }}
               transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-              className="pointer-events-auto w-64 sm:w-72 relative overflow-hidden rounded-xl border border-gray-200 dark:border-slate-700/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-lg shadow-black/5 dark:shadow-black/30"
+              className="pointer-events-auto w-64 sm:w-72 relative overflow-hidden rounded-xl border border-gray-200 dark:border-white\/10/80 bg-white/95 dark:bg-[#1c1c1e]/95 backdrop-blur-md shadow-lg shadow-black/5 dark:shadow-black/30"
             >
               {/* Left accent bar */}
               <div className={`absolute inset-y-0 left-0 w-[3px] ${risk.bg}`} />

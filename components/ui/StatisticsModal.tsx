@@ -119,9 +119,9 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full max-w-xl max-h-[90vh] flex flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 overflow-hidden">
+      <div className="relative w-full max-w-xl max-h-[90vh] flex flex-col bg-white dark:bg-[#1c1c1e] backdrop-blur-2xl rounded-3xl shadow-2xl border border-gray-200/50 dark:border-white/10 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-slate-800 shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white\/10 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
               <BarChart2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
@@ -133,7 +133,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-500 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-white\/5 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-500 transition-colors"
             aria-label="Tutup"
           >
             <X className="w-4 h-4" />
@@ -160,7 +160,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
 
           {/* Chart + Stats row */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4">
+            <div className="bg-gray-50/60 dark:bg-white/5 rounded-2xl p-4">
               <p className="text-xs font-bold text-gray-700 dark:text-gray-200 mb-3">Distribusi Hasil</p>
               {total > 0 ? (
                 <div className="flex flex-col items-center gap-3">
@@ -187,7 +187,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
             </div>
 
             <div className="space-y-3">
-              <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4">
+              <div className="bg-gray-50 dark:bg-white\/5/50 rounded-xl p-4">
                 <p className="text-xs font-bold text-gray-700 dark:text-gray-200 mb-3">Jenis Target</p>
                 <div className="space-y-2.5">
                   {[
@@ -199,20 +199,20 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
                         <span className="flex items-center gap-1 text-gray-600 dark:text-gray-300 font-medium">{item.icon}{item.label}</span>
                         <span className="font-bold text-gray-800 dark:text-white">{item.val}</span>
                       </div>
-                      <div className="h-1.5 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                      <div className="h-1.5 bg-gray-200/70 dark:bg-white/5 rounded-full overflow-hidden">
                         <div className={`h-full ${item.bar} rounded-full`} style={{ width: total > 0 ? `${(item.val / total) * 100}%` : "0%" }} />
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4">
+              <div className="bg-gray-50 dark:bg-white\/5/50 rounded-xl p-4">
                 <p className="text-xs font-bold text-gray-700 dark:text-gray-200 mb-2">Rata-rata Risiko</p>
                 <div className="flex items-end gap-1 mb-2">
                   <span className={`text-3xl font-extrabold leading-none ${riskColor}`}>{Math.round(avgRisk)}</span>
                   <span className="text-gray-400 text-xs mb-0.5">/100</span>
                 </div>
-                <div className="h-2 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden mb-1.5">
+                <div className="h-2 bg-gray-200/70 dark:bg-white/5 rounded-full overflow-hidden mb-1.5">
                   <div className={`h-full rounded-full ${riskBg}`} style={{ width: `${Math.min(avgRisk, 100)}%` }} />
                 </div>
                 <p className="text-[11px] text-gray-500 dark:text-gray-400">
@@ -225,7 +225,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
 
 
           {/* Riwayat Scan Komunitas */}
-          <div className="border-t border-gray-100 dark:border-slate-800 pt-4">
+          <div className="border-t border-gray-100 dark:border-white\/10 pt-4">
             <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3">Riwayat Terakhir Komunitas</h3>
             {historyList.length === 0 ? (
               <p className="text-xs text-gray-500 text-center py-4">Belum ada riwayat scan.</p>
@@ -238,7 +238,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
                   const resultText = isDanger ? "Berbahaya" : isSusp ? "Mencurigakan" : "Aman";
 
                   return (
-                    <div key={idx} className="p-3 rounded-xl bg-gray-50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700">
+                    <div key={idx} className="p-3 rounded-2xl bg-gray-50/60 dark:bg-white/5 border border-gray-100/80 dark:border-white/8 hover:bg-gray-100/50 dark:hover:bg-white/10 transition-colors">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 mb-0.5">
