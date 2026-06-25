@@ -55,7 +55,7 @@ export default async function AboutPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col font-sans bg-ios-bg dark:bg-ios-bgDark">
       <Header />
       <main className="flex-grow">
 
@@ -84,7 +84,7 @@ export default async function AboutPage() {
           <div className="container mx-auto px-4 max-w-4xl">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {stats.map((s, i) => (
-                <div key={i} className="text-center py-5 px-3 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800">
+                <div key={i} className="text-center py-5 px-3 bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                   <div className="text-2xl sm:text-3xl font-black text-primary-600 dark:text-primary-400 mb-1">{s.value}</div>
                   <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">{s.label}</div>
                 </div>
@@ -102,8 +102,8 @@ export default async function AboutPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
               {cards.map((c, i) => (
-                <div key={i} className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 p-7 rounded-2xl hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                  <div className={`w-12 h-12 ${c.color} rounded-2xl flex items-center justify-center mb-5`}>
+                <div key={i} className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/5 p-7 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_15px_40px_rgb(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300">
+                  <div className={`w-12 h-12 ${c.color} rounded-full flex items-center justify-center mb-5 shadow-sm`}>
                     {c.icon}
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">{c.title}</h3>
@@ -123,10 +123,10 @@ export default async function AboutPage() {
                 Setiap harinya ribuan URL phishing baru bermunculan. Dengan menggunakan PhishDeep, Anda turut berkontribusi dalam memetakan dan menghentikan pergerakan pelaku kejahatan siber.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-white text-primary-900 font-bold px-8 py-3.5 rounded-xl hover:bg-gray-100 transition-all duration-300 shadow-lg hover:-translate-y-0.5 group">
+                <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-white text-primary-900 font-bold px-8 py-3.5 rounded-full hover:bg-gray-100 transition-all duration-300 shadow-lg hover:-translate-y-0.5 group">
                   Mulai Gratis Sekarang <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
-                <Link href="/cara-kerja" className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-8 py-3.5 rounded-xl transition-all duration-300">
+                <Link href="/cara-kerja" className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-8 py-3.5 rounded-full transition-all duration-300">
                   Cara Kerja
                 </Link>
               </div>

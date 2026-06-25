@@ -62,9 +62,9 @@ export default function FiturPage() {
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="grid md:grid-cols-3 gap-6">
               {features.map((f, i) => (
-                <div key={i} className="group bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 p-7 rounded-2xl hover:shadow-xl dark:hover:border-slate-700 hover:-translate-y-1 transition-all duration-300 flex flex-col">
+                <div key={i} className="group bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/5 p-7 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_15px_40px_rgb(0,0,0,0.1)] dark:hover:border-white/10 hover:-translate-y-1 transition-all duration-300 flex flex-col">
                   <div className="flex items-start justify-between mb-5">
-                    <div className={`w-12 h-12 ${f.color} rounded-xl flex items-center justify-center shadow-sm`}>
+                    <div className={`w-12 h-12 ${f.color} rounded-full flex items-center justify-center shadow-sm`}>
                       {f.icon}
                     </div>
                     <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${f.badgeColor}`}>{f.badge}</span>
@@ -94,10 +94,10 @@ export default function FiturPage() {
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">Siap Melindungi Diri Anda?</h2>
             <p className="text-gray-300 mb-8 max-w-lg mx-auto leading-relaxed">Mulai scan pertama Anda sekarang. Deteksi phishing dan malware dengan bukti visual yang nyata.</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-white text-primary-900 font-bold px-8 py-3.5 rounded-xl hover:bg-gray-100 transition-all duration-300 text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 group">
+              <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-white text-primary-900 font-bold px-8 py-3.5 rounded-full hover:bg-gray-100 transition-all duration-300 text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 group">
                 Mulai Scan Gratis <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link href="/cara-kerja" className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-8 py-3.5 rounded-xl transition-all duration-300 text-base">
+              <Link href="/cara-kerja" className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-8 py-3.5 rounded-full transition-all duration-300 text-base">
                 Pelajari Cara Kerja
               </Link>
             </div>

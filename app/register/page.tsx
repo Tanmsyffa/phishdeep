@@ -8,7 +8,7 @@ export default function RegisterPage({
   searchParams: { message: string }
 }) {
   return (
-    <div className="min-h-screen flex bg-gray-50 dark:bg-slate-950">
+    <div className="min-h-screen flex bg-ios-bg dark:bg-ios-bgDark">
       
       {/* Left Side - Visual Banner (Hidden on Mobile) */}
       <div className="hidden lg:flex w-1/2 bg-slate-950 relative overflow-hidden flex-col justify-between border-r border-slate-800">
@@ -60,7 +60,7 @@ export default function RegisterPage({
       </div>
 
       {/* Right Side - Register Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 py-12 sm:p-12 relative bg-white dark:bg-slate-950 min-h-screen lg:min-h-0">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 py-12 sm:p-12 relative bg-ios-bg dark:bg-ios-bgDark min-h-screen lg:min-h-0">
         
         {/* Mobile Back Button */}
         <div className="absolute top-6 left-6 lg:hidden">
@@ -110,7 +110,7 @@ export default function RegisterPage({
           <form action={signInWithGoogle}>
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-slate-800 text-gray-700 dark:text-gray-300 font-bold py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-900 hover:border-gray-300 dark:hover:border-slate-700 hover:shadow-sm transition-all duration-200 group relative overflow-hidden"
+              className="w-full flex items-center justify-center gap-3 bg-white dark:bg-ios-cardDark border border-gray-200/50 dark:border-white/10 text-gray-700 dark:text-gray-300 font-bold py-4 rounded-full hover:bg-gray-50 dark:hover:bg-white/5 shadow-[0_2px_10px_rgb(0,0,0,0.02)] transition-all duration-300 group relative overflow-hidden active:scale-[0.98]"
             >
               <div className="absolute inset-0 bg-gray-50 dark:bg-slate-900 opacity-0 group-hover:opacity-100 transition-opacity" />
               {/* Google Icon SVG */}

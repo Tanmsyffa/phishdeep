@@ -75,10 +75,10 @@ export default function CaraKerjaPage() {
               <div className="space-y-10">
                 {steps.map((s, i) => (
                   <div key={i} className="flex gap-5 sm:gap-7 items-start relative">
-                    <div className={`shrink-0 w-11 h-11 ${s.color} text-white rounded-xl flex items-center justify-center text-sm font-bold shadow-md z-10`}>
+                    <div className={`shrink-0 w-11 h-11 ${s.color} text-white rounded-full flex items-center justify-center text-sm font-bold shadow-sm z-10`}>
                       {s.step}
                     </div>
-                    <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-5 flex-1 hover:shadow-md transition-shadow">
+                    <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/5 rounded-3xl p-6 flex-1 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all">
                       <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{s.title}</h3>
                       <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-sm">{s.desc}</p>
                     </div>
@@ -96,7 +96,7 @@ export default function CaraKerjaPage() {
               <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-3">Kenapa PhishDeep Lebih Baik?</h2>
               <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-base">Tidak hanya mendeteksi — kami memberikan <strong className="text-gray-700 dark:text-gray-200">bukti nyata</strong> yang bisa digunakan.</p>
             </div>
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-x-auto overflow-y-hidden shadow-sm">
+            <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 overflow-x-auto overflow-y-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
               <table className="w-full text-left border-collapse min-w-[500px]">
                 <thead>
                   <tr className="border-b border-gray-100 dark:border-slate-800">
@@ -137,10 +137,10 @@ export default function CaraKerjaPage() {
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">Coba Sekarang</h2>
             <p className="text-gray-300 mb-8 max-w-lg mx-auto leading-relaxed">Scan link pertama Anda dan lihat sendiri perbedaannya. Tidak perlu kartu kredit.</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-white text-primary-900 font-bold px-8 py-3.5 rounded-xl hover:bg-gray-100 transition-all duration-300 text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 group">
+              <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-white text-primary-900 font-bold px-8 py-3.5 rounded-full hover:bg-gray-100 transition-all duration-300 text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 group">
                 Mulai Scan Gratis <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link href="/fitur" className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-8 py-3.5 rounded-xl transition-all duration-300 text-base">
+              <Link href="/fitur" className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-8 py-3.5 rounded-full transition-all duration-300 text-base">
                 Lihat Fitur Lengkap
               </Link>
             </div>

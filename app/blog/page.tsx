@@ -33,12 +33,12 @@ export default function BlogPage() {
   const regularArticles = articles.slice(1);
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-gray-50 dark:bg-slate-950">
+    <div className="min-h-screen flex flex-col font-sans bg-ios-bg dark:bg-ios-bgDark">
       <Header />
       <main className="flex-grow">
 
         {/* ── Hero Section ─────────────────────────────────── */}
-        <section className="border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900/50">
+        <section className="border-b border-gray-200/50 dark:border-white/5 bg-transparent">
           <div className="container mx-auto px-4 sm:px-6 max-w-6xl py-8 sm:py-12">
             <div className="mb-6">
               <BackButton />
@@ -79,7 +79,7 @@ export default function BlogPage() {
               <div className="mb-10 sm:mb-16">
                 <p className="text-[11px] uppercase tracking-widest font-bold text-gray-400 dark:text-gray-500 mb-4 pl-1">Artikel Utama</p>
                 <Link href={`/blog/${featuredArticle.id}`} className="group block">
-                  <article className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-gray-200 dark:border-slate-800 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col md:flex-row">
+                  <article className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_15px_40px_rgb(0,0,0,0.1)] transition-all duration-300 flex flex-col md:flex-row">
                     {/* Image */}
                     <div className="md:w-5/12 h-52 sm:h-64 md:h-auto bg-gray-200 dark:bg-slate-800 relative overflow-hidden shrink-0">
                       <img
@@ -120,7 +120,7 @@ export default function BlogPage() {
                             <p className="text-[11px] text-gray-400">Penulis Keamanan Siber</p>
                           </div>
                         </div>
-                        <span className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-sm bg-blue-50 dark:bg-blue-500/10 px-5 py-2.5 rounded-xl group-hover:bg-blue-100 dark:group-hover:bg-blue-500/20 transition-colors shrink-0">
+                        <span className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-sm bg-blue-50 dark:bg-blue-500/10 px-5 py-2.5 rounded-full group-hover:bg-blue-100 dark:group-hover:bg-blue-500/20 transition-colors shrink-0">
                           Baca Artikel <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </span>
                       </div>
@@ -140,7 +140,7 @@ export default function BlogPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-5 sm:gap-6">
               {regularArticles.map(article => (
                 <Link key={article.id} href={`/blog/${article.id}`} className="group block">
-                  <article className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+                  <article className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_15px_40px_rgb(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
                     {/* Image */}
                     <div className="h-44 sm:h-48 bg-gray-200 dark:bg-slate-800 overflow-hidden relative shrink-0">
                       <img
