@@ -60,14 +60,14 @@ export default async function ScanResultPage({ params, searchParams }: { params:
   if (isOwner && hoursDiff > 48) {
     return (
       <div className="max-w-2xl mx-auto py-20 text-center">
-        <div className="w-20 h-20 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="w-20 h-20 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-white/5">
           <Clock className="w-10 h-10 text-gray-400" />
         </div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Laporan Kedaluwarsa</h1>
-        <p className="text-gray-500 dark:text-gray-400 mb-8">
+        <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
           Demi keamanan dan efisiensi, riwayat dan laporan scan pengguna otomatis dihapus dari akses publik/pribadi setelah 48 jam.
         </p>
-        <Link href="/history" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-medium transition-colors">
+        <Link href="/history" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-full font-semibold transition-all active:scale-95 shadow-sm inline-block">
           Kembali ke Riwayat
         </Link>
       </div>
@@ -97,39 +97,39 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
       {/* Community View Banner */}
       {!isOwner && (
-        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-2xl flex items-start gap-3 print:hidden">
-          <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center shrink-0">
-            <Globe className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+        <div className="mb-6 p-4 bg-blue-50/60 dark:bg-blue-500/10 border border-blue-200/60 dark:border-blue-500/20 rounded-3xl flex items-start gap-3 print:hidden backdrop-blur-xl">
+          <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center shrink-0">
+            <Globe className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
-          <div>
+          <div className="pt-0.5">
             <h3 className="text-sm font-bold text-blue-900 dark:text-blue-100">Akses Komunitas</h3>
-            <p className="text-xs text-blue-700 dark:text-blue-300 mt-0.5">
-              Anda sedang melihat detail scan yang dilakukan oleh <span className="font-bold">{scan.user_name || 'pengguna lain'}</span>. 
-              Beberapa aksi spesifik seperti menghapus atau mengulang scan telah dinonaktifkan.
+            <p className="text-xs text-blue-700 dark:text-blue-300 mt-1 leading-relaxed">
+              Anda melihat detail scan oleh <span className="font-bold">{scan.user_name || 'pengguna lain'}</span>. 
+              Beberapa aksi spesifik seperti menghapus atau mengulang scan dinonaktifkan.
             </p>
           </div>
         </div>
       )}
 
       {/* Top Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-5 sm:mb-6 print:hidden">
-        <Link href="/dashboard" className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-white flex items-center gap-2 transition-colors group self-start">
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Kembali ke Dashboard
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 print:hidden">
+        <Link href="/dashboard" className="text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-white flex items-center gap-2 transition-colors group self-start">
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Dashboard
         </Link>
         <div className="flex items-center gap-2 text-sm flex-wrap">
-          <span className="text-gray-400 dark:text-gray-500 text-xs font-mono bg-gray-100 dark:bg-slate-800 px-2 py-0.5 rounded">#{params.id.split('-')[0]}</span>
+          <span className="text-gray-400 dark:text-gray-500 text-xs font-mono bg-gray-100/80 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 px-2.5 py-1 rounded-full">#{params.id.split('-')[0]}</span>
           {isDanger && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-semibold border border-red-100 dark:border-red-800 text-xs">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 font-semibold border border-red-100 dark:border-red-500/20 text-xs">
               <AlertTriangle className="w-3.5 h-3.5" /> Berbahaya
             </span>
           )}
           {isSuspicious && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 font-semibold border border-yellow-100 dark:border-yellow-800 text-xs">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-50 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 font-semibold border border-yellow-100 dark:border-yellow-500/20 text-xs">
               <AlertTriangle className="w-3.5 h-3.5" /> Mencurigakan
             </span>
           )}
           {isSafe && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 font-semibold border border-green-100 dark:border-green-800 text-xs">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 font-semibold border border-green-100 dark:border-green-500/20 text-xs">
               <CheckCircle className="w-3.5 h-3.5" /> Aman
             </span>
           )}
@@ -140,20 +140,20 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
       {/* Historical Comparison Alert */}
       {previousScan && (
-        <div className="mb-4 flex items-start gap-3 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-800/60 rounded-2xl p-4 animate-in fade-in slide-in-from-top-2 print:hidden">
-          <div className="w-9 h-9 bg-blue-100 dark:bg-blue-500/20 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+        <div className="mb-4 flex items-start gap-3 bg-blue-50/60 dark:bg-blue-500/10 border border-blue-200/50 dark:border-blue-500/20 rounded-3xl p-5 animate-in fade-in slide-in-from-top-2 print:hidden backdrop-blur-xl">
+          <div className="w-10 h-10 bg-blue-100 dark:bg-blue-500/20 rounded-full flex items-center justify-center shrink-0">
             <HistoryIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
-          <div>
-            <h3 className="text-sm font-bold text-blue-800 dark:text-blue-400 mb-0.5">Riwayat Ditemukan</h3>
+          <div className="pt-0.5">
+            <h3 className="text-sm font-bold text-blue-800 dark:text-blue-400 mb-1">Riwayat Ditemukan</h3>
             <p className="text-xs text-blue-700 dark:text-blue-400/80 leading-relaxed">
               Target ini pernah di-scan oleh <span className="font-bold">{previousScan.user_name || 'Seorang pengguna'}</span> pada <strong>{new Date(previousScan.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</strong> dengan skor risiko awal <span className="font-bold">{previousScan.risk_score}</span>. 
               {scan.risk_score > previousScan.risk_score ? (
-                <span className="text-red-600 dark:text-red-400 font-medium"> Tingkat ancaman telah meningkat sejak scan terakhir!</span>
+                <span className="text-red-600 dark:text-red-400 font-bold ml-1">Tingkat ancaman telah meningkat sejak scan terakhir!</span>
               ) : scan.risk_score < previousScan.risk_score ? (
-                <span className="text-green-600 dark:text-green-400 font-medium"> Skor risiko telah menurun sejak scan terakhir.</span>
+                <span className="text-green-600 dark:text-green-400 font-bold ml-1">Skor risiko telah menurun sejak scan terakhir.</span>
               ) : (
-                <span className="text-gray-600 dark:text-gray-400"> Tidak ada perubahan signifikan pada tingkat ancaman.</span>
+                <span className="text-gray-600 dark:text-gray-400 font-medium ml-1">Tidak ada perubahan signifikan.</span>
               )}
             </p>
           </div>
@@ -162,12 +162,12 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
       {/* Danger Alert Banner */}
       {isDanger && (
-        <div className="mb-5 flex items-start gap-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-800/60 rounded-2xl p-4 animate-in fade-in slide-in-from-top-2 print:hidden">
-          <div className="w-9 h-9 bg-red-100 dark:bg-red-500/20 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+        <div className="mb-5 flex items-start gap-3 bg-red-50/80 dark:bg-red-500/10 border border-red-200/60 dark:border-red-500/20 rounded-3xl p-5 animate-in fade-in slide-in-from-top-2 print:hidden backdrop-blur-xl">
+          <div className="w-10 h-10 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center shrink-0">
             <ShieldAlert className="w-5 h-5 text-red-600 dark:text-red-400" />
           </div>
-          <div>
-            <h3 className="text-sm font-bold text-red-700 dark:text-red-400 mb-0.5">⚠ Ancaman Berbahaya Terdeteksi!</h3>
+          <div className="pt-0.5">
+            <h3 className="text-sm font-bold text-red-700 dark:text-red-400 mb-1">⚠ Ancaman Berbahaya Terdeteksi!</h3>
             <p className="text-xs text-red-600 dark:text-red-400/80 leading-relaxed">
               Skor risiko <strong>{scan.risk_score}/100</strong>. Target ini terindikasi sebagai situs <strong>phishing, malware, atau penipuan</strong>. Jangan klik, masukkan data, atau instal file dari sumber ini. Segera laporkan ke pihak berwajib menggunakan bukti laporan di bawah.
             </p>
@@ -175,12 +175,12 @@ export default async function ScanResultPage({ params, searchParams }: { params:
         </div>
       )}
       {isSuspicious && (
-        <div className="mb-5 flex items-start gap-3 bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-800/60 rounded-2xl p-4 animate-in fade-in slide-in-from-top-2 print:hidden">
-          <div className="w-9 h-9 bg-yellow-100 dark:bg-yellow-500/20 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+        <div className="mb-5 flex items-start gap-3 bg-yellow-50/80 dark:bg-yellow-500/10 border border-yellow-200/60 dark:border-yellow-500/20 rounded-3xl p-5 animate-in fade-in slide-in-from-top-2 print:hidden backdrop-blur-xl">
+          <div className="w-10 h-10 bg-yellow-100 dark:bg-yellow-500/20 rounded-full flex items-center justify-center shrink-0">
             <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
           </div>
-          <div>
-            <h3 className="text-sm font-bold text-yellow-700 dark:text-yellow-400 mb-0.5">Perlu Kewaspadaan</h3>
+          <div className="pt-0.5">
+            <h3 className="text-sm font-bold text-yellow-700 dark:text-yellow-400 mb-1">Perlu Kewaspadaan</h3>
             <p className="text-xs text-yellow-700 dark:text-yellow-400/80 leading-relaxed">
               Skor risiko <strong>{scan.risk_score}/100</strong>. Ditemukan beberapa anomali mencurigakan. Lakukan verifikasi manual sebelum berinteraksi dengan target ini.
             </p>
@@ -255,49 +255,49 @@ export default async function ScanResultPage({ params, searchParams }: { params:
         <div className="lg:col-span-2 space-y-5 print:w-full">
           
           {/* Summary Box */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 sm:p-6 print:hidden">
-            <h2 className="font-bold text-gray-900 dark:text-white mb-4 text-sm sm:text-base print:text-lg">Ringkasan Eksekutif</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+          <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/8 rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6 sm:p-8 print:hidden">
+            <h2 className="font-bold text-gray-900 dark:text-white mb-5 text-base print:text-lg">Ringkasan Eksekutif</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               
-              <div className={`sm:col-span-1 border rounded-xl p-4 print:border-2 ${isDanger ? 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800 print:border-red-600 print:bg-white dark:bg-slate-900' : isSuspicious ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-800 print:border-yellow-600 print:bg-white dark:bg-slate-900' : 'bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-800 print:border-green-600 print:bg-white dark:bg-slate-900'}`}>
-                <div className={`flex items-center gap-2 font-bold mb-2 text-sm ${isDanger ? 'text-red-600 dark:text-red-400' : isSuspicious ? 'text-yellow-600 dark:text-yellow-400' : 'text-green-600 dark:text-green-400'}`}>
-                  {isDanger || isSuspicious ? <ShieldAlert className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" /> : <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />}
+              <div className={`sm:col-span-1 border rounded-2xl p-5 print:border-2 ${isDanger ? 'bg-red-50/50 dark:bg-red-500/5 border-red-200/60 dark:border-red-500/20' : isSuspicious ? 'bg-yellow-50/50 dark:bg-yellow-500/5 border-yellow-200/60 dark:border-yellow-500/20' : 'bg-green-50/50 dark:bg-green-500/5 border-green-200/60 dark:border-green-500/20'}`}>
+                <div className={`flex items-center gap-2 font-bold mb-3 text-sm ${isDanger ? 'text-red-600 dark:text-red-400' : isSuspicious ? 'text-yellow-600 dark:text-yellow-400' : 'text-green-600 dark:text-green-400'}`}>
+                  {isDanger || isSuspicious ? <ShieldAlert className="w-5 h-5 shrink-0" /> : <CheckCircle className="w-5 h-5 shrink-0" />}
                   {isDanger ? 'Berisiko Tinggi' : isSuspicious ? 'Perlu Diwaspadai' : 'Terlihat Aman'}
                 </div>
-                <p className={`text-xs leading-relaxed ${isDanger ? 'text-red-700 dark:text-red-400 print:text-black' : isSuspicious ? 'text-yellow-700 dark:text-yellow-400 print:text-black' : 'text-green-700 dark:text-green-400 print:text-black'}`}>
+                <p className={`text-xs leading-relaxed ${isDanger ? 'text-red-700 dark:text-red-400' : isSuspicious ? 'text-yellow-700 dark:text-yellow-400' : 'text-green-700 dark:text-green-400'}`}>
                   {domainInfo.threat_summary ? domainInfo.threat_summary : (isDanger ? 'Aktivitas berbahaya terdeteksi. Sistem menyarankan untuk memblokir interaksi dengan target ini segera.' : isSuspicious ? 'Ditemukan beberapa anomali. Harap berhati-hati dan lakukan verifikasi manual.' : 'Tidak ditemukan ancaman signifikan pada saat pemindaian dilakukan.')}
                 </p>
               </div>
 
-              <div className="bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl p-4 flex flex-col justify-center print:bg-white dark:bg-slate-900 print:border-gray-300">
-                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Skor Risiko Total</div>
-                <div className={`text-2xl sm:text-3xl font-bold flex items-end gap-1 ${isDanger ? 'text-red-600 dark:text-red-400' : isSuspicious ? 'text-yellow-600 dark:text-yellow-400' : 'text-green-600 dark:text-green-400'}`}>
-                  {scan.risk_score} <span className="text-sm text-gray-400 dark:text-gray-500 font-normal">/ 100</span>
+              <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-100/80 dark:border-white/5 rounded-2xl p-5 flex flex-col justify-center relative overflow-hidden">
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-semibold">Skor Risiko Total</div>
+                <div className={`text-3xl font-bold flex items-end gap-1 ${isDanger ? 'text-red-600 dark:text-red-400' : isSuspicious ? 'text-yellow-600 dark:text-yellow-400' : 'text-green-600 dark:text-green-400'}`}>
+                  {scan.risk_score} <span className="text-sm text-gray-400 dark:text-gray-500 font-medium">/ 100</span>
                 </div>
                 {domainInfo.confidence_level && (
-                  <div className="mt-1 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest print:text-gray-600">
+                  <div className="mt-1.5 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
                     Confidence: {domainInfo.confidence_level.split(' ')[0]}
                   </div>
                 )}
-                <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-1.5 mt-2 overflow-hidden print:hidden">
-                  <div className={`h-1.5 rounded-full ${isDanger ? 'bg-red-500' : isSuspicious ? 'bg-yellow-500' : 'bg-green-500'}`} style={{ width: `${scan.risk_score}%` }}></div>
+                <div className="w-full bg-gray-200/50 dark:bg-white/10 rounded-full h-1.5 mt-3 overflow-hidden">
+                  <div className={`h-full rounded-full transition-all duration-1000 ${isDanger ? 'bg-red-500' : isSuspicious ? 'bg-yellow-500' : 'bg-green-500'}`} style={{ width: `${scan.risk_score}%` }}></div>
                 </div>
               </div>
 
-              <div className="bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl p-4 flex flex-col justify-center print:bg-white dark:bg-slate-900 print:border-gray-300">
-                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Target Analisis</div>
-                <div className="text-sm font-bold text-gray-900 dark:text-white break-all line-clamp-2" title={scan.target_url}>{scan.target_url}</div>
-                <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-slate-700 print:bg-gray-100 dark:bg-slate-800 inline-block px-2 py-0.5 rounded-md self-start">{scan.target_type}</div>
+              <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-100/80 dark:border-white/5 rounded-2xl p-5 flex flex-col justify-center">
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-semibold">Target Analisis</div>
+                <div className="text-sm font-bold text-gray-900 dark:text-white break-all line-clamp-2 leading-snug" title={scan.target_url}>{scan.target_url}</div>
+                <div className="mt-2 text-[10px] font-bold text-gray-500 dark:text-gray-400 bg-white dark:bg-white/10 border border-gray-200/50 dark:border-transparent inline-flex px-2.5 py-1 rounded-md self-start uppercase tracking-wider">{scan.target_type}</div>
               </div>
             </div>
           </div>
 
           {/* Detailed Intelligence Panels */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 print:grid-cols-2 print:break-inside-avoid">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 print:grid-cols-2 print:break-inside-avoid mt-5">
             {/* Domain / WHOIS Box */}
             {Object.keys(domainInfo).length > 0 && (
-              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 print:border-none print:shadow-none print:p-0 print:mb-4 col-span-full">
-                <h3 className="font-bold text-gray-900 dark:text-white mb-3 text-sm flex items-center gap-2 print:border-b print:border-gray-300 print:pb-1 print:mb-2 print:text-base"><Globe className="w-4 h-4 text-primary-500 print:hidden" /> <span className="print:hidden">Informasi Domain (RDAP & OSINT)</span><span className="hidden print:inline">Detail Analisis Keamanan</span></h3>
+              <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6 print:border-none print:shadow-none print:p-0 print:mb-4 col-span-full">
+                <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm flex items-center gap-2 print:border-b print:border-gray-300 print:pb-1 print:mb-2 print:text-base"><Globe className="w-4 h-4 text-blue-500 print:hidden" /> <span className="print:hidden">Informasi Domain (RDAP & OSINT)</span><span className="hidden print:inline">Detail Analisis Keamanan</span></h3>
 
                 {/* --- PRINT ONLY: Simple List Format --- */}
                 <div className="hidden print:block text-xs text-black leading-relaxed">
@@ -319,28 +319,28 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                 <div className="print:hidden">
                 {/* Row 1 — Identity */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
-                  <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                  <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                     <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                       <Globe className="w-3.5 h-3.5" />
                       <span className="text-[9px] uppercase font-bold tracking-wide">Domain</span>
                     </div>
                     <div className="font-mono font-semibold text-gray-900 dark:text-white text-xs truncate">{domainInfo.domain || 'N/A'}</div>
                   </div>
-                  <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                  <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                     <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                       <Server className="w-3.5 h-3.5" />
                       <span className="text-[9px] uppercase font-bold tracking-wide">IP Server</span>
                     </div>
                     <div className="font-mono font-semibold text-gray-900 dark:text-white text-xs">{domainInfo.ip_address || 'N/A'}</div>
                   </div>
-                  <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                  <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                     <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                       <Shield className="w-3.5 h-3.5" />
                       <span className="text-[9px] uppercase font-bold tracking-wide">Registrar</span>
                     </div>
                     <div className="font-medium text-gray-900 dark:text-white text-xs line-clamp-2 leading-snug">{domainInfo.registrar || 'N/A'}</div>
                   </div>
-                  <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                  <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                     <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                       <Clock className="w-3.5 h-3.5" />
                       <span className="text-[9px] uppercase font-bold tracking-wide">Umur Domain</span>
@@ -356,7 +356,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
                 {/* Row 2 — Dates, SSL, Wayback */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
-                  <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                  <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                     <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                       <Calendar className="w-3.5 h-3.5" />
                       <span className="text-[9px] uppercase font-bold tracking-wide">Terdaftar</span>
@@ -364,7 +364,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     <div className="text-xs font-medium text-gray-900 dark:text-white">{domainInfo.creation_date || 'N/A'}</div>
                   </div>
                   {domainInfo.expiry_date && domainInfo.expiry_date !== 'Unknown' && (
-                    <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                         <Calendar className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">Kadaluarsa</span>
@@ -373,7 +373,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     </div>
                   )}
                   {domainInfo.last_updated && domainInfo.last_updated !== 'Unknown' && (
-                    <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                         <RefreshCw className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">Diperbarui</span>
@@ -391,7 +391,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     </div>
                   )}
                   {domainInfo.wayback_first_seen && (
-                    <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                         <History className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">Wayback Pertama</span>
@@ -400,7 +400,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     </div>
                   )}
                   {domainInfo.wayback_last_seen && (
-                    <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                         <History className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">Wayback Terakhir</span>
@@ -413,7 +413,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                 {/* Row 3 — Geo + Threat Intel */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                   {domainInfo.geo_country && (
-                    <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 col-span-2 sm:col-span-1 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 col-span-2 sm:col-span-1 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                         <Globe className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">Lokasi Server</span>
@@ -424,7 +424,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     </div>
                   )}
                   {domainInfo.urlscan_total !== undefined && (
-                    <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                         <Search className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">URLScan.io</span>
@@ -436,7 +436,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     </div>
                   )}
                   {domainInfo.dns_ttl !== undefined && (
-                    <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                         <Activity className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">DNS TTL</span>
@@ -445,7 +445,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     </div>
                   )}
                   {domainInfo.cert_count !== undefined && (
-                    <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                         <FileText className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">crt.sh Certs</span>
@@ -473,7 +473,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                       const textColor = isCritical ? 'text-red-600 dark:text-red-400' : isWarn ? 'text-orange-600 dark:text-orange-400' : isNotice ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400';
                       const bgAccent = isCritical ? 'bg-red-50 dark:bg-red-900/20' : isWarn ? 'bg-orange-50 dark:bg-orange-900/20' : isNotice ? 'bg-amber-50 dark:bg-amber-900/20' : 'bg-emerald-50 dark:bg-emerald-900/20';
                       return (
-                        <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-300">
+                        <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-300">
                           <div className="flex items-start gap-3">
                             <div className={`w-8 h-8 rounded flex items-center justify-center shrink-0 ${bgAccent}`}>
                               <Activity className={`w-4 h-4 ${textColor}`} />
@@ -530,7 +530,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
                     {/* AbuseIPDB card */}
                     {domainInfo.abuseipdb_score !== undefined && (
-                      <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex items-center gap-3 print:border-gray-300">
+                      <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex items-center gap-3 print:border-gray-300">
                         <div className="w-8 h-8 rounded bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center shrink-0">
                           <ShieldAlert className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                         </div>
@@ -609,7 +609,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
             {/* Framework Box */}
             {frameworks.length > 0 && (
-              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 print:border-none print:shadow-none print:p-0 print:mb-4">
+              <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6 print:border-none print:shadow-none print:p-0 print:mb-4">
                 <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm flex items-center gap-2 print:hidden"><Server className="w-4 h-4 text-primary-500 print:hidden" /> Teknologi & Stack</h3>
                 
                 {/* --- PRINT ONLY --- */}
@@ -648,7 +648,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
           {/* Redirect Chain */}
           {redirectChain.length > 0 && (
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 print:border-none print:shadow-none print:p-0 print:mb-4 print:break-inside-avoid">
+            <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6 print:border-none print:shadow-none print:p-0 print:mb-4 print:break-inside-avoid">
               <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm flex items-center gap-2 print:hidden"><LinkIcon className="w-4 h-4 text-primary-500 print:hidden" /> Jejak Redirect (Redirect Chain)</h3>
               
               {/* --- PRINT ONLY --- */}
@@ -791,7 +791,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
         {/* Right Column: Sidebar - Hidden on Print */}
         <div className="space-y-4 sm:space-y-6 print:hidden">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 sm:p-6">
+          <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6 sm:p-6">
             <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm sm:text-base">Informasi Metadata</h3>
             <div className="space-y-3 text-xs sm:text-sm">
               <div className="flex justify-between gap-2 border-b border-gray-100 dark:border-slate-700 pb-2">
@@ -813,7 +813,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
             </div>
           </div>
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-2xl p-5">
+          <div className="bg-blue-50/60 dark:bg-blue-500/10 border border-blue-200/50 dark:border-blue-500/20 backdrop-blur-xl rounded-3xl p-6">
             <h4 className="font-bold text-gray-900 dark:text-white text-sm mb-2">Penafian Laporan</h4>
             <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
               Laporan ini dibuat otomatis menggunakan teknik <i>static & dynamic analysis</i> tanpa manipulasi.

@@ -172,7 +172,7 @@ export default function DashboardPage() {
             <img
               src={user.user_metadata.avatar_url}
               alt="Profile"
-              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-gray-100 dark:border-slate-700 shadow-sm"
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-gray-200/50 dark:border-white/5 shadow-sm"
             />
           ) : (
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-2xl sm:text-3xl shadow-sm">
@@ -262,9 +262,9 @@ export default function DashboardPage() {
                     <span className="absolute right-1 -translate-y-1/2" style={{ top: '50%' }}>{chartMax / 2}</span>
                     <span className="absolute right-1 -translate-y-1/2" style={{ top: '100%' }}>0</span>
                   </div>
-                  <div className="flex-1 relative border-l border-b border-gray-100 dark:border-slate-700" style={{ height: `${CHART_H}px` }}>
-                    <div className="absolute left-0 right-0 border-t border-dashed border-gray-100 dark:border-slate-700" style={{ top: '0%' }} />
-                    <div className="absolute left-0 right-0 border-t border-dashed border-gray-100 dark:border-slate-700" style={{ top: '50%' }} />
+                  <div className="flex-1 relative border-l border-b border-gray-200/50 dark:border-white/5" style={{ height: `${CHART_H}px` }}>
+                    <div className="absolute left-0 right-0 border-t border-dashed border-gray-200/50 dark:border-white/5" style={{ top: '0%' }} />
+                    <div className="absolute left-0 right-0 border-t border-dashed border-gray-200/50 dark:border-white/5" style={{ top: '50%' }} />
                     <div className="absolute inset-0 flex items-end justify-around px-1 pb-0">
                       {trendData.map((t, idx) => {
                         const isToday = t.wibDay === todayWIBStr;
@@ -310,7 +310,7 @@ export default function DashboardPage() {
                     );
                   })}
                 </div>
-                <div className="flex gap-4 mt-3 text-[10px] font-medium justify-center border-t border-gray-100 dark:border-slate-700 pt-3 text-gray-600 dark:text-gray-300">
+                <div className="flex gap-4 mt-3 text-[10px] font-medium justify-center border-t border-gray-200/50 dark:border-white/5 pt-3 text-gray-600 dark:text-gray-300">
                   <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-blue-200 dark:bg-blue-500/50 rounded-sm inline-block" /> Total Scan</div>
                   <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-red-400 dark:bg-red-500 rounded-sm inline-block" /> Bahaya Terdeteksi</div>
                 </div>
