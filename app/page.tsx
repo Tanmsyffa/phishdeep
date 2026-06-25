@@ -140,7 +140,7 @@ export default function Home() {
 
 
         {/* Features Section */}
-        <section id="fitur" className="py-12 bg-gray-50 dark:bg-transparent">
+        <section id="fitur" className="py-12 bg-transparent">
           <div className="container mx-auto px-4">
             <div className="text-center mb-10">
               <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-3">Fitur Utama PhishDeep</h2>
@@ -148,24 +148,24 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
-              <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 p-5 sm:p-8 rounded-2xl hover:shadow-lg transition-shadow">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900/40 text-primary-600 rounded-xl flex items-center justify-center mb-4 sm:mb-6">
+              <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/5 p-6 sm:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_15px_40px_rgb(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full flex items-center justify-center mb-4 sm:mb-6 shadow-sm">
                   <LinkIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
                 <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-3">Scan Link</h3>
                 <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Deteksi phishing pada link beserta screenshot, anotasi, dan redirect chain lengkap.</p>
               </div>
 
-              <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 p-5 sm:p-8 rounded-2xl hover:shadow-lg transition-shadow">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 rounded-xl flex items-center justify-center mb-4 sm:mb-6">
+              <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/5 p-6 sm:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_15px_40px_rgb(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mb-4 sm:mb-6 shadow-sm">
                   <Smartphone className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
                 <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-3">Scan APK</h3>
                 <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Analisis izin berbahaya, deteksi malware, dan overlay detection.</p>
               </div>
 
-              <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 p-5 sm:p-8 rounded-2xl hover:shadow-lg transition-shadow">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 rounded-xl flex items-center justify-center mb-4 sm:mb-6">
+              <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/5 p-6 sm:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_15px_40px_rgb(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mb-4 sm:mb-6 shadow-sm">
                   <FileText className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
                 <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-3">Bukti Forensik</h3>
@@ -176,13 +176,13 @@ export default function Home() {
         </section>
 
         {/* Comparison Section */}
-        <section id="cara-kerja" className="py-12 bg-white dark:bg-transparent">
+        <section id="cara-kerja" className="py-12 bg-transparent">
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="text-center mb-10">
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Kenapa PhishDeep Lebih Baik?</h2>
             </div>
 
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-x-auto">
+            <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-x-auto">
               <table className="w-full text-left border-collapse min-w-[500px]">
                 <thead>
                   <tr className="bg-gray-50 dark:bg-slate-900/50 border-b border-gray-200 dark:border-slate-800">
@@ -240,7 +240,7 @@ export default function Home() {
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Blog & Edukasi Keamanan Siber</h2>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-2">Pelajari lebih lanjut tentang tren phishing, teknik terbaru malware, dan bagaimana Anda bisa melindungi diri dari serangan siber.</p>
-            <Link href="/blog" className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-xl font-semibold transition-all duration-300 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-primary-600 dark:hover:text-white hover:border-blue-200 dark:hover:border-slate-700 hover:shadow-md group">Lihat Artikel Blog <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></Link>
+            <Link href="/blog" className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-full font-semibold transition-all duration-300 bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-white/10 hover:text-blue-600 dark:hover:text-white shadow-sm active:scale-95 group">Lihat Artikel Blog <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></Link>
           </div>
         </section>
 
@@ -249,7 +249,7 @@ export default function Home() {
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Tentang PhishDeep</h2>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-2">Kami adalah tim yang berdedikasi untuk menciptakan ruang digital yang lebih aman bagi semua orang di Indonesia. Misi kami adalah memberikan bukti, bukan sekadar peringatan.</p>
-            <Link href="/about" className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-xl font-semibold transition-all duration-300 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-primary-600 dark:hover:text-white hover:border-blue-200 dark:hover:border-slate-700 hover:shadow-md group">Selengkapnya Tentang Kami <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></Link>
+            <Link href="/about" className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-full font-semibold transition-all duration-300 bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-white/10 hover:text-blue-600 dark:hover:text-white shadow-sm active:scale-95 group">Selengkapnya Tentang Kami <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></Link>
           </div>
         </section>
       </main>

@@ -202,7 +202,7 @@ function ScanForm() {
                     <input 
                       type="text" 
                       placeholder="contoh-link.com atau https://contoh.com" 
-                      className="flex-1 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow disabled:bg-gray-100 dark:disabled:bg-slate-900 text-gray-900 dark:text-white"
+                      className="flex-1 border border-gray-200 dark:border-white/10 bg-white/60 dark:bg-white/5 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-shadow text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 backdrop-blur-sm"
                       value={url}
                       onChange={(e) => setUrl(e.target.value)}
                       disabled={isScanning}
@@ -211,7 +211,7 @@ function ScanForm() {
                     <button 
                       type="submit" 
                       disabled={isScanning}
-                      className="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-sm text-sm disabled:opacity-50"
+                      className="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors shadow-sm text-sm disabled:opacity-50 active:scale-95"
                     >
                       Scan Sekarang
                     </button>
@@ -231,7 +231,7 @@ function ScanForm() {
                   </div>
                   <h3 className="font-medium text-gray-900 dark:text-white mb-1">{file ? file.name : 'Upload File Anda'}</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-4">{file ? 'File siap untuk dipindai (Maks 25MB)' : 'Tarik dan letakkan file di sini atau klik (Maks 25MB)'}</p>
-                  <button type="submit" disabled={isScanning || !file} className="text-white font-medium text-sm border bg-blue-600 px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 relative z-10 cursor-pointer">
+                  <button type="submit" disabled={isScanning || !file} className="text-white font-medium text-sm border bg-blue-600 px-6 py-2 rounded-full hover:bg-blue-700 transition-colors disabled:opacity-50 relative z-10 cursor-pointer active:scale-95">
                     {file ? 'Mulai Scan' : 'Pilih File'}
                   </button>
                 </form>
@@ -240,7 +240,7 @@ function ScanForm() {
             
             {!isScanning && limitCheck.allowed && activeTab === 'link' && (
               <div className="px-4 sm:px-8 pb-5 sm:pb-8">
-                <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-4 border border-gray-100 dark:border-slate-700">
+                <div className="bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-gray-100 dark:border-white/5">
                   <h4 className="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2.5">Contoh link phishing untuk dicoba:</h4>
                   <ul className="space-y-1.5 text-xs text-primary-600">
                     <li><button onClick={() => setUrl('bca-security-update-verify.com/login')} className="hover:underline text-left text-blue-600 dark:text-blue-400 flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-blue-600 shrink-0"></span><span className="break-all">bca-security-update-verify.com/login</span></button></li>
@@ -255,9 +255,9 @@ function ScanForm() {
 
           {/* Info cards - visible on all screens */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <div className="bg-blue-50 dark:bg-blue-500/20 p-4 rounded-2xl border border-blue-100 dark:border-blue-800">
+            <div className="bg-white/40 dark:bg-blue-500/5 p-5 rounded-3xl border border-white/50 dark:border-blue-800/30 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-sm">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-center text-primary-600 shadow-sm shrink-0">
+                <div className="w-8 h-8 bg-white dark:bg-ios-cardDark rounded-full flex items-center justify-center text-blue-600 shadow-sm shrink-0">
                   <ShieldAlert className="w-4 h-4" />
                 </div>
                 <h3 className="font-bold text-gray-900 dark:text-white text-sm">Analisis Nyata</h3>
@@ -266,7 +266,7 @@ function ScanForm() {
                 Analisis file/URL <strong>secara langsung</strong>, bukan simulasi. Maks. <strong>25MB</strong>. File dihapus setelah analisis.
               </p>
             </div>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
+            <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl p-5 rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
               <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-2">Tips Aman</h3>
               <ul className="space-y-1.5 text-xs text-gray-600 dark:text-gray-300">
                 <li className="flex gap-2"><span className="text-green-500 font-bold shrink-0">✓</span> Jangan masukkan data pribadi di situs mencurigakan.</li>

@@ -165,7 +165,7 @@ export default function DashboardPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-5 sm:space-y-6">
       {/* Welcome Card */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
+      <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
         {/* Avatar */}
         <div className="shrink-0">
           {user?.user_metadata?.avatar_url ? (
@@ -193,7 +193,7 @@ export default function DashboardPage() {
         {/* Button */}
         <button
           onClick={() => setShowModal(true)}
-          className="shrink-0 flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl transition-all"
+          className="shrink-0 flex items-center gap-2 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 border border-blue-200 dark:border-blue-800/50 text-blue-600 dark:text-blue-400 text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-full transition-all active:scale-95"
         >
           <BarChart2 className="w-4 h-4" />
           Statistik Komunitas
@@ -209,7 +209,7 @@ export default function DashboardPage() {
           const susp = catScans.filter(s => s.risk_score > 30 && s.risk_score <= 70).length;
           const safe = catScans.filter(s => s.risk_score <= 30).length;
           return (
-            <div key={c.type} className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 sm:p-5">
+            <div key={c.type} className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6">
               <div className="flex justify-between items-center mb-3 sm:mb-4">
                 <div className="flex items-center gap-2.5">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${c.bg}`}>{c.icon}</div>
@@ -242,7 +242,7 @@ export default function DashboardPage() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Trend Chart */}
-        <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 sm:p-6">
+        <div className="lg:col-span-2 bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6">
           <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base mb-1">Tren Analisis (7 Hari)</h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Perbandingan total scan vs ancaman berbahaya harian.</p>
           {(() => {
@@ -321,7 +321,7 @@ export default function DashboardPage() {
 
         {/* Distribution & Limit */}
         <div className="space-y-4">
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
+          <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl p-6 rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm">Batas Scan Harian</h3>
             <div className="flex justify-between text-xs mb-2">
               <span className="text-gray-500 dark:text-gray-400">Terpakai</span>
@@ -335,7 +335,7 @@ export default function DashboardPage() {
               <div className="mt-3 text-xs bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg p-2.5 border border-red-100 dark:border-red-800">Batas harian tercapai. Kembali lagi besok!</div>
             )}
           </div>
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
+          <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl p-6 rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm">Sebaran Target (Hari Ini)</h3>
             {(() => {
               const linkCount = scans.filter(s => s.target_type === 'Link').length;
@@ -367,8 +367,8 @@ export default function DashboardPage() {
 
       {/* Activity Table */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-          <div className="px-4 sm:px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
+        <div className="lg:col-span-2 bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+          <div className="px-4 sm:px-6 py-4 border-b border-gray-200/50 dark:border-white/5 flex items-center justify-between">
             <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Aktivitas Terakhir</h2>
             <Link href="/history" className="text-xs text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors">Lihat semua →</Link>
           </div>
@@ -390,7 +390,7 @@ export default function DashboardPage() {
           </div>
           <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 text-xs font-medium border-b border-gray-100 dark:border-slate-700">
+              <thead className="bg-gray-50/50 dark:bg-white/5 text-gray-500 dark:text-gray-400 text-xs font-medium border-b border-gray-200/50 dark:border-white/5">
                 <tr>
                   <th className="px-6 py-3">Target</th>
                   <th className="px-6 py-3">Jenis</th>

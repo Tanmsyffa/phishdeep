@@ -30,7 +30,7 @@ export default function Header() {
   }, [supabase.auth]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200/50 dark:border-white/10 bg-ios-bg/80 dark:bg-ios-bgDark/70 backdrop-blur-xl supports-[backdrop-filter]:bg-ios-bg/60">
+    <header className="sticky top-0 z-50 w-full border-b border-gray-200/50 dark:border-white/10 bg-ios-bg/80 dark:bg-ios-cardDark/80 backdrop-blur-xl supports-[backdrop-filter]:bg-ios-bg/60 dark:supports-[backdrop-filter]:bg-ios-cardDark/60">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <ShieldCheck className="h-8 w-8 text-primary-600" />

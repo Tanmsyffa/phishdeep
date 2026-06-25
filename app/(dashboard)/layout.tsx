@@ -17,7 +17,7 @@ export default function DashboardLayout({
     <div className="flex h-[100dvh] overflow-hidden bg-ios-bg dark:bg-ios-bgDark flex-col md:flex-row relative print:h-auto print:overflow-visible print:bg-white transition-colors duration-300">
       <LiveNotifications />
       {/* Mobile Top Bar */}
-      <div className="md:hidden flex items-center justify-between p-4 bg-ios-bg/80 dark:bg-ios-bgDark/70 backdrop-blur-2xl text-gray-900 dark:text-white z-40 border-b border-gray-200/50 dark:border-white/5 transition-colors print:hidden supports-[backdrop-filter]:bg-ios-bg/60">
+      <div className="md:hidden flex items-center justify-between p-4 bg-ios-bg/80 dark:bg-ios-cardDark/80 backdrop-blur-2xl text-gray-900 dark:text-white z-40 border-b border-gray-200/50 dark:border-white/5 transition-colors print:hidden supports-[backdrop-filter]:bg-ios-bg/60 dark:supports-[backdrop-filter]:bg-ios-cardDark/60">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-blue-600 dark:bg-blue-500 flex items-center justify-center shrink-0">
             <ShieldCheck className="h-4 w-4 text-white" />

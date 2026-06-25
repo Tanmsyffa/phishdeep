@@ -18,10 +18,11 @@ const config: Config = {
           900: '#0a192f',
         },
         ios: {
-          bg: '#F2F2F7',         // iOS Light Background
-          bgDark: '#000000',     // iOS Dark Background
-          card: '#FFFFFF',       // iOS Light Card
-          cardDark: '#1C1C1E',   // iOS Dark Card
+          bg: '#F2F2F7',         // iOS Light Background — systemGroupedBackground
+          bgDark: '#000000',     // iOS Dark Background — systemBackground
+          card: '#FFFFFF',       // iOS Light Card — secondarySystemGroupedBackground
+          cardDark: '#1C1C1E',   // iOS Dark Card — secondarySystemBackground
+          card2Dark: '#2C2C2E',  // iOS Dark Card Level 2 — tertiarySystemBackground
         },
         background: "var(--background)",
         foreground: "var(--foreground)",

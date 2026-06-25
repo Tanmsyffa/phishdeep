@@ -34,7 +34,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   ];
 
   return (
-    <aside className="w-64 bg-ios-bg/80 dark:bg-ios-bgDark/70 backdrop-blur-2xl text-gray-900 dark:text-gray-100 h-full md:h-screen sticky top-0 flex flex-col border-r border-gray-200/50 dark:border-white/5 transition-colors supports-[backdrop-filter]:bg-ios-bg/60" style={{ overflow: 'hidden' }}>
+    <aside className="w-64 bg-ios-bg/80 dark:bg-ios-cardDark/80 backdrop-blur-2xl text-gray-900 dark:text-gray-100 h-full md:h-screen sticky top-0 flex flex-col border-r border-gray-200/50 dark:border-white/5 transition-colors supports-[backdrop-filter]:bg-ios-bg/60 dark:supports-[backdrop-filter]:bg-ios-cardDark/60" style={{ overflow: 'hidden' }}>
       {/* Logo */}
       <div className="px-4 py-4 flex items-center justify-between border-b border-gray-200/50 dark:border-white/5">
         <Link href="/" className="flex items-center gap-2.5">

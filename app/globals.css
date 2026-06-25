@@ -5,6 +5,9 @@
 @layer base {
   body {
     @apply bg-ios-bg dark:bg-ios-bgDark text-gray-900 dark:text-gray-100;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', system-ui, sans-serif;
   }
 }
 

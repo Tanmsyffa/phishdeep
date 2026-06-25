@@ -78,7 +78,7 @@ export default async function HistoryPage({
     <div className="max-w-5xl mx-auto space-y-5">
       {/* Header */}
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center shrink-0">
+        <div className="w-9 h-9 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center shrink-0">
           <ClipboardList className="w-5 h-5 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
@@ -90,8 +90,8 @@ export default async function HistoryPage({
       <SearchFilter />
 
       {filteredScans.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-10 sm:p-16 text-center shadow-sm">
-          <div className="w-14 h-14 bg-gray-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/5 rounded-3xl p-10 sm:p-16 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <div className="w-14 h-14 bg-gray-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
             <Eye className="w-7 h-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
           </div>
           <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-2">Tidak Ada Hasil</h2>
@@ -102,7 +102,7 @@ export default async function HistoryPage({
           {/* Mobile Card View */}
           <div className="space-y-3 sm:hidden">
             {filteredScans.map((row) => (
-              <div key={row.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-4 shadow-sm">
+              <div key={row.id} className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate flex-1 min-w-0">{row.target}</p>
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border shrink-0 ${row.warna}`}>
@@ -126,10 +126,10 @@ export default async function HistoryPage({
           </div>
 
           {/* Desktop Table View */}
-          <div className="hidden sm:block bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden">
+          <div className="hidden sm:block bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-gray-50 dark:bg-slate-800/50 text-gray-500 dark:text-gray-400 text-xs font-medium border-b border-gray-100 dark:border-slate-800">
+                <thead className="bg-gray-50/50 dark:bg-white/5 text-gray-500 dark:text-gray-400 text-xs font-medium border-b border-gray-200/50 dark:border-white/5">
                   <tr>
                     <th className="px-6 py-3">Target</th>
                     <th className="px-6 py-3">Jenis</th>
@@ -140,7 +140,7 @@ export default async function HistoryPage({
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
                   {filteredScans.map((row) => (
-                    <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <tr key={row.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
                       <td className="px-6 py-4 max-w-[300px] truncate text-gray-700 dark:text-gray-300 font-medium">{row.target}</td>
                       <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
                         <span className="bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-md font-medium text-xs">{row.jenis}</span>
