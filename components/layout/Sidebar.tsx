@@ -39,11 +39,11 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="w-60 xl:w-64 bg-ios-bg/90 dark:bg-ios-cardDark/90 backdrop-blur-2xl text-gray-900 dark:text-gray-100 h-screen sticky top-0 flex flex-col border-r border-gray-200/50 dark:border-white/5 transition-colors"
+      className="w-60 xl:w-64 bg-ios-bg/90 dark:bg-white/10 backdrop-blur-2xl text-gray-900 dark:text-gray-100 h-screen sticky top-0 flex flex-col border-r border-gray-200/50 dark:border-white/10 transition-colors"
       style={{ overflow: "hidden" }}
     >
       {/* Logo */}
-      <div className="px-4 py-5 flex items-center gap-2.5 border-b border-gray-200/50 dark:border-white/5">
+      <div className="px-4 py-5 flex items-center gap-2.5 border-b border-gray-200/50 dark:border-white/10">
         <Link href="/" className="flex items-center gap-2.5 group">
           <div className="w-8 h-8 rounded-[10px] bg-blue-600 flex items-center justify-center shadow-sm shrink-0">
             <ShieldCheck className="h-5 w-5 text-white" />
@@ -96,9 +96,9 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom Section */}
-      <div className="px-3 pb-5 space-y-2 border-t border-gray-200/50 dark:border-white/5 pt-3">
+      <div className="px-3 pb-5 space-y-2 border-t border-gray-200/50 dark:border-white/10 pt-3">
         {/* Free plan card */}
-        <div className="bg-white/60 dark:bg-white/5 border border-gray-200/50 dark:border-white/8 rounded-2xl px-3.5 py-3 backdrop-blur-sm">
+        <div className="bg-white/60 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 rounded-2xl px-3.5 py-3 backdrop-blur-sm">
           <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-0.5">100% Gratis</p>
           <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-snug">
             Limit <span className="font-semibold text-gray-800 dark:text-gray-300">10 scan / hari</span>. Tanpa biaya tersembunyi.

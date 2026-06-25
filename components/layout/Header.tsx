@@ -28,7 +28,7 @@ export default function Header() {
   return (
     <>
       {/* ── Top Header Bar ───────────────────────── */}
-      <header className="sticky top-0 z-50 w-full border-b border-gray-200/50 dark:border-white/10 bg-ios-bg/85 dark:bg-ios-cardDark/85 backdrop-blur-2xl">
+      <header className="sticky top-0 z-50 w-full border-b border-gray-200/50 dark:border-white/10 bg-ios-bg/85 dark:bg-white/10 backdrop-blur-2xl">
         <div className="container mx-auto px-4 h-14 flex items-center justify-between">
 
           {/* Logo */}

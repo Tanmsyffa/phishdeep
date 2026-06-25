@@ -165,14 +165,14 @@ export default function DashboardPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-5 sm:space-y-6">
       {/* Welcome Card */}
-      <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+      <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
         {/* Avatar */}
         <div className="shrink-0">
           {user?.user_metadata?.avatar_url ? (
             <img
               src={user.user_metadata.avatar_url}
               alt="Profile"
-              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-gray-200/50 dark:border-white/5 shadow-sm"
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-gray-200/50 dark:border-white/10 shadow-sm"
             />
           ) : (
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-2xl sm:text-3xl shadow-sm">
@@ -209,7 +209,7 @@ export default function DashboardPage() {
           const susp = catScans.filter(s => s.risk_score > 30 && s.risk_score <= 70).length;
           const safe = catScans.filter(s => s.risk_score <= 30).length;
           return (
-            <div key={c.type} className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6">
+            <div key={c.type} className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6">
               <div className="flex justify-between items-center mb-3 sm:mb-4">
                 <div className="flex items-center gap-2.5">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${c.bg}`}>{c.icon}</div>
@@ -242,7 +242,7 @@ export default function DashboardPage() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Trend Chart */}
-        <div className="lg:col-span-2 bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6">
+        <div className="lg:col-span-2 bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6">
           <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base mb-1">Tren Analisis (7 Hari)</h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Perbandingan total scan vs ancaman berbahaya harian.</p>
           {(() => {
@@ -262,9 +262,9 @@ export default function DashboardPage() {
                     <span className="absolute right-1 -translate-y-1/2" style={{ top: '50%' }}>{chartMax / 2}</span>
                     <span className="absolute right-1 -translate-y-1/2" style={{ top: '100%' }}>0</span>
                   </div>
-                  <div className="flex-1 relative border-l border-b border-gray-200/50 dark:border-white/5" style={{ height: `${CHART_H}px` }}>
-                    <div className="absolute left-0 right-0 border-t border-dashed border-gray-200/50 dark:border-white/5" style={{ top: '0%' }} />
-                    <div className="absolute left-0 right-0 border-t border-dashed border-gray-200/50 dark:border-white/5" style={{ top: '50%' }} />
+                  <div className="flex-1 relative border-l border-b border-gray-200/50 dark:border-white/10" style={{ height: `${CHART_H}px` }}>
+                    <div className="absolute left-0 right-0 border-t border-dashed border-gray-200/50 dark:border-white/10" style={{ top: '0%' }} />
+                    <div className="absolute left-0 right-0 border-t border-dashed border-gray-200/50 dark:border-white/10" style={{ top: '50%' }} />
                     <div className="absolute inset-0 flex items-end justify-around px-1 pb-0">
                       {trendData.map((t, idx) => {
                         const isToday = t.wibDay === todayWIBStr;
@@ -310,7 +310,7 @@ export default function DashboardPage() {
                     );
                   })}
                 </div>
-                <div className="flex gap-4 mt-3 text-[10px] font-medium justify-center border-t border-gray-200/50 dark:border-white/5 pt-3 text-gray-600 dark:text-gray-300">
+                <div className="flex gap-4 mt-3 text-[10px] font-medium justify-center border-t border-gray-200/50 dark:border-white/10 pt-3 text-gray-600 dark:text-gray-300">
                   <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-blue-200 dark:bg-blue-500/50 rounded-sm inline-block" /> Total Scan</div>
                   <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-red-400 dark:bg-red-500 rounded-sm inline-block" /> Bahaya Terdeteksi</div>
                 </div>
@@ -321,7 +321,7 @@ export default function DashboardPage() {
 
         {/* Distribution & Limit */}
         <div className="space-y-4">
-          <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl p-6 rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl p-6 rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm">Batas Scan Harian</h3>
             <div className="flex justify-between text-xs mb-2">
               <span className="text-gray-500 dark:text-gray-400">Terpakai</span>
@@ -335,7 +335,7 @@ export default function DashboardPage() {
               <div className="mt-3 text-xs bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg p-2.5 border border-red-100 dark:border-red-800">Batas harian tercapai. Kembali lagi besok!</div>
             )}
           </div>
-          <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl p-6 rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl p-6 rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm">Sebaran Target (Hari Ini)</h3>
             {(() => {
               const linkCount = scans.filter(s => s.target_type === 'Link').length;
@@ -367,8 +367,8 @@ export default function DashboardPage() {
 
       {/* Activity Table */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        <div className="lg:col-span-2 bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-          <div className="px-4 sm:px-6 py-4 border-b border-gray-200/50 dark:border-white/5 flex items-center justify-between">
+        <div className="lg:col-span-2 bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+          <div className="px-4 sm:px-6 py-4 border-b border-gray-200/50 dark:border-white/10 flex items-center justify-between">
             <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Aktivitas Terakhir</h2>
             <Link href="/history" className="text-xs text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors">Lihat semua →</Link>
           </div>
@@ -390,7 +390,7 @@ export default function DashboardPage() {
           </div>
           <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50/50 dark:bg-white/5 text-gray-500 dark:text-gray-400 text-xs font-medium border-b border-gray-200/50 dark:border-white/5">
+              <thead className="bg-gray-50/50 dark:bg-white/5 text-gray-500 dark:text-gray-400 text-xs font-medium border-b border-gray-200/50 dark:border-white/10">
                 <tr>
                   <th className="px-6 py-3">Target</th>
                   <th className="px-6 py-3">Jenis</th>

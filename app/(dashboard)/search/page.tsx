@@ -52,7 +52,7 @@ export default function SearchPage() {
       </div>
 
       {/* Search Card */}
-      <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/8 rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.05)] p-6 space-y-4">
+      <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.05)] p-6 space-y-4">
         <form onSubmit={handleSearch} className="flex gap-2.5">
           <div className="relative flex-1">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -61,7 +61,7 @@ export default function SearchPage() {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Masukkan UUID Scan (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)"
-              className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200/60 dark:border-white/8 rounded-2xl pl-10 pr-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+              className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200/60 dark:border-white/10 rounded-2xl pl-10 pr-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
             />
           </div>
           <button
@@ -105,12 +105,12 @@ export default function SearchPage() {
           : 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-100 dark:border-green-500/20';
         const StatusIcon = isDanger ? ShieldAlert : isSusp ? AlertCircle : CheckCircle;
         return (
-          <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/8 rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.05)] overflow-hidden animate-in fade-in slide-in-from-bottom-3">
-            <div className="px-6 py-4 border-b border-gray-100/80 dark:border-white/5 flex items-center justify-between">
+          <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.05)] overflow-hidden animate-in fade-in slide-in-from-bottom-3">
+            <div className="px-6 py-4 border-b border-gray-100/80 dark:border-white/10 flex items-center justify-between">
               <h2 className="font-bold text-gray-900 dark:text-white flex items-center gap-2 text-sm">
                 <Globe className="w-4 h-4 text-blue-500" /> Hasil Pencarian
               </h2>
-              <code className="text-[10px] text-gray-400 bg-gray-50 dark:bg-white/5 px-2 py-1 rounded-lg border border-gray-100 dark:border-white/5 truncate max-w-[140px]">
+              <code className="text-[10px] text-gray-400 bg-gray-50 dark:bg-white/5 px-2 py-1 rounded-lg border border-gray-100 dark:border-white/10 truncate max-w-[140px]">
                 {searchResult.id}
               </code>
             </div>
@@ -120,7 +120,7 @@ export default function SearchPage() {
                   <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${statusClass}`}>
                     <StatusIcon className="w-3 h-3" /> {statusLabel}
                   </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400 font-medium bg-gray-50 dark:bg-white/5 px-2 py-1 rounded-full border border-gray-100 dark:border-white/5">
+                  <span className="text-xs text-gray-500 dark:text-gray-400 font-medium bg-gray-50 dark:bg-white/5 px-2 py-1 rounded-full border border-gray-100 dark:border-white/10">
                     Skor: {searchResult.risk_score}/100
                   </span>
                 </div>

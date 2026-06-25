@@ -39,7 +39,7 @@ export default function HelpPage() {
 
       {/* Contact Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/8 rounded-3xl p-6 flex flex-col gap-4 shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all duration-200">
+        <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl p-6 flex flex-col gap-4 shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all duration-200">
           <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-500/15 flex items-center justify-center shrink-0">
             <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
@@ -57,7 +57,7 @@ export default function HelpPage() {
           </Link>
         </div>
 
-        <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/8 rounded-3xl p-6 flex flex-col gap-4 shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all duration-200">
+        <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl p-6 flex flex-col gap-4 shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all duration-200">
           <div className="w-10 h-10 rounded-full bg-green-50 dark:bg-green-500/15 flex items-center justify-center shrink-0">
             <MessageSquare className="w-5 h-5 text-green-600 dark:text-green-400" />
           </div>
@@ -77,8 +77,8 @@ export default function HelpPage() {
       </div>
 
       {/* Quick Tips */}
-      <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/8 rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100/80 dark:border-white/5">
+      <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100/80 dark:border-white/10">
           <h3 className="font-bold text-gray-900 dark:text-white text-sm flex items-center gap-2">
             <Info className="w-4 h-4 text-blue-500" /> Panduan Cepat
           </h3>

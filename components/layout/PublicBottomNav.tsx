@@ -40,7 +40,7 @@ export default function PublicBottomNav() {
       className="lg:hidden fixed bottom-0 left-0 right-0 z-50"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="mx-3 mb-3 bg-ios-bg/85 dark:bg-ios-cardDark/85 backdrop-blur-2xl border border-gray-200/60 dark:border-white/10 rounded-[28px] shadow-[0_8px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.5)] pb-safe">
+      <div className="mx-3 mb-3 bg-ios-bg/85 dark:bg-white/10 backdrop-blur-2xl border border-gray-200/60 dark:border-white/10 rounded-[28px] shadow-[0_8px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.5)] pb-safe">
         <div className="flex items-center justify-around px-2 py-2">
           {allItems.map(({ href, label, icon: Icon }) => {
             const active = isActive(href);

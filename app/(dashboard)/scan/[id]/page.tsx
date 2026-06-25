@@ -60,7 +60,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
   if (isOwner && hoursDiff > 48) {
     return (
       <div className="max-w-2xl mx-auto py-20 text-center">
-        <div className="w-20 h-20 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-white/5">
+        <div className="w-20 h-20 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-white/10">
           <Clock className="w-10 h-10 text-gray-400" />
         </div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Laporan Kedaluwarsa</h1>
@@ -117,7 +117,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Dashboard
         </Link>
         <div className="flex items-center gap-2 text-sm flex-wrap">
-          <span className="text-gray-400 dark:text-gray-500 text-xs font-mono bg-gray-100/80 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 px-2.5 py-1 rounded-full">#{params.id.split('-')[0]}</span>
+          <span className="text-gray-400 dark:text-gray-500 text-xs font-mono bg-gray-100/80 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 px-2.5 py-1 rounded-full">#{params.id.split('-')[0]}</span>
           {isDanger && (
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 font-semibold border border-red-100 dark:border-red-500/20 text-xs">
               <AlertTriangle className="w-3.5 h-3.5" /> Berbahaya
@@ -255,7 +255,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
         <div className="lg:col-span-2 space-y-5 print:w-full">
           
           {/* Summary Box */}
-          <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/8 rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6 sm:p-8 print:hidden">
+          <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6 sm:p-8 print:hidden">
             <h2 className="font-bold text-gray-900 dark:text-white mb-5 text-base print:text-lg">Ringkasan Eksekutif</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               
@@ -269,7 +269,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                 </p>
               </div>
 
-              <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-100/80 dark:border-white/5 rounded-2xl p-5 flex flex-col justify-center relative overflow-hidden">
+              <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-100/80 dark:border-white/10 rounded-2xl p-5 flex flex-col justify-center relative overflow-hidden">
                 <div className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-semibold">Skor Risiko Total</div>
                 <div className={`text-3xl font-bold flex items-end gap-1 ${isDanger ? 'text-red-600 dark:text-red-400' : isSuspicious ? 'text-yellow-600 dark:text-yellow-400' : 'text-green-600 dark:text-green-400'}`}>
                   {scan.risk_score} <span className="text-sm text-gray-400 dark:text-gray-500 font-medium">/ 100</span>
@@ -284,7 +284,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                 </div>
               </div>
 
-              <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-100/80 dark:border-white/5 rounded-2xl p-5 flex flex-col justify-center">
+              <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-100/80 dark:border-white/10 rounded-2xl p-5 flex flex-col justify-center">
                 <div className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-semibold">Target Analisis</div>
                 <div className="text-sm font-bold text-gray-900 dark:text-white break-all line-clamp-2 leading-snug" title={scan.target_url}>{scan.target_url}</div>
                 <div className="mt-2 text-[10px] font-bold text-gray-500 dark:text-gray-400 bg-white dark:bg-white/10 border border-gray-200/50 dark:border-transparent inline-flex px-2.5 py-1 rounded-md self-start uppercase tracking-wider">{scan.target_type}</div>
@@ -296,7 +296,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 print:grid-cols-2 print:break-inside-avoid mt-5">
             {/* Domain / WHOIS Box */}
             {Object.keys(domainInfo).length > 0 && (
-              <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6 print:border-none print:shadow-none print:p-0 print:mb-4 col-span-full">
+              <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6 print:border-none print:shadow-none print:p-0 print:mb-4 col-span-full">
                 <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm flex items-center gap-2 print:border-b print:border-gray-300 print:pb-1 print:mb-2 print:text-base"><Globe className="w-4 h-4 text-blue-500 print:hidden" /> <span className="print:hidden">Informasi Domain (RDAP & OSINT)</span><span className="hidden print:inline">Detail Analisis Keamanan</span></h3>
 
                 {/* --- PRINT ONLY: Simple List Format --- */}
@@ -319,28 +319,28 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                 <div className="print:hidden">
                 {/* Row 1 — Identity */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
-                  <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                  <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                     <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                       <Globe className="w-3.5 h-3.5" />
                       <span className="text-[9px] uppercase font-bold tracking-wide">Domain</span>
                     </div>
                     <div className="font-mono font-semibold text-gray-900 dark:text-white text-xs truncate">{domainInfo.domain || 'N/A'}</div>
                   </div>
-                  <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                  <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                     <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                       <Server className="w-3.5 h-3.5" />
                       <span className="text-[9px] uppercase font-bold tracking-wide">IP Server</span>
                     </div>
                     <div className="font-mono font-semibold text-gray-900 dark:text-white text-xs">{domainInfo.ip_address || 'N/A'}</div>
                   </div>
-                  <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                  <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                     <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                       <Shield className="w-3.5 h-3.5" />
                       <span className="text-[9px] uppercase font-bold tracking-wide">Registrar</span>
                     </div>
                     <div className="font-medium text-gray-900 dark:text-white text-xs line-clamp-2 leading-snug">{domainInfo.registrar || 'N/A'}</div>
                   </div>
-                  <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                  <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                     <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                       <Clock className="w-3.5 h-3.5" />
                       <span className="text-[9px] uppercase font-bold tracking-wide">Umur Domain</span>
@@ -356,7 +356,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
                 {/* Row 2 — Dates, SSL, Wayback */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
-                  <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                  <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                     <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                       <Calendar className="w-3.5 h-3.5" />
                       <span className="text-[9px] uppercase font-bold tracking-wide">Terdaftar</span>
@@ -364,7 +364,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     <div className="text-xs font-medium text-gray-900 dark:text-white">{domainInfo.creation_date || 'N/A'}</div>
                   </div>
                   {domainInfo.expiry_date && domainInfo.expiry_date !== 'Unknown' && (
-                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                         <Calendar className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">Kadaluarsa</span>
@@ -373,7 +373,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     </div>
                   )}
                   {domainInfo.last_updated && domainInfo.last_updated !== 'Unknown' && (
-                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                         <RefreshCw className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">Diperbarui</span>
@@ -391,7 +391,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     </div>
                   )}
                   {domainInfo.wayback_first_seen && (
-                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                         <History className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">Wayback Pertama</span>
@@ -400,7 +400,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     </div>
                   )}
                   {domainInfo.wayback_last_seen && (
-                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                         <History className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">Wayback Terakhir</span>
@@ -413,7 +413,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                 {/* Row 3 — Geo + Threat Intel */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                   {domainInfo.geo_country && (
-                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 col-span-2 sm:col-span-1 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-3 col-span-2 sm:col-span-1 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                         <Globe className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">Lokasi Server</span>
@@ -424,7 +424,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     </div>
                   )}
                   {domainInfo.urlscan_total !== undefined && (
-                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                         <Search className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">URLScan.io</span>
@@ -436,7 +436,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     </div>
                   )}
                   {domainInfo.dns_ttl !== undefined && (
-                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                         <Activity className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">DNS TTL</span>
@@ -445,7 +445,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     </div>
                   )}
                   {domainInfo.cert_count !== undefined && (
-                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
+                    <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-200 dark:border-slate-700">
                       <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mb-1.5">
                         <FileText className="w-3.5 h-3.5" />
                         <span className="text-[9px] uppercase font-bold tracking-wide">crt.sh Certs</span>
@@ -473,7 +473,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                       const textColor = isCritical ? 'text-red-600 dark:text-red-400' : isWarn ? 'text-orange-600 dark:text-orange-400' : isNotice ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400';
                       const bgAccent = isCritical ? 'bg-red-50 dark:bg-red-900/20' : isWarn ? 'bg-orange-50 dark:bg-orange-900/20' : isNotice ? 'bg-amber-50 dark:bg-amber-900/20' : 'bg-emerald-50 dark:bg-emerald-900/20';
                       return (
-                        <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-300">
+                        <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] print:border-gray-300">
                           <div className="flex items-start gap-3">
                             <div className={`w-8 h-8 rounded flex items-center justify-center shrink-0 ${bgAccent}`}>
                               <Activity className={`w-4 h-4 ${textColor}`} />
@@ -530,7 +530,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
                     {/* AbuseIPDB card */}
                     {domainInfo.abuseipdb_score !== undefined && (
-                      <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex items-center gap-3 print:border-gray-300">
+                      <div className="bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex items-center gap-3 print:border-gray-300">
                         <div className="w-8 h-8 rounded bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center shrink-0">
                           <ShieldAlert className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                         </div>
@@ -609,7 +609,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
             {/* Framework Box */}
             {frameworks.length > 0 && (
-              <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6 print:border-none print:shadow-none print:p-0 print:mb-4">
+              <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6 print:border-none print:shadow-none print:p-0 print:mb-4">
                 <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm flex items-center gap-2 print:hidden"><Server className="w-4 h-4 text-primary-500 print:hidden" /> Teknologi & Stack</h3>
                 
                 {/* --- PRINT ONLY --- */}
@@ -648,7 +648,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
           {/* Redirect Chain */}
           {redirectChain.length > 0 && (
-            <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6 print:border-none print:shadow-none print:p-0 print:mb-4 print:break-inside-avoid">
+            <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6 print:border-none print:shadow-none print:p-0 print:mb-4 print:break-inside-avoid">
               <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm flex items-center gap-2 print:hidden"><LinkIcon className="w-4 h-4 text-primary-500 print:hidden" /> Jejak Redirect (Redirect Chain)</h3>
               
               {/* --- PRINT ONLY --- */}
@@ -791,7 +791,7 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
         {/* Right Column: Sidebar - Hidden on Print */}
         <div className="space-y-4 sm:space-y-6 print:hidden">
-          <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6 sm:p-6">
+          <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6 sm:p-6">
             <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-sm sm:text-base">Informasi Metadata</h3>
             <div className="space-y-3 text-xs sm:text-sm">
               <div className="flex justify-between gap-2 border-b border-gray-100 dark:border-slate-700 pb-2">

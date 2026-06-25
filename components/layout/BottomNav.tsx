@@ -27,7 +27,7 @@ export default function BottomNav() {
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       {/* Frosted glass bar */}
-      <div className="mx-3 mb-3 bg-ios-bg/80 dark:bg-ios-cardDark/80 backdrop-blur-2xl border border-gray-200/60 dark:border-white/10 rounded-[28px] shadow-[0_8px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.5)] pb-safe">
+      <div className="mx-3 mb-3 bg-ios-bg/80 dark:bg-white/10 backdrop-blur-2xl border border-gray-200/60 dark:border-white/10 rounded-[28px] shadow-[0_8px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.5)] pb-safe">
         <div className="flex items-center justify-around px-2 py-2">
           {navItems.map(({ href, label, icon: Icon }) => {
             const active = isActive(href);

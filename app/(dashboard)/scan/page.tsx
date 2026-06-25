@@ -156,10 +156,10 @@ function ScanForm() {
             </div>
           )}
 
-          <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 rounded-3xl border border-gray-200/50 dark:border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] overflow-hidden backdrop-blur-xl">
+          <div className="bg-ios-card/80 dark:bg-white/10 rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.04)] overflow-hidden backdrop-blur-xl">
             {/* iOS Segmented Control Tab */}
             <div className="p-4 sm:p-6 pb-0">
-              <div className="flex bg-gray-100/80 dark:bg-white/5 rounded-full p-1 border border-gray-200/50 dark:border-white/5 relative">
+              <div className="flex bg-gray-100/80 dark:bg-white/5 rounded-full p-1 border border-gray-200/50 dark:border-white/10 relative">
                 <button
                   type="button"
                   onClick={() => setActiveTab('link')}
@@ -237,7 +237,7 @@ function ScanForm() {
                     disabled={isScanning}
                     required
                   />
-                  <div className="w-16 h-16 bg-white dark:bg-ios-cardDark rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-100 dark:border-white/5 group-hover:scale-105 transition-transform">
+                  <div className="w-16 h-16 bg-white dark:bg-ios-cardDark rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-100 dark:border-white/10 group-hover:scale-105 transition-transform">
                     <Smartphone className="w-7 h-7 text-blue-500" />
                   </div>
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-1.5">{file ? file.name : 'Upload File Anda'}</h3>
@@ -251,7 +251,7 @@ function ScanForm() {
             
             {!isScanning && limitCheck.allowed && activeTab === 'link' && (
               <div className="px-4 sm:px-8 pb-5 sm:pb-8">
-                <div className="bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-gray-100 dark:border-white/5">
+                <div className="bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-gray-100 dark:border-white/10">
                   <h4 className="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2.5">Contoh link phishing untuk dicoba:</h4>
                   <ul className="space-y-1.5 text-xs text-primary-600">
                     <li><button onClick={() => setUrl('bca-security-update-verify.com/login')} className="hover:underline text-left text-blue-600 dark:text-blue-400 flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-blue-600 shrink-0"></span><span className="break-all">bca-security-update-verify.com/login</span></button></li>
@@ -266,7 +266,7 @@ function ScanForm() {
 
           {/* Info cards - visible on all screens */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl p-5 rounded-3xl border border-gray-200/50 dark:border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
+            <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl p-5 rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
               <div className="flex items-center gap-3 mb-2.5">
                 <div className="w-8 h-8 bg-blue-50 dark:bg-blue-500/15 rounded-full flex items-center justify-center shrink-0">
                   <ShieldAlert className="w-4 h-4 text-blue-500" />
@@ -278,7 +278,7 @@ function ScanForm() {
               </p>
             </div>
             
-            <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl p-5 rounded-3xl border border-gray-200/50 dark:border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
+            <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl p-5 rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
               <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-3">Tips Aman</h3>
               <ul className="space-y-2 text-xs text-gray-500 dark:text-gray-400">
                 <li className="flex gap-2.5"><span className="w-4 h-4 rounded-full bg-green-500/20 text-green-600 flex items-center justify-center font-bold shrink-0">✓</span> Jangan input data pribadi di situs mencurigakan.</li>

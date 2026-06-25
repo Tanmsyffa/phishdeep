@@ -125,8 +125,8 @@ export default function SettingsPage() {
       </div>
 
       {/* Profile Card */}
-      <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden mb-5">
-        <div className="px-5 sm:px-6 py-4 border-b border-gray-200/50 dark:border-white/5 flex items-center gap-2">
+      <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden mb-5">
+        <div className="px-5 sm:px-6 py-4 border-b border-gray-200/50 dark:border-white/10 flex items-center gap-2">
           <User className="w-4 h-4 text-primary-500" />
           <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Informasi Profil</h2>
         </div>
@@ -200,8 +200,8 @@ export default function SettingsPage() {
       </div>
 
       {/* Theme Card */}
-      <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-        <div className="px-5 sm:px-6 py-4 border-b border-gray-200/50 dark:border-white/5 flex items-center gap-2">
+      <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+        <div className="px-5 sm:px-6 py-4 border-b border-gray-200/50 dark:border-white/10 flex items-center gap-2">
           <Palette className="w-4 h-4 text-primary-500" />
           <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Tampilan & Tema</h2>
         </div>

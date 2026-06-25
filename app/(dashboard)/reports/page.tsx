@@ -76,8 +76,8 @@ export default async function ReportsPage({
           <p className="text-sm font-medium">Gagal memuat data laporan.</p>
         </div>
       ) : filteredScans.length === 0 ? (
-        <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/5 rounded-3xl p-10 sm:p-16 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-          <div className="w-14 h-14 bg-gray-50 dark:bg-white/5 text-gray-400 dark:text-gray-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100 dark:border-white/5">
+        <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl p-10 sm:p-16 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <div className="w-14 h-14 bg-gray-50 dark:bg-white/5 text-gray-400 dark:text-gray-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100 dark:border-white/10">
             <FileText className="w-7 h-7" />
           </div>
           <h3 className="font-bold text-gray-900 dark:text-white text-base sm:text-lg mb-2">Tidak Ada Hasil</h3>
@@ -92,7 +92,7 @@ export default async function ReportsPage({
             const dateStr = new Date(scan.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
             
             return (
-              <div key={scan.id} className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl p-5 sm:p-6 rounded-3xl border border-gray-200/50 dark:border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] flex flex-col hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all duration-200 group">
+              <div key={scan.id} className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl p-5 sm:p-6 rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.04)] flex flex-col hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all duration-200 group">
                 <div className="flex items-start justify-between mb-5">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${isDanger ? 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400' : isSuspicious ? 'bg-yellow-50 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' : 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400'}`}>
                     {isDanger || isSuspicious ? <ShieldAlert className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
