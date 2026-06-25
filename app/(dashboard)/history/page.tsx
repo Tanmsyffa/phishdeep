@@ -7,9 +7,9 @@ import Pagination from "@/components/ui/Pagination";
 import { redirect } from "next/navigation";
 
 function getStatusColor(score: number) {
-  if (score > 70) return { label: 'Berbahaya', color: 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-800' };
-  if (score > 30) return { label: 'Mencurigakan', color: 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 border-yellow-100 dark:border-yellow-800' };
-  return { label: 'Aman', color: 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border-green-100 dark:border-green-800' };
+  if (score > 70) return { label: 'Berbahaya',    color: 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border-red-100 dark:border-red-500/20' };
+  if (score > 30) return { label: 'Mencurigakan', color: 'bg-yellow-50 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-100 dark:border-yellow-500/20' };
+  return              { label: 'Aman',           color: 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-100 dark:border-green-500/20' };
 }
 
 export default async function HistoryPage({
@@ -78,12 +78,12 @@ export default async function HistoryPage({
     <div className="max-w-5xl mx-auto space-y-5">
       {/* Header */}
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-9 h-9 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center shrink-0">
+        <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-500/15 flex items-center justify-center shrink-0">
           <ClipboardList className="w-5 h-5 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
-          <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight">Riwayat Scan</h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Daftar semua aktivitas pemindaian Anda.</p>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Riwayat Scan</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Daftar semua aktivitas pemindaian Anda.</p>
         </div>
       </div>
 
@@ -129,31 +129,29 @@ export default async function HistoryPage({
           <div className="hidden sm:block bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-gray-50/50 dark:bg-white/5 text-gray-500 dark:text-gray-400 text-xs font-medium border-b border-gray-200/50 dark:border-white/5">
+                <thead className="bg-gray-50/60 dark:bg-white/3 text-gray-500 dark:text-gray-400 text-xs font-semibold border-b border-gray-100/80 dark:border-white/5 tracking-wide">
                   <tr>
-                    <th className="px-6 py-3">Target</th>
-                    <th className="px-6 py-3">Jenis</th>
-                    <th className="px-6 py-3">Hasil</th>
-                    <th className="px-6 py-3">Tanggal</th>
-                    <th className="px-6 py-3 text-right">Aksi</th>
+                    <th className="px-6 py-3.5">Target</th>
+                    <th className="px-6 py-3.5">Jenis</th>
+                    <th className="px-6 py-3.5">Hasil</th>
+                    <th className="px-6 py-3.5">Tanggal</th>
+                    <th className="px-6 py-3.5 text-right">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
+                <tbody className="divide-y divide-gray-100/60 dark:divide-white/5">
                   {filteredScans.map((row) => (
-                    <tr key={row.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
-                      <td className="px-6 py-4 max-w-[300px] truncate text-gray-700 dark:text-gray-300 font-medium">{row.target}</td>
-                      <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
-                        <span className="bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-md font-medium text-xs">{row.jenis}</span>
+                    <tr key={row.id} className="hover:bg-gray-50/50 dark:hover:bg-white/3 transition-colors">
+                      <td className="px-6 py-4 max-w-[300px] truncate text-gray-700 dark:text-gray-300 font-medium text-sm">{row.target}</td>
+                      <td className="px-6 py-4">
+                        <span className="bg-gray-100/80 dark:bg-white/8 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-full font-medium text-xs border border-gray-200/50 dark:border-white/8">{row.jenis}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${row.warna}`}>
-                          {row.hasil}
-                        </span>
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${row.warna}`}>{row.hasil}</span>
                       </td>
-                      <td className="px-6 py-4 text-gray-400 dark:text-gray-500 dark:text-gray-400 text-xs">{row.tanggal}</td>
+                      <td className="px-6 py-4 text-gray-400 dark:text-gray-500 text-xs">{row.tanggal}</td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link href={`/scan/${row.id}`} className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-xs" title="Lihat Detail">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Link href={`/scan/${row.id}`} className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-full transition-colors flex items-center gap-1.5 text-xs font-medium">
                             <Eye className="w-4 h-4" /> Detail
                           </Link>
                           <DeleteScanButton id={row.id} />
