@@ -14,8 +14,14 @@ const config: Config = {
           50: '#eff6ff',
           100: '#dbeafe',
           500: '#3b82f6',
-          600: '#2563eb', // Standard bright blue
-          900: '#0a192f', // Dark blue background
+          600: '#007AFF', // iOS Blue
+          900: '#0a192f',
+        },
+        ios: {
+          bg: '#F2F2F7',         // iOS Light Background
+          bgDark: '#000000',     // iOS Dark Background
+          card: '#FFFFFF',       // iOS Light Card
+          cardDark: '#1C1C1E',   // iOS Dark Card
         },
         background: "var(--background)",
         foreground: "var(--foreground)",

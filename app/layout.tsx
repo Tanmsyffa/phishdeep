@@ -116,7 +116,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} antialiased text-gray-900 bg-gray-50 dark:bg-slate-950 dark:text-gray-100`}>
+      <body className={`${inter.className} antialiased text-gray-900 bg-ios-bg dark:bg-ios-bgDark dark:text-gray-100`}>
         <script
           nonce={nonce}
           type="application/ld+json"

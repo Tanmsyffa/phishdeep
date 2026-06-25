@@ -151,8 +151,8 @@ function ScanForm() {
             </div>
           )}
 
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden transition-colors">
-            <div className="flex border-b border-gray-200 dark:border-slate-800 overflow-x-auto">
+          <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden transition-colors backdrop-blur-2xl">
+            <div className="flex border-b border-gray-200/50 dark:border-white/5 overflow-x-auto">
               <button
                 type="button"
                 onClick={() => setActiveTab('link')}

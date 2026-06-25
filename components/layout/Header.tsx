@@ -30,7 +30,7 @@ export default function Header() {
   }, [supabase.auth]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-slate-800 bg-white/90 dark:bg-slate-950/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-gray-200/50 dark:border-white/10 bg-ios-bg/80 dark:bg-ios-bgDark/70 backdrop-blur-xl supports-[backdrop-filter]:bg-ios-bg/60">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <ShieldCheck className="h-8 w-8 text-primary-600" />
@@ -53,7 +53,7 @@ export default function Header() {
                 <LayoutDashboard className="w-4 h-4" /> Dashboard
               </Link>
               <form action={logout}>
-                <button className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 px-3 py-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-all flex items-center gap-2">
+                <button className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 px-4 py-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-all flex items-center gap-2">
                   <LogOut className="w-4 h-4" /> Keluar
                 </button>
               </form>

@@ -31,7 +31,7 @@ export default function Home() {
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-10 w-full sm:w-auto px-4 sm:px-0 justify-center lg:justify-start">
-                  <Link href="/scan" className="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-primary-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold hover:bg-primary-700 transition-all duration-300 shadow-lg shadow-primary-600/20 text-sm sm:text-lg hover:shadow-xl hover:-translate-y-1 group">
+                  <Link href="/scan" className="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-primary-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-full font-semibold hover:bg-primary-700 transition-all duration-300 shadow-lg shadow-primary-600/20 text-sm sm:text-lg hover:shadow-xl hover:-translate-y-1 group">
                     Scan Gratis Sekarang <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
@@ -53,24 +53,24 @@ export default function Home() {
                 {/* Decorative glow behind mockup */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary-500/20 blur-[100px] -z-10 rounded-full pointer-events-none"></div>
 
-                <div className="relative w-full max-w-[550px] mx-auto bg-slate-900 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-700/50 overflow-hidden group">
+                <div className="relative w-full max-w-[550px] mx-auto bg-white dark:bg-ios-bgDark rounded-3xl shadow-[0_30px_60px_rgba(0,0,0,0.12)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.5)] border border-gray-200/50 dark:border-white/10 overflow-hidden group">
                   
                   {/* Glassmorphism Browser Top Bar */}
-                  <div className="h-12 bg-slate-800/80 backdrop-blur-md border-b border-slate-700/80 flex items-center px-4 gap-3 relative z-20">
+                  <div className="h-12 bg-ios-bg/60 dark:bg-white/5 backdrop-blur-2xl border-b border-gray-200/50 dark:border-white/5 flex items-center px-4 gap-3 relative z-20">
                     <div className="flex gap-2">
                       <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
                       <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
                       <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
                     </div>
-                    <div className="mx-auto bg-slate-950/50 text-[11px] text-slate-400 font-mono px-6 py-1.5 rounded-full border border-slate-700/50 flex items-center gap-2 w-3/4 truncate shadow-inner">
+                    <div className="mx-auto bg-white/60 dark:bg-black/40 text-[11px] text-gray-500 dark:text-gray-400 font-medium px-6 py-1.5 rounded-full border border-gray-200/50 dark:border-white/5 flex items-center gap-2 w-3/4 truncate shadow-sm backdrop-blur-md">
                       <span className="text-red-400">🔓 Not Secure</span> <span className="opacity-30">|</span> https://secure-bca-update.com/login
                     </div>
                   </div>
 
                   {/* Phishing Page Content */}
-                  <div className="relative h-[400px] bg-[#f8fafc] dark:bg-slate-950 flex flex-col items-center pt-8 overflow-hidden">
+                  <div className="relative h-[400px] bg-ios-bg dark:bg-ios-bgDark flex flex-col items-center pt-8 overflow-hidden">
                     {/* Fake Bank UI */}
-                    <div className="w-[320px] bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-800 overflow-hidden relative z-10 opacity-70 grayscale-[20%] blur-[0.5px] group-hover:blur-none group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
+                    <div className="w-[320px] bg-white dark:bg-ios-cardDark rounded-3xl shadow-xl border border-gray-200/50 dark:border-white/5 overflow-hidden relative z-10 opacity-70 grayscale-[20%] blur-[0.5px] group-hover:blur-none group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
                       <div className="bg-blue-600 p-6 text-center">
                         <div className="w-12 h-12 bg-white rounded-full mx-auto mb-3 flex items-center justify-center text-blue-600 font-black text-2xl shadow-inner">B</div>
                         <h2 className="text-white font-bold text-lg">Bank Central</h2>
