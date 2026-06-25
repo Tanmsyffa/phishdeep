@@ -71,7 +71,7 @@ export default function CaraKerjaPage() {
           <div className="container mx-auto px-4 max-w-3xl">
             <div className="relative">
               {/* Timeline line */}
-              <div className="absolute left-[22px] top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 via-purple-500 to-green-500 hidden sm:block" />
+              <div className="absolute left-[22px] top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-white/10 hidden sm:block" />
               <div className="space-y-10">
                 {steps.map((s, i) => (
                   <div key={i} className="flex gap-5 sm:gap-7 items-start relative">
@@ -129,20 +129,22 @@ export default function CaraKerjaPage() {
         </section>
 
         {/* CTA */}
-        <section className="py-16 bg-gradient-to-br from-slate-900 to-primary-950 dark:from-slate-950 dark:to-slate-900 text-white">
-          <div className="container mx-auto px-4 max-w-3xl text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/80 text-xs font-semibold mb-6">
-              <ShieldAlert className="w-3.5 h-3.5" /> Mulai Gratis, Tanpa Kartu Kredit
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Coba Sekarang</h2>
-            <p className="text-gray-300 mb-8 max-w-lg mx-auto leading-relaxed">Scan link pertama Anda dan lihat sendiri perbedaannya. Tidak perlu kartu kredit.</p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-white text-primary-900 font-bold px-8 py-3.5 rounded-full hover:bg-gray-100 transition-all duration-300 text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 group">
-                Mulai Scan Gratis <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link href="/fitur" className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-8 py-3.5 rounded-full transition-all duration-300 text-base">
-                Lihat Fitur Lengkap
-              </Link>
+        <section className="py-12 px-4">
+          <div className="container mx-auto max-w-3xl">
+            <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/60 dark:border-white/8 rounded-3xl p-10 sm:p-14 text-center shadow-[0_4px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_40px_rgba(0,0,0,0.3)]">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-semibold mb-6">
+                <ShieldAlert className="w-3.5 h-3.5" /> Mulai Gratis, Tanpa Kartu Kredit
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold mb-3 text-gray-900 dark:text-white tracking-tight">Coba Sekarang</h2>
+              <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-lg mx-auto leading-relaxed text-sm sm:text-base">Scan link pertama Anda dan lihat sendiri perbedaannya. Tidak perlu kartu kredit.</p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold px-8 py-3.5 rounded-full hover:bg-blue-700 transition-all duration-200 text-sm shadow-sm hover:-translate-y-0.5 active:scale-95 group">
+                  Mulai Scan Gratis <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <Link href="/fitur" className="inline-flex items-center justify-center gap-2 bg-black/5 dark:bg-white/8 hover:bg-black/8 dark:hover:bg-white/12 border border-gray-200/60 dark:border-white/10 text-gray-700 dark:text-gray-300 font-semibold px-8 py-3.5 rounded-full transition-all duration-200 text-sm active:scale-95">
+                  Lihat Fitur Lengkap
+                </Link>
+              </div>
             </div>
           </div>
         </section>

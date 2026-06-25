@@ -93,9 +93,9 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-8 text-white shadow-md">
-                  <h3 className="text-xl font-bold mb-3">Butuh Respon Cepat?</h3>
-                  <p className="text-blue-100 text-sm leading-relaxed mb-6">
+                <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-blue-200/60 dark:border-blue-500/20 rounded-3xl p-8 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
+                  <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Butuh Respon Cepat?</h3>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-6">
                     Untuk pelaporan insiden keamanan atau ancaman siber berskala besar, sertakan subject [URGENT] pada email Anda.
                   </p>
                 </div>

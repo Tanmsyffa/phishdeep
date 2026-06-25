@@ -115,18 +115,18 @@ export default async function AboutPage() {
         </section>
 
         {/* CTA Banner */}
-        <section className="pb-16 px-4">
+        <section className="pb-12 px-4">
           <div className="container mx-auto max-w-4xl">
-            <div className="bg-gradient-to-br from-slate-900 to-primary-950 dark:from-slate-950 dark:to-slate-900 text-white rounded-3xl p-10 sm:p-14 text-center border border-primary-800/20">
-              <h2 className="text-2xl sm:text-3xl font-bold mb-4">Bersama Membangun Internet yang Aman</h2>
-              <p className="text-gray-300 max-w-2xl mx-auto mb-8 text-sm sm:text-base leading-relaxed">
+            <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/60 dark:border-white/8 rounded-3xl p-10 sm:p-14 text-center shadow-[0_4px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_40px_rgba(0,0,0,0.3)]">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-3 text-gray-900 dark:text-white tracking-tight">Bersama Membangun Internet yang Aman</h2>
+              <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-8 text-sm sm:text-base leading-relaxed">
                 Setiap harinya ribuan URL phishing baru bermunculan. Dengan menggunakan PhishDeep, Anda turut berkontribusi dalam memetakan dan menghentikan pergerakan pelaku kejahatan siber.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-white text-primary-900 font-bold px-8 py-3.5 rounded-full hover:bg-gray-100 transition-all duration-300 shadow-lg hover:-translate-y-0.5 group">
+                <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold px-8 py-3.5 rounded-full hover:bg-blue-700 transition-all duration-200 shadow-sm hover:-translate-y-0.5 active:scale-95 group text-sm">
                   Mulai Gratis Sekarang <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
-                <Link href="/cara-kerja" className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-8 py-3.5 rounded-full transition-all duration-300">
+                <Link href="/cara-kerja" className="inline-flex items-center justify-center gap-2 bg-black/5 dark:bg-white/8 hover:bg-black/8 dark:hover:bg-white/12 border border-gray-200/60 dark:border-white/10 text-gray-700 dark:text-gray-300 font-semibold px-8 py-3.5 rounded-full transition-all duration-200 text-sm active:scale-95">
                   Cara Kerja
                 </Link>
               </div>
