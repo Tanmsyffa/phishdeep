@@ -5,255 +5,217 @@ import { ArrowRight, CheckCircle2, ShieldCheck, FileText, Link as LinkIcon, Smar
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col font-sans bg-ios-bg dark:bg-ios-bgDark pb-20 lg:pb-0">
       <Header />
-      
+
       <main className="flex-grow">
-        {/* Hero Section */}
-        <section className="pt-10 pb-16 overflow-hidden">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col lg:flex-row items-center gap-16">
-              
-              <div className="lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left">
-                <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-50 dark:bg-blue-500/20 border border-blue-100 dark:border-blue-800 text-primary-700 dark:text-primary-300 text-[10px] xs:text-xs sm:text-sm font-semibold mb-6 sm:mb-8 shadow-sm max-w-full">
-                  <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                  <span className="leading-tight truncate sm:whitespace-normal">Deteksi Phishing & Malware dengan Bukti Visual</span>
-                </div>
-                
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-[1.15] mb-4 sm:mb-6">
-                  Jangan cuma tahu <br className="hidden sm:block"/>
-                  link berbahaya. <br className="hidden lg:block"/>
-                  <span className="text-primary-600">Lihat bukti nyatanya.</span>
-                </h1>
-                
-                <p className="text-sm sm:text-lg text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 max-w-xl leading-relaxed px-2 sm:px-0">
-                  PhishDeep mendeteksi phishing, malware, dan ancaman lain pada link dan APK dilengkapi bukti visual lengkap yang siap digunakan.
-                </p>
-                
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-10 w-full sm:w-auto px-4 sm:px-0 justify-center lg:justify-start">
-                  <Link href="/scan" className="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-primary-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-full font-semibold hover:bg-primary-700 transition-all duration-300 shadow-lg shadow-primary-600/20 text-sm sm:text-lg hover:shadow-xl hover:-translate-y-1 group">
-                    Scan Gratis Sekarang <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 text-sm text-gray-600 dark:text-gray-300 justify-center lg:justify-start font-medium mx-auto lg:mx-0">
-                  <div className="flex items-center gap-2.5 text-left">
-                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
-                    <span>Kotak merah di area scam</span>
-                  </div>
-                  <div className="flex items-center gap-2.5 text-left">
-                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
-                    <span>Laporan PDF forensik</span>
-                  </div>
-                </div>
+
+        {/* ── Hero ──────────────────────────────── */}
+        <section className="pt-12 pb-20 overflow-hidden relative">
+          {/* Subtle background orb — no neon */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-blue-500/5 dark:bg-blue-500/8 rounded-full blur-[100px] pointer-events-none -z-0" />
+
+          <div className="container mx-auto px-5 max-w-5xl relative z-10">
+            <div className="flex flex-col items-center text-center">
+
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 dark:bg-white/5 border border-gray-200/80 dark:border-white/10 backdrop-blur-sm text-xs font-semibold text-gray-600 dark:text-gray-300 mb-6 shadow-sm">
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                Deteksi Phishing & Malware dengan Bukti Visual
               </div>
 
-              {/* Browser Mockup - Hidden on Mobile */}
-              <div className="hidden lg:block lg:w-1/2 relative z-10 w-full pl-6">
-                {/* Decorative glow behind mockup */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary-500/20 blur-[100px] -z-10 rounded-full pointer-events-none"></div>
+              {/* Heading */}
+              <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold tracking-tight text-gray-900 dark:text-white leading-[1.15] mb-5 max-w-3xl">
+                Jangan cuma tahu link berbahaya.{" "}
+                <span className="text-blue-600 dark:text-blue-400">Lihat bukti nyatanya.</span>
+              </h1>
 
-                <div className="relative w-full max-w-[550px] mx-auto bg-white dark:bg-ios-bgDark rounded-3xl shadow-[0_30px_60px_rgba(0,0,0,0.12)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.5)] border border-gray-200/50 dark:border-white/10 overflow-hidden group">
-                  
-                  {/* Glassmorphism Browser Top Bar */}
-                  <div className="h-12 bg-ios-bg/60 dark:bg-white/5 backdrop-blur-2xl border-b border-gray-200/50 dark:border-white/5 flex items-center px-4 gap-3 relative z-20">
-                    <div className="flex gap-2">
-                      <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-                      <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-                      <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
-                    </div>
-                    <div className="mx-auto bg-white/60 dark:bg-black/40 text-[11px] text-gray-500 dark:text-gray-400 font-medium px-6 py-1.5 rounded-full border border-gray-200/50 dark:border-white/5 flex items-center gap-2 w-3/4 truncate shadow-sm backdrop-blur-md">
-                      <span className="text-red-400">🔓 Not Secure</span> <span className="opacity-30">|</span> https://secure-bca-update.com/login
-                    </div>
-                  </div>
+              <p className="text-base sm:text-lg text-gray-500 dark:text-gray-400 mb-8 max-w-xl leading-relaxed">
+                PhishDeep mendeteksi phishing, malware, dan ancaman pada link & APK — lengkap dengan bukti visual forensik siap lapor.
+              </p>
 
-                  {/* Phishing Page Content */}
-                  <div className="relative h-[400px] bg-ios-bg dark:bg-ios-bgDark flex flex-col items-center pt-8 overflow-hidden">
-                    {/* Fake Bank UI */}
-                    <div className="w-[320px] bg-white dark:bg-ios-cardDark rounded-3xl shadow-xl border border-gray-200/50 dark:border-white/5 overflow-hidden relative z-10 opacity-70 grayscale-[20%] blur-[0.5px] group-hover:blur-none group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
-                      <div className="bg-blue-600 p-6 text-center">
-                        <div className="w-12 h-12 bg-white rounded-full mx-auto mb-3 flex items-center justify-center text-blue-600 font-black text-2xl shadow-inner">B</div>
-                        <h2 className="text-white font-bold text-lg">Bank Central</h2>
-                      </div>
-                      <div className="p-6 space-y-4">
-                        <div className="space-y-1.5">
-                          <div className="h-3.5 w-20 bg-gray-200 dark:bg-slate-700 rounded-sm"></div>
-                          <div className="h-10 border border-gray-300 dark:border-slate-700 rounded-lg bg-gray-50 dark:bg-slate-800/50"></div>
-                        </div>
-                        <div className="space-y-1.5">
-                          <div className="h-3.5 w-16 bg-gray-200 dark:bg-slate-700 rounded-sm"></div>
-                          <div className="h-10 border border-gray-300 dark:border-slate-700 rounded-lg bg-gray-50 dark:bg-slate-800/50"></div>
-                        </div>
-                        <div className="h-10 bg-blue-600 rounded-lg mt-6 shadow-md shadow-blue-600/20"></div>
-                      </div>
-                    </div>
-
-                    {/* Threat Detection Overlay (The Red Box) */}
-                    <div className="absolute top-[12%] left-1/2 -translate-x-1/2 w-[360px] h-[320px] border-2 border-red-500 bg-red-500/10 rounded-xl z-30 pointer-events-none">
-                      
-                      {/* Scanning Line Animation */}
-                      <style dangerouslySetInnerHTML={{__html: `
-                        @keyframes scanLine {
-                          0% { top: 0%; opacity: 0; }
-                          10% { opacity: 1; }
-                          90% { opacity: 1; }
-                          100% { top: 100%; opacity: 0; }
-                        }
-                        .animate-scan {
-                          animation: scanLine 3s ease-in-out infinite;
-                        }
-                      `}} />
-                      <div className="absolute top-0 left-0 right-0 h-0.5 bg-red-500 shadow-[0_0_15px_rgba(239,68,68,1)] animate-scan"></div>
-                      
-                      {/* Corner Accents */}
-                      <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-red-500"></div>
-                      <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-red-500"></div>
-                      <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-red-500"></div>
-                      <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-red-500"></div>
-
-                      {/* Tooltip Badge */}
-                      <div className="absolute -right-8 top-12 bg-slate-900/95 backdrop-blur-sm border border-red-500/50 text-white p-3.5 rounded-xl shadow-2xl">
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <div className="w-2 h-2 rounded-full bg-red-500 animate-ping"></div>
-                          <span className="text-red-400 font-bold text-[10px] uppercase tracking-widest">Phishing Terdeteksi</span>
-                        </div>
-                        <p className="text-[11px] text-slate-300 max-w-[150px] leading-relaxed">Form login palsu untuk mencuri kredensial.</p>
-                      </div>
-
-                      {/* Secondary Badge */}
-                      <div className="absolute -left-4 bottom-16 bg-slate-900/95 backdrop-blur-sm border border-yellow-500/50 text-white p-3 rounded-xl shadow-2xl">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-yellow-400 font-bold text-[10px] uppercase tracking-widest">Domain Bahaya</span>
-                        </div>
-                        <p className="text-[10px] text-slate-400 max-w-[120px]">Umur domain: 2 hari</p>
-                      </div>
-
-                    </div>
-                  </div>
-                </div>
+              {/* CTA */}
+              <div className="flex flex-col sm:flex-row gap-3 mb-10 w-full sm:w-auto">
+                <Link
+                  href="/scan"
+                  className="inline-flex justify-center items-center gap-2 bg-blue-600 text-white px-7 py-3.5 rounded-full font-semibold hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-600/20 text-sm hover:-translate-y-0.5 group active:scale-95"
+                >
+                  Scan Gratis Sekarang <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <Link
+                  href="/cara-kerja"
+                  className="inline-flex justify-center items-center gap-2 bg-white/80 dark:bg-white/5 backdrop-blur-sm text-gray-700 dark:text-gray-300 border border-gray-200/80 dark:border-white/10 px-7 py-3.5 rounded-full font-semibold hover:bg-white dark:hover:bg-white/10 transition-all duration-200 text-sm active:scale-95"
+                >
+                  Cara Kerja
+                </Link>
               </div>
 
-            </div>
-          </div>
-        </section>
-
-
-
-        {/* Features Section */}
-        <section id="fitur" className="py-12 bg-transparent">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-10">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-3">Fitur Utama PhishDeep</h2>
-              <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto text-sm sm:text-base">Kami menyediakan berbagai alat pemindaian untuk memastikan Anda aman dari ancaman siber.</p>
+              {/* Trust bullets */}
+              <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
+                {['Kotak merah di area scam', 'Laporan PDF forensik', 'Gratis & tanpa kartu kredit'].map((t) => (
+                  <div key={t} className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                    <span>{t}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
-              <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/5 p-6 sm:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_15px_40px_rgb(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full flex items-center justify-center mb-4 sm:mb-6 shadow-sm">
-                  <LinkIcon className="w-5 h-5 sm:w-6 sm:h-6" />
-                </div>
-                <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-3">Scan Link</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Deteksi phishing pada link beserta screenshot, anotasi, dan redirect chain lengkap.</p>
-              </div>
+            {/* Browser Mockup */}
+            <div className="mt-14 relative max-w-[680px] mx-auto">
+              {/* Glow */}
+              <div className="absolute inset-0 bg-blue-500/8 dark:bg-blue-500/12 blur-[60px] rounded-3xl pointer-events-none" />
 
-              <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/5 p-6 sm:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_15px_40px_rgb(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mb-4 sm:mb-6 shadow-sm">
-                  <Smartphone className="w-5 h-5 sm:w-6 sm:h-6" />
+              <div className="relative bg-ios-card dark:bg-ios-cardDark rounded-[28px] border border-gray-200/60 dark:border-white/10 shadow-[0_30px_80px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_80px_rgba(0,0,0,0.5)] overflow-hidden">
+                {/* Browser chrome */}
+                <div className="h-11 bg-gray-50 dark:bg-[#2C2C2E] border-b border-gray-200/50 dark:border-white/5 flex items-center px-4 gap-3">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
+                  </div>
+                  <div className="flex-1 bg-white/60 dark:bg-black/30 text-[11px] text-gray-500 dark:text-gray-400 font-medium px-3 py-1 rounded-full border border-gray-200/50 dark:border-white/5 flex items-center gap-2 max-w-[300px] mx-auto">
+                    <span className="text-red-400">🔓</span> https://secure-bca-update.com/login
+                  </div>
                 </div>
-                <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-3">Scan APK</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Analisis izin berbahaya, deteksi malware, dan overlay detection.</p>
-              </div>
 
-              <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/5 p-6 sm:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_15px_40px_rgb(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mb-4 sm:mb-6 shadow-sm">
-                  <FileText className="w-5 h-5 sm:w-6 sm:h-6" />
+                {/* Page content mock */}
+                <div className="relative h-[300px] sm:h-[360px] bg-gray-100 dark:bg-[#1a1a1a] flex items-start justify-center pt-8 overflow-hidden">
+                  {/* Fake bank card */}
+                  <div className="w-[260px] sm:w-[300px] bg-white dark:bg-ios-cardDark rounded-2xl border border-gray-200/50 dark:border-white/5 shadow-lg overflow-hidden opacity-75">
+                    <div className="bg-blue-600 p-5 text-center">
+                      <div className="w-10 h-10 bg-white rounded-full mx-auto mb-2 flex items-center justify-center text-blue-600 font-black text-xl">B</div>
+                      <p className="text-white font-bold text-base">Bank Central</p>
+                    </div>
+                    <div className="p-5 space-y-3">
+                      <div className="space-y-1"><div className="h-2.5 w-16 bg-gray-200 dark:bg-white/10 rounded" /><div className="h-9 border border-gray-200 dark:border-white/5 rounded-lg bg-gray-50 dark:bg-white/5" /></div>
+                      <div className="space-y-1"><div className="h-2.5 w-12 bg-gray-200 dark:bg-white/10 rounded" /><div className="h-9 border border-gray-200 dark:border-white/5 rounded-lg bg-gray-50 dark:bg-white/5" /></div>
+                      <div className="h-9 bg-blue-600 rounded-lg mt-2" />
+                    </div>
+                  </div>
+
+                  {/* Red detection box */}
+                  <div className="absolute inset-[16px] sm:inset-[20px] border-2 border-red-500 bg-red-500/8 rounded-xl pointer-events-none">
+                    {/* Scan line animation */}
+                    <div
+                      className="absolute left-0 right-0 h-0.5 bg-red-500/60"
+                      style={{ animation: 'scanLine 2.5s ease-in-out infinite', top: '0%' }}
+                    />
+                    <style dangerouslySetInnerHTML={{__html:`@keyframes scanLine{0%{top:0%;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:100%;opacity:0}}`}} />
+                    {/* Danger label */}
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
+                      ⚠ PHISHING TERDETEKSI
+                    </div>
+                    {/* Corner anchors */}
+                    {['top-0 left-0','top-0 right-0','bottom-0 left-0','bottom-0 right-0'].map((p) => (
+                      <div key={p} className={`absolute ${p} w-3 h-3 border-2 border-red-500`} />
+                    ))}
+                  </div>
                 </div>
-                <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-3">Bukti Forensik</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Laporan PDF forensik siap digunakan untuk bukti dan laporan resmi.</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Comparison Section */}
-        <section id="cara-kerja" className="py-12 bg-transparent">
-          <div className="container mx-auto px-4 max-w-5xl">
+        {/* ── Features ──────────────────────────── */}
+        <section id="fitur" className="py-16">
+          <div className="container mx-auto px-5 max-w-5xl">
             <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Kenapa PhishDeep Lebih Baik?</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">Fitur Utama PhishDeep</h2>
+              <p className="text-gray-500 dark:text-gray-400 max-w-xl mx-auto text-sm sm:text-base">Tiga alat pemindaian untuk memastikan Anda aman dari segala ancaman siber.</p>
             </div>
 
-            <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[500px]">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+              {[
+                { icon: <LinkIcon className="w-5 h-5" />, color: 'text-blue-600 bg-blue-100 dark:bg-blue-500/15', title: 'Scan Link', desc: 'Deteksi phishing pada link beserta screenshot beranotasi, redirect chain, dan skor risiko lengkap.' },
+                { icon: <Smartphone className="w-5 h-5" />, color: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-500/15', title: 'Scan APK', desc: 'Analisis izin berbahaya, deteksi malware, dan overlay detection pada file APK Android.' },
+                { icon: <FileText className="w-5 h-5" />, color: 'text-rose-600 bg-rose-100 dark:bg-rose-500/15', title: 'Laporan Forensik', desc: 'Laporan PDF profesional siap digunakan sebagai bukti untuk laporan resmi ke pihak berwajib.' },
+              ].map((f) => (
+                <div key={f.title} className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/5 p-6 rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col gap-4">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${f.color}`}>
+                    {f.icon}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 dark:text-white mb-1.5">{f.title}</h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{f.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Comparison Table ──────────────────── */}
+        <section id="cara-kerja" className="py-16">
+          <div className="container mx-auto px-5 max-w-4xl">
+            <div className="text-center mb-10">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">Kenapa PhishDeep Lebih Baik?</h2>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">Tidak hanya mendeteksi — kami memberikan bukti nyata yang bisa digunakan.</p>
+            </div>
+
+            <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_4px_24px_rgba(0,0,0,0.04)] overflow-hidden overflow-x-auto">
+              <table className="w-full text-left min-w-[480px]">
                 <thead>
-                  <tr className="bg-gray-50 dark:bg-slate-900/50 border-b border-gray-200 dark:border-slate-800">
-                    <th className="p-3 sm:p-6 font-semibold text-gray-900 dark:text-white text-sm sm:text-base w-1/2">Fitur</th>
-                    <th className="p-3 sm:p-6 font-semibold text-gray-900 dark:text-white text-center text-sm sm:text-base w-1/4">Tools Lain</th>
-                    <th className="p-3 sm:p-6 font-bold text-primary-600 dark:text-primary-400 text-center text-sm sm:text-base w-1/4 bg-blue-50 dark:bg-blue-500/20">PhishDeep</th>
+                  <tr className="border-b border-gray-100 dark:border-white/5">
+                    <th className="px-6 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300 w-1/2">Fitur</th>
+                    <th className="px-6 py-4 text-sm font-semibold text-gray-400 text-center w-1/4">Tools Lain</th>
+                    <th className="px-6 py-4 text-sm font-bold text-blue-600 dark:text-blue-400 text-center w-1/4">PhishDeep</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
-                  <tr>
-                    <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Deteksi phishing / malware</td>
-                    <td className="p-3 sm:p-6 text-center text-gray-400 dark:text-gray-500 text-base sm:text-lg">✓</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Screenshot bukti visual</td>
-                    <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Kotak merah area scam</td>
-                    <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Redirect chain lengkap</td>
-                    <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Laporan PDF forensik</td>
-                    <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 sm:p-6 text-gray-700 dark:text-gray-300 text-xs sm:text-base">Bukti siap untuk laporan polisi</td>
-                    <td className="p-3 sm:p-6 text-center text-red-400 text-base sm:text-lg">✕</td>
-                    <td className="p-3 sm:p-6 text-center text-green-600 dark:text-green-400 font-bold bg-blue-50 dark:bg-blue-500/10 text-base sm:text-lg">✓</td>
-                  </tr>
+                <tbody className="divide-y divide-gray-50 dark:divide-white/5">
+                  {[
+                    ['Deteksi phishing / malware', true],
+                    ['Screenshot bukti visual', false],
+                    ['Kotak merah area scam', false],
+                    ['Redirect chain lengkap', false],
+                    ['Laporan PDF forensik', false],
+                    ['Bukti siap laporan polisi', false],
+                  ].map(([label, other]) => (
+                    <tr key={String(label)} className="hover:bg-gray-50/50 dark:hover:bg-white/3 transition-colors">
+                      <td className="px-6 py-3.5 text-sm text-gray-700 dark:text-gray-300">{label as string}</td>
+                      <td className="px-6 py-3.5 text-center text-base">
+                        {other ? <span className="text-gray-400">✓</span> : <span className="text-red-400">✕</span>}
+                      </td>
+                      <td className="px-6 py-3.5 text-center text-green-500 font-bold text-base">✓</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
-            
-            <div className="mt-12 flex flex-wrap justify-center gap-8 text-sm font-medium text-gray-500 dark:text-gray-400">
-              <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500"/> Gratis Digunakan</div>
-              <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500"/> Privasi Terjaga</div>
-              <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500"/> File Auto-Delete 24 Jam</div>
-              <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500"/> Aman & Terpercaya</div>
+
+            <div className="mt-8 flex flex-wrap justify-center gap-5 text-sm text-gray-500 dark:text-gray-400">
+              {['Gratis Digunakan', 'Privasi Terjaga', 'File Auto-Delete 24 Jam', 'Aman & Terpercaya'].map((t) => (
+                <div key={t} className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />{t}
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Blog Section */}
-        <section id="blog" className="py-10 sm:py-12 bg-gray-50 dark:bg-transparent border-t border-gray-200 dark:border-slate-800">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Blog & Edukasi Keamanan Siber</h2>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-2">Pelajari lebih lanjut tentang tren phishing, teknik terbaru malware, dan bagaimana Anda bisa melindungi diri dari serangan siber.</p>
-            <Link href="/blog" className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-full font-semibold transition-all duration-300 bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-white/10 hover:text-blue-600 dark:hover:text-white shadow-sm active:scale-95 group">Lihat Artikel Blog <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></Link>
+        {/* ── Blog CTA ──────────────────────────── */}
+        <section id="blog" className="py-12 border-t border-gray-100 dark:border-white/5">
+          <div className="container mx-auto px-5 text-center max-w-xl">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Blog & Edukasi Keamanan Siber</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Pelajari tren phishing terbaru dan cara melindungi diri dari serangan siber.</p>
+            <Link href="/blog" className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-white/10 transition-all shadow-sm active:scale-95 group">
+              Lihat Artikel Blog <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </section>
 
-        {/* Tentang Section */}
-        <section id="tentang" className="py-10 sm:py-12 bg-white dark:bg-transparent border-t border-gray-200 dark:border-slate-800">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Tentang PhishDeep</h2>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-2">Kami adalah tim yang berdedikasi untuk menciptakan ruang digital yang lebih aman bagi semua orang di Indonesia. Misi kami adalah memberikan bukti, bukan sekadar peringatan.</p>
-            <Link href="/about" className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-full font-semibold transition-all duration-300 bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-white/10 hover:text-blue-600 dark:hover:text-white shadow-sm active:scale-95 group">Selengkapnya Tentang Kami <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></Link>
+        {/* ── About CTA ─────────────────────────── */}
+        <section id="tentang" className="py-12 border-t border-gray-100 dark:border-white/5">
+          <div className="container mx-auto px-5 text-center max-w-xl">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Tentang PhishDeep</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Tim yang berdedikasi untuk ruang digital yang lebih aman bagi seluruh masyarakat Indonesia.</p>
+            <Link href="/about" className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-white/10 transition-all shadow-sm active:scale-95 group">
+              Selengkapnya <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </section>
+
       </main>
-
       <Footer />
     </div>
   );

@@ -33,7 +33,7 @@ export default function BlogPage() {
   const regularArticles = articles.slice(1);
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-ios-bg dark:bg-ios-bgDark">
+    <div className="min-h-screen flex flex-col font-sans bg-ios-bg dark:bg-ios-bgDark pb-20 lg:pb-0">
       <Header />
       <main className="flex-grow">
 

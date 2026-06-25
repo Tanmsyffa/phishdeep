@@ -33,7 +33,7 @@ export default function FiturPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col font-sans bg-ios-bg dark:bg-ios-bgDark pb-20 lg:pb-0">
       <Header />
       <main className="flex-grow">
 

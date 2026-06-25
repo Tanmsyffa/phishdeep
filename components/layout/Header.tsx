@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ShieldCheck, Menu, X, LogOut, LayoutDashboard } from "lucide-react";
+import { ShieldCheck, LogOut, LayoutDashboard } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { logout } from "@/app/auth-actions";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import PublicBottomNav from "@/components/layout/PublicBottomNav";
 
 export default function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const supabase = createClient();
 
@@ -19,110 +19,91 @@ export default function Header() {
         setUser(session?.user ?? null);
       }
     );
-
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
-
-    return () => {
-      subscription.unsubscribe();
-    };
+    return () => { subscription.unsubscribe(); };
   }, [supabase.auth]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200/50 dark:border-white/10 bg-ios-bg/80 dark:bg-ios-cardDark/80 backdrop-blur-xl supports-[backdrop-filter]:bg-ios-bg/60 dark:supports-[backdrop-filter]:bg-ios-cardDark/60">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <ShieldCheck className="h-8 w-8 text-primary-600" />
-          <span className="font-bold text-xl tracking-tight text-primary-900 dark:text-white">PhishDeep</span>
-        </Link>
-        
-        {/* Desktop Nav */}
-        <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
-          <Link href="/" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">Beranda</Link>
-          <Link href="/fitur" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">Fitur</Link>
-          <Link href="/cara-kerja" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">Cara Kerja</Link>
-          <Link href="/blog" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">Blog</Link>
-          <Link href="/about" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">Tentang</Link>
-        </nav>
+    <>
+      {/* ── Top Header Bar ───────────────────────── */}
+      <header className="sticky top-0 z-50 w-full border-b border-gray-200/50 dark:border-white/10 bg-ios-bg/85 dark:bg-ios-cardDark/85 backdrop-blur-2xl">
+        <div className="container mx-auto px-4 h-14 flex items-center justify-between">
 
-        <div className="hidden lg:flex items-center gap-3 xl:gap-4">
-          {user ? (
-            <>
-              <Link href="/dashboard" className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 flex items-center gap-2">
-                <LayoutDashboard className="w-4 h-4" /> Dashboard
-              </Link>
-              <form action={logout}>
-                <button className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 px-4 py-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-all flex items-center gap-2">
-                  <LogOut className="w-4 h-4" /> Keluar
-                </button>
-              </form>
-              <div className="border-l border-gray-200 dark:border-slate-700 h-6 mx-1"></div>
-              <ThemeToggle />
-            </>
-          ) : (
-            <>
-              <ThemeToggle />
-              <div className="border-l border-gray-200 dark:border-slate-700 h-6 mx-1"></div>
-              <Link href="/login" className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white">
-                Masuk
-              </Link>
-              <Link href="/register" className="text-sm font-medium bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors">
-                Daftar Gratis
-              </Link>
-            </>
-          )}
-        </div>
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <div className="w-8 h-8 rounded-[10px] bg-blue-600 flex items-center justify-center shadow-sm">
+              <ShieldCheck className="h-5 w-5 text-white" />
+            </div>
+            <span className="font-bold text-base tracking-tight text-gray-900 dark:text-white">PhishDeep</span>
+          </Link>
 
-        {/* Mobile Menu Toggle */}
-        <button 
-          className="lg:hidden p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label="Toggle Menu"
-        >
-          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </div>
-
-      {/* Mobile Nav */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden border-t border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 absolute w-full left-0 shadow-xl border-b pb-4">
-          <nav className="flex flex-col px-4 py-4 space-y-4">
-            <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600">Beranda</Link>
-            <Link href="/fitur" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600">Fitur</Link>
-            <Link href="/cara-kerja" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600">Cara Kerja</Link>
-            <Link href="/blog" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600">Blog</Link>
-            <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600">Tentang</Link>
+          {/* Desktop Nav — hidden on mobile/tablet, shown on lg+ */}
+          <nav className="hidden lg:flex items-center gap-1">
+            {[
+              { href: "/",          label: "Beranda" },
+              { href: "/fitur",     label: "Fitur" },
+              { href: "/cara-kerja",label: "Cara Kerja" },
+              { href: "/blog",      label: "Blog" },
+              { href: "/about",     label: "Tentang" },
+            ].map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-all"
+              >
+                {label}
+              </Link>
+            ))}
           </nav>
-          <div className="px-4 pt-4 border-t border-gray-100 dark:border-slate-800 flex flex-col gap-3">
+
+          {/* Desktop Auth Actions */}
+          <div className="hidden lg:flex items-center gap-2">
+            <ThemeToggle />
+            <div className="h-5 w-px bg-gray-200 dark:bg-white/10 mx-1" />
             {user ? (
               <>
-                <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-center text-white bg-primary-600 px-4 py-2.5 rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center gap-2">
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-1.5 rounded-full hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all"
+                >
                   <LayoutDashboard className="w-4 h-4" /> Dashboard
                 </Link>
-                <form action={logout} className="flex flex-col">
-                  <button onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-center text-red-600 border border-red-100 dark:border-red-800 bg-red-50/50 dark:bg-red-900/20 px-4 py-2.5 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-all flex items-center justify-center gap-2">
+                <form action={logout}>
+                  <button className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 px-3 py-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-500/10 transition-all">
                     <LogOut className="w-4 h-4" /> Keluar
                   </button>
                 </form>
               </>
             ) : (
               <>
-                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-center text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-slate-700 px-4 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
+                <Link
+                  href="/login"
+                  className="text-sm font-medium text-gray-700 dark:text-gray-200 px-3 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-all"
+                >
                   Masuk
                 </Link>
-                <Link href="/register" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-center bg-primary-600 text-white px-4 py-2.5 rounded-lg hover:bg-primary-700 transition-colors">
+                <Link
+                  href="/register"
+                  className="text-sm font-semibold bg-blue-600 text-white px-4 py-1.5 rounded-full hover:bg-blue-700 transition-colors shadow-sm active:scale-95"
+                >
                   Daftar Gratis
                 </Link>
               </>
             )}
-            <div className="border-t border-gray-100 dark:border-slate-800 pt-3 mt-1 flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Tema</span>
-              <ThemeToggle />
-            </div>
           </div>
+
+          {/* Mobile right side — only ThemeToggle */}
+          <div className="flex lg:hidden items-center">
+            <ThemeToggle />
+          </div>
+
         </div>
-      )}
-    </header>
+      </header>
+
+      {/* ── Public Bottom Nav — Mobile/Tablet only ─ */}
+      <PublicBottomNav />
+    </>
   );
 }

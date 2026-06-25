@@ -4,7 +4,7 @@ import BackButton from "@/components/ui/BackButton";
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col font-sans bg-ios-bg dark:bg-ios-bgDark pb-20 lg:pb-0">
       <Header />
       <main className="flex-grow bg-white dark:bg-transparent pt-10 pb-16">
         <div className="container mx-auto px-4 max-w-4xl">
