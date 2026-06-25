@@ -77,10 +77,10 @@ export default function SearchPage() {
         </form>
 
         {/* Tip */}
-        <div className="flex items-start gap-2.5 bg-blue-50/60 dark:bg-blue-500/8 border border-blue-100 dark:border-blue-500/15 rounded-2xl px-4 py-3">
+        <div className="flex items-start gap-2.5 bg-ios-card/50 dark:bg-white/5 backdrop-blur-xl border border-blue-100/50 dark:border-white/10 rounded-2xl px-4 py-3">
           <Lightbulb className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
-          <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-            <span className="font-semibold">Tip:</span> Temukan ID Scan di halaman <span className="font-semibold">Statistik Komunitas</span> pada Dashboard, atau dari link yang dibagikan pengguna lain.
+          <p className="text-xs text-blue-700 dark:text-gray-300 leading-relaxed">
+            <span className="font-semibold text-blue-600 dark:text-blue-400">Tip:</span> Temukan ID Scan di halaman <span className="font-semibold text-gray-900 dark:text-white">Statistik Komunitas</span> pada Dashboard, atau dari link yang dibagikan pengguna lain.
           </p>
         </div>
       </div>

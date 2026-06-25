@@ -140,16 +140,16 @@ export default async function HistoryPage({
                 </thead>
                 <tbody className="divide-y divide-gray-100/60 dark:divide-white/5">
                   {filteredScans.map((row) => (
-                    <tr key={row.id} className="hover:bg-gray-50/50 dark:hover:bg-white/3 transition-colors">
-                      <td className="px-6 py-4 max-w-[300px] truncate text-gray-700 dark:text-gray-300 font-medium text-sm">{row.target}</td>
-                      <td className="px-6 py-4">
-                        <span className="bg-gray-100/80 dark:bg-white/8 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-full font-medium text-xs border border-gray-200/50 dark:border-white/10">{row.jenis}</span>
+                    <tr key={row.id} className="group hover:bg-gray-50/80 dark:hover:bg-white/5 transition-all duration-200">
+                      <td className="px-6 py-4 max-w-[300px] truncate text-gray-700 dark:text-gray-300 font-medium text-sm group-hover:first:rounded-l-2xl group-hover:last:rounded-r-2xl">{row.target}</td>
+                      <td className="px-6 py-4 group-hover:first:rounded-l-2xl group-hover:last:rounded-r-2xl">
+                        <span className="bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-white px-3 py-1.5 rounded-full font-bold text-[11px] uppercase tracking-wider">{row.jenis}</span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 group-hover:first:rounded-l-2xl group-hover:last:rounded-r-2xl">
                         <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${row.warna}`}>{row.hasil}</span>
                       </td>
-                      <td className="px-6 py-4 text-gray-400 dark:text-gray-500 text-xs">{row.tanggal}</td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 text-gray-400 dark:text-gray-500 text-xs group-hover:first:rounded-l-2xl group-hover:last:rounded-r-2xl">{row.tanggal}</td>
+                      <td className="px-6 py-4 group-hover:first:rounded-l-2xl group-hover:last:rounded-r-2xl">
                         <div className="flex items-center justify-end gap-1.5">
                           <Link href={`/scan/${row.id}`} className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-full transition-colors flex items-center gap-1.5 text-xs font-medium">
                             <Eye className="w-4 h-4" /> Detail

@@ -372,17 +372,17 @@ export default function DashboardPage() {
             <h2 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Aktivitas Terakhir</h2>
             <Link href="/history" className="text-xs text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors">Lihat semua →</Link>
           </div>
-          <div className="sm:hidden divide-y divide-gray-100 dark:divide-slate-800">
+          <div className="sm:hidden divide-y divide-gray-100 dark:divide-white/5">
             {displayScans.length === 0 ? (
               <p className="text-center text-sm text-gray-400 dark:text-gray-500 py-10">Belum ada aktivitas scan hari ini</p>
             ) : displayScans.map(row => (
-              <Link key={row.id} href={`/scan/${row.id}`} className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
+              <Link key={row.id} href={`/scan/${row.id}`} className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate flex-1">{row.target}</span>
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border shrink-0 ${row.warna}`}>{row.hasil}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
-                  <span className="bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 px-1.5 py-0.5 rounded font-medium">{row.jenis}</span>
+                  <span className="bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-white px-2 py-0.5 rounded-full font-bold text-[10px] uppercase tracking-wider">{row.jenis}</span>
                   <span>{row.tanggal}</span>
                 </div>
               </Link>
@@ -398,17 +398,17 @@ export default function DashboardPage() {
                   <th className="px-6 py-3">Waktu</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                 {displayScans.length === 0 ? (
                   <tr><td colSpan={4} className="px-6 py-10 text-center text-gray-400 dark:text-gray-500 text-sm">Belum ada aktivitas scan hari ini</td></tr>
                 ) : displayScans.map(row => (
-                  <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/70 transition-colors">
-                    <td className="px-6 py-3.5 max-w-[220px] truncate text-gray-700 dark:text-gray-300 font-medium">
+                  <tr key={row.id} className="group hover:bg-gray-50/80 dark:hover:bg-white/5 transition-all duration-200">
+                    <td className="px-6 py-3.5 max-w-[220px] truncate text-gray-700 dark:text-gray-300 font-medium group-hover:first:rounded-l-2xl group-hover:last:rounded-r-2xl">
                       <Link href={`/scan/${row.id}`} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{row.target}</Link>
                     </td>
-                    <td className="px-6 py-3.5"><span className="bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded text-xs font-medium">{row.jenis}</span></td>
-                    <td className="px-6 py-3.5"><span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${row.warna}`}>{row.hasil}</span></td>
-                    <td className="px-6 py-3.5 text-gray-400 dark:text-gray-500 text-xs">{row.tanggal}</td>
+                    <td className="px-6 py-3.5 group-hover:first:rounded-l-2xl group-hover:last:rounded-r-2xl"><span className="bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-white px-3 py-1.5 rounded-full font-bold text-[11px] uppercase tracking-wider">{row.jenis}</span></td>
+                    <td className="px-6 py-3.5 group-hover:first:rounded-l-2xl group-hover:last:rounded-r-2xl"><span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${row.warna}`}>{row.hasil}</span></td>
+                    <td className="px-6 py-3.5 text-gray-400 dark:text-gray-500 text-xs group-hover:first:rounded-l-2xl group-hover:last:rounded-r-2xl">{row.tanggal}</td>
                   </tr>
                 ))}
               </tbody>
@@ -417,10 +417,10 @@ export default function DashboardPage() {
         </div>
 
         <div>
-          <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
-            <h3 className="font-bold mb-1 text-sm text-gray-900 dark:text-white">Mulai Scan Baru</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Analisis link atau APK mencurigakan sekarang.</p>
-            <Link href="/scan" className="block text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl text-sm transition-colors">
+          <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <h3 className="font-bold mb-2 text-sm text-gray-900 dark:text-white">Mulai Scan Baru</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-5 leading-relaxed">Analisis link atau APK mencurigakan sekarang.</p>
+            <Link href="/scan" className="block text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-full text-sm transition-all active:scale-95 shadow-sm">
               Scan Sekarang →
             </Link>
           </div>

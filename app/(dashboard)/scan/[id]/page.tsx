@@ -676,18 +676,18 @@ export default async function ScanResultPage({ params, searchParams }: { params:
 
           {/* Screenshot / Visual Evidence */}
           {isLink && screenshotUrl && (
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden print:border-gray-300 print:shadow-none print:break-inside-avoid">
-              <div className="p-5 border-b border-gray-100 dark:border-slate-700 flex items-center gap-2">
+            <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.04)] overflow-hidden print:border-gray-300 print:shadow-none print:break-inside-avoid">
+              <div className="p-5 border-b border-gray-100/50 dark:border-white/5 flex items-center gap-2">
                 <Monitor className="w-4 h-4 text-primary-500 shrink-0" />
                 <h3 className="font-bold text-gray-900 dark:text-white text-sm">Bukti Visual (Tangkapan Layar)</h3>
                 <span className="ml-auto text-[10px] text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-800 font-medium rounded-md px-2.5 py-1 hidden sm:block">
                   Diambil saat analisis
                 </span>
               </div>
-              <div className="p-5 sm:p-6 bg-gray-50 dark:bg-slate-800/50 flex justify-center">
-                <div className="w-full max-w-4xl rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-900 overflow-hidden">
+              <div className="p-5 sm:p-6 bg-gray-50/50 dark:bg-white/3 flex justify-center">
+                <div className="w-full max-w-4xl rounded-2xl border border-gray-200/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.08)] bg-white dark:bg-slate-900 overflow-hidden">
                   {/* Mock Browser Top Bar */}
-                  <div className="h-8 border-b border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/80 flex items-center px-3 gap-1.5">
+                  <div className="h-8 border-b border-gray-100/50 dark:border-white/5 bg-gray-100/80 dark:bg-white/5 flex items-center px-3 gap-1.5">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
                     <div className="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
                     <div className="w-2.5 h-2.5 rounded-full bg-green-400"></div>
@@ -707,10 +707,10 @@ export default async function ScanResultPage({ params, searchParams }: { params:
           )}
 
           {/* Details Log Section */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden print:border-none print:shadow-none print:break-inside-avoid">
-            <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 print:border-b print:border-gray-300 print:bg-white print:p-0 print:pb-1 print:mb-2">
+          <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.04)] overflow-hidden print:border-none print:shadow-none print:break-inside-avoid mt-4">
+            <div className="p-4 sm:p-5 border-b border-gray-200/50 dark:border-white/5 flex items-center gap-2 print:border-b print:border-gray-300 print:bg-white print:p-0 print:pb-1 print:mb-2">
               <h2 className="font-bold text-gray-900 dark:text-white text-sm flex items-center gap-2 print:text-base">
-                <ShieldAlert className="w-4 h-4 text-primary-500 print:hidden" /> Log Audit Keamanan
+                <ShieldAlert className="w-4 h-4 text-blue-500 print:hidden" /> Log Audit Keamanan
               </h2>
             </div>
             
@@ -745,8 +745,8 @@ export default async function ScanResultPage({ params, searchParams }: { params:
                     const cleanStep = item.step.replace(/\[([A-Z0-9.:-]+)\]/, '').trim();
 
                     return (
-                      <div key={idx} className="flex items-start gap-2.5 p-3 bg-gray-50 dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 print:border-gray-300 print:bg-white dark:bg-slate-900 relative">
-                        <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-primary-700 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 print:border print:border-gray-300">
+                      <div key={idx} className="flex items-start gap-2.5 p-3 bg-gray-50/50 dark:bg-white/5 rounded-2xl border border-gray-100/50 dark:border-white/10 print:border-gray-300 print:bg-white relative">
+                        <div className="w-5 h-5 rounded-full bg-blue-100/80 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 print:border print:border-gray-300">
                           {idx + 1}
                         </div>
                         <div className="min-w-0 flex-1">
