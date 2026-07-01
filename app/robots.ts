@@ -13,6 +13,6 @@ export default function robots(): MetadataRoute.Robots {
         '/settings/'
       ],
     },
-    sitemap: 'https://phishdeep.vercel.app/sitemap.xml',
+    sitemap: 'https://phishdeep.my.id/sitemap.xml',
   }
 }

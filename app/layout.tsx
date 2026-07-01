@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://phishdeep.vercel.app'),
+  metadataBase: new URL('https://phishdeep.my.id'),
   applicationName: "PhishDeep",
   appleWebApp: {
     title: "PhishDeep",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "PhishDeep - Deteksi Phishing & Malware",
     description: "Cek link dan APK Anda dari bahaya phishing dan malware. Dapatkan bukti visual nyata dengan PhishDeep.",
-    url: 'https://phishdeep.vercel.app',
+    url: 'https://phishdeep.my.id',
     siteName: 'PhishDeep',
     images: [
       {
@@ -93,13 +93,13 @@ export default function RootLayout({
     '@type': 'WebSite',
     name: 'PhishDeep',
     alternateName: 'PhishDeep - Deteksi Phishing & Malware',
-    url: 'https://phishdeep.vercel.app',
+    url: 'https://phishdeep.my.id',
     description: 'Platform cerdas untuk mendeteksi phishing, malware, dan ancaman siber pada link dan APK dengan laporan forensik visual.',
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: 'https://phishdeep.vercel.app/scan',
+        urlTemplate: 'https://phishdeep.my.id/scan',
       },
       'query-input': 'required name=search_term_string',
     },

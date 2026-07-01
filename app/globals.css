@@ -44,7 +44,7 @@
 
   /* --- Page Footer (auto-appended) --- */
   body::after {
-    content: 'PhishDeep Cybersecurity Intelligence Platform  |  CONFIDENTIAL — FOR AUTHORIZED USE ONLY  |  phishdeep.vercel.app';
+    content: 'PhishDeep Cybersecurity Intelligence Platform  |  CONFIDENTIAL — FOR AUTHORIZED USE ONLY  |  phishdeep.my.id';
     position: fixed;
     bottom: 8mm;
     left: 0;

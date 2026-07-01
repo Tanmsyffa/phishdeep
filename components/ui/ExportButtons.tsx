@@ -59,7 +59,7 @@ export default function ExportButtons({ data }: { data: any }) {
     csv += row('');
     csv += row('Report ID', data.id);
     csv += row('Generated', generatedAt);
-    csv += row('Platform', 'PhishDeep v1.0 | phishdeep.vercel.app');
+    csv += row('Platform', 'PhishDeep v1.0 | phishdeep.my.id');
     csv += row('Methodology', 'Automated Forensic Analysis + OSINT Enrichment');
     csv += row('');
 

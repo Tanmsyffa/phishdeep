@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
  
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://phishdeep.vercel.app' // Anda bisa ganti ini dengan domain asli Anda nantinya
+  const baseUrl = 'https://phishdeep.my.id' // Anda bisa ganti ini dengan domain asli Anda nantinya
   
   return [
     {
