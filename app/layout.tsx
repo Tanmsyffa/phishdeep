@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     capable: true,
   },
   verification: {
-    google: '_b9NX6YFJiCTfMjqqNefgiFxu5oVMIXiDwCl_R-M9s0',
+    google: '5FoAX4E_VkQW8QjrEA4_Lmkbp_6RV6Lg3x1_GeEU6zk',
   },
   title: {
     default: "PhishDeep - Deteksi Phishing & Malware dengan Bukti Visual",
