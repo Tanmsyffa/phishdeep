@@ -96,12 +96,12 @@ export default function Home() {
 
                   {/* Red detection box */}
                   <div className="absolute inset-[16px] sm:inset-[20px] border-2 border-red-500 bg-red-500/8 rounded-xl pointer-events-none">
-                    {/* Scan line animation */}
+                    {/* Scan line animation (Composited) */}
                     <div
-                      className="absolute left-0 right-0 h-0.5 bg-red-500/60"
-                      style={{ animation: 'scanLine 2.5s ease-in-out infinite', top: '0%' }}
+                      className="absolute left-0 right-0 h-full border-b-2 border-red-500/60"
+                      style={{ animation: 'scanLine 2.5s ease-in-out infinite', transform: 'translateY(-100%)' }}
                     />
-                    <style dangerouslySetInnerHTML={{__html:`@keyframes scanLine{0%{top:0%;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:100%;opacity:0}}`}} />
+                    <style dangerouslySetInnerHTML={{__html:`@keyframes scanLine{0%{transform:translateY(-100%);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(0%);opacity:0}}`}} />
                     {/* Danger label */}
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
                       ⚠ PHISHING TERDETEKSI

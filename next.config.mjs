@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
   rewrites: async () => {
     if (process.env.NODE_ENV === 'development') {
       return [
