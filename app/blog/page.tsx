@@ -50,7 +50,7 @@ export default function BlogPage() {
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight tracking-tight">
                 Blog <span className="text-blue-600 dark:text-blue-400">Keamanan Siber</span>
               </h1>
-              <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 leading-relaxed max-w-lg">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed max-w-lg">
                 Tingkatkan kesadaran keamanan digital Anda dengan artikel, tips, dan update terbaru seputar ancaman siber.
               </p>
               {/* Stats row */}
@@ -160,7 +160,7 @@ export default function BlogPage() {
                         {article.title}
                       </h2>
 
-                      <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3 flex-grow">
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3 flex-grow">
                         {article.excerpt}
                       </p>
 

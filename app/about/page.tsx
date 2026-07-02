@@ -72,7 +72,7 @@ export default async function AboutPage() {
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-5 leading-tight max-w-3xl">
                 Tentang <span className="text-primary-600">PhishDeep</span>
               </h1>
-              <p className="text-base sm:text-lg text-gray-500 dark:text-gray-400 max-w-2xl leading-relaxed">
+              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed">
                 Kami berdedikasi untuk menciptakan ruang digital yang lebih aman bagi seluruh masyarakat Indonesia dengan memberikan bukti forensik, bukan sekadar peringatan.
               </p>
             </div>
@@ -86,7 +86,7 @@ export default async function AboutPage() {
               {stats.map((s, i) => (
                 <div key={i} className="text-center py-5 px-3 bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                   <div className="text-2xl sm:text-3xl font-black text-primary-600 dark:text-primary-400 mb-1">{s.value}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">{s.label}</div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">{s.label}</div>
                 </div>
               ))}
             </div>
@@ -98,7 +98,7 @@ export default async function AboutPage() {
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="text-center mb-10">
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3">Apa yang Kami Percaya</h2>
-              <p className="text-gray-500 dark:text-gray-400 max-w-xl mx-auto text-sm sm:text-base">Nilai-nilai yang mendasari setiap fitur dan keputusan yang kami buat.</p>
+              <p className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto text-sm sm:text-base">Nilai-nilai yang mendasari setiap fitur dan keputusan yang kami buat.</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
               {cards.map((c, i) => (
@@ -107,7 +107,7 @@ export default async function AboutPage() {
                     {c.icon}
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">{c.title}</h3>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{c.desc}</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{c.desc}</p>
                 </div>
               ))}
             </div>
@@ -119,7 +119,7 @@ export default async function AboutPage() {
           <div className="container mx-auto max-w-4xl">
             <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/60 dark:border-white/8 rounded-3xl p-10 sm:p-14 text-center shadow-[0_4px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_40px_rgba(0,0,0,0.3)]">
               <h2 className="text-2xl sm:text-3xl font-bold mb-3 text-gray-900 dark:text-white tracking-tight">Bersama Membangun Internet yang Aman</h2>
-              <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-8 text-sm sm:text-base leading-relaxed">
+              <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-8 text-sm sm:text-base leading-relaxed">
                 Setiap harinya ribuan URL phishing baru bermunculan. Dengan menggunakan PhishDeep, Anda turut berkontribusi dalam memetakan dan menghentikan pergerakan pelaku kejahatan siber.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">

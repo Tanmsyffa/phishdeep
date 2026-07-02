@@ -50,7 +50,7 @@ export default function FiturPage() {
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-5 leading-tight max-w-3xl">
                 Semua yang Anda Butuhkan untuk <span className="text-primary-600">Keamanan Digital</span>
               </h1>
-              <p className="text-base sm:text-lg text-gray-500 dark:text-gray-400 max-w-2xl leading-relaxed">
+              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed">
                 PhishDeep menyediakan tiga fitur utama untuk melindungi Anda dari berbagai ancaman siber, lengkap dengan bukti visual yang siap digunakan.
               </p>
             </div>
@@ -70,13 +70,13 @@ export default function FiturPage() {
                     <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${f.badgeColor}`}>{f.badge}</span>
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">{f.title}</h3>
-                  <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-sm flex-grow">{f.desc}</p>
+                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm flex-grow">{f.desc}</p>
                 </div>
               ))}
             </div>
 
             {/* Trust badges */}
-            <div className="mt-12 flex flex-wrap justify-center gap-6 text-xs font-medium text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-slate-800 pt-10">
+            <div className="mt-12 flex flex-wrap justify-center gap-6 text-xs font-medium text-gray-600 dark:text-gray-400 border-t border-gray-100 dark:border-slate-800 pt-10">
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> Gratis Digunakan</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> Privasi Terjaga</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> File Auto-Delete 24 Jam</div>
@@ -93,7 +93,7 @@ export default function FiturPage() {
                 <ShieldAlert className="w-3.5 h-3.5" /> Mulai Gratis, Tanpa Kartu Kredit
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold mb-3 text-gray-900 dark:text-white tracking-tight">Siap Melindungi Diri Anda?</h2>
-              <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-lg mx-auto leading-relaxed text-sm sm:text-base">Mulai scan pertama Anda sekarang. Deteksi phishing dan malware dengan bukti visual yang nyata.</p>
+              <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-lg mx-auto leading-relaxed text-sm sm:text-base">Mulai scan pertama Anda sekarang. Deteksi phishing dan malware dengan bukti visual yang nyata.</p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold px-8 py-3.5 rounded-full hover:bg-blue-700 transition-all duration-200 text-sm shadow-sm hover:-translate-y-0.5 active:scale-95 group">
                   Mulai Scan Gratis <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

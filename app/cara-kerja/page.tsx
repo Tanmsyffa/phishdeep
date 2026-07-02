@@ -59,7 +59,7 @@ export default function CaraKerjaPage() {
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-5 leading-tight max-w-3xl">
                 Bagaimana PhishDeep <span className="text-primary-600">Melindungi Anda</span>
               </h1>
-              <p className="text-base sm:text-lg text-gray-500 dark:text-gray-400 max-w-2xl leading-relaxed">
+              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed">
                 Proses pemindaian berjalan sepenuhnya otomatis di server kami. Anda hanya perlu mengirimkan target, dan kami yang melakukan sisanya.
               </p>
             </div>
@@ -80,7 +80,7 @@ export default function CaraKerjaPage() {
                     </div>
                     <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/5 rounded-3xl p-6 flex-1 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all">
                       <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{s.title}</h3>
-                      <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-sm">{s.desc}</p>
+                      <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">{s.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -94,14 +94,14 @@ export default function CaraKerjaPage() {
           <div className="container mx-auto px-4 max-w-3xl">
             <div className="text-center mb-10">
               <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-3">Kenapa PhishDeep Lebih Baik?</h2>
-              <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-base">Tidak hanya mendeteksi — kami memberikan <strong className="text-gray-700 dark:text-gray-200">bukti nyata</strong> yang bisa digunakan.</p>
+              <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Tidak hanya mendeteksi — kami memberikan <strong className="text-gray-700 dark:text-gray-200">bukti nyata</strong> yang bisa digunakan.</p>
             </div>
             <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-white/5 overflow-x-auto overflow-y-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
               <table className="w-full text-left border-collapse min-w-[500px]">
                 <thead>
                   <tr className="border-b border-gray-100 dark:border-slate-800">
                     <th className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300 text-sm w-1/2">Fitur</th>
-                    <th className="px-6 py-4 font-semibold text-gray-500 dark:text-gray-400 text-center text-sm w-1/4">Tools Lain</th>
+                    <th className="px-6 py-4 font-semibold text-gray-600 dark:text-gray-400 text-center text-sm w-1/4">Tools Lain</th>
                     <th className="px-6 py-4 font-bold text-primary-600 dark:text-primary-400 text-center text-sm w-1/4 bg-blue-50/50 dark:bg-blue-500/10">PhishDeep</th>
                   </tr>
                 </thead>
@@ -119,7 +119,7 @@ export default function CaraKerjaPage() {
               </table>
             </div>
 
-            <div className="mt-8 flex flex-wrap justify-center gap-5 text-xs font-medium text-gray-500 dark:text-gray-400">
+            <div className="mt-8 flex flex-wrap justify-center gap-5 text-xs font-medium text-gray-600 dark:text-gray-400">
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> Gratis Digunakan</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> Privasi Terjaga</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> File Auto-Delete 24 Jam</div>
@@ -136,7 +136,7 @@ export default function CaraKerjaPage() {
                 <ShieldAlert className="w-3.5 h-3.5" /> Mulai Gratis, Tanpa Kartu Kredit
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold mb-3 text-gray-900 dark:text-white tracking-tight">Coba Sekarang</h2>
-              <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-lg mx-auto leading-relaxed text-sm sm:text-base">Scan link pertama Anda dan lihat sendiri perbedaannya. Tidak perlu kartu kredit.</p>
+              <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-lg mx-auto leading-relaxed text-sm sm:text-base">Scan link pertama Anda dan lihat sendiri perbedaannya. Tidak perlu kartu kredit.</p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold px-8 py-3.5 rounded-full hover:bg-blue-700 transition-all duration-200 text-sm shadow-sm hover:-translate-y-0.5 active:scale-95 group">
                   Mulai Scan Gratis <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

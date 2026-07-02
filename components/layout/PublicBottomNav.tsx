@@ -54,14 +54,14 @@ export default function PublicBottomNav() {
                   className={`flex items-center justify-center w-10 h-7 rounded-full transition-all duration-200 ${
                     active
                       ? "bg-blue-600 text-white shadow-sm"
-                      : "text-gray-400 dark:text-gray-500"
+                      : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   <Icon className="w-[18px] h-[18px]" strokeWidth={active ? 2.5 : 2} />
                 </span>
                 <span
                   className={`text-[10px] font-semibold tracking-tight transition-colors duration-200 ${
-                    active ? "text-blue-600 dark:text-blue-400" : "text-gray-400 dark:text-gray-500"
+                    active ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   {label}
