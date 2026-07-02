@@ -1,0 +1,15 @@
+# PhishDeep
+
+PhishDeep is a cybersecurity intelligence platform designed to detect phishing, malware, and cyber threats on URLs and APK files. It provides actionable visual forensic evidence.
+
+## Features
+- URL Scanning and Phishing Detection
+- APK Malware Analysis
+- Visual Forensic Reports
+- Cyber Threat Intelligence
+
+## Target Audience
+Indonesian internet users, cybersecurity professionals, and enterprises.
+
+## Tech Stack
+Next.js, Tailwind CSS, Supabase, Python, Puppeteer.
