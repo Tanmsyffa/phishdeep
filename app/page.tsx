@@ -52,7 +52,7 @@ export default function Home() {
 
               {/* Trust bullets */}
               <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-600 dark:text-gray-400">
-                {['Kotak merah di area scam', 'Laporan PDF forensik', 'Gratis & tanpa kartu kredit'].map((t) => (
+                {['Screenshot bukti visual', 'Laporan PDF forensik', 'Gratis & tanpa kartu kredit'].map((t) => (
                   <div key={t} className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
                     <span>{t}</span>
@@ -94,23 +94,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Red detection box */}
-                  <div className="absolute inset-[16px] sm:inset-[20px] border-2 border-red-500 bg-red-500/10 rounded-xl pointer-events-none">
-                    {/* Scan line animation (Composited) */}
-                    <div
-                      className="absolute left-0 right-0 h-full border-b-2 border-red-500/60"
-                      style={{ animation: 'scanLine 2.5s ease-in-out infinite', transform: 'translateY(-100%)' }}
-                    />
-                    <style dangerouslySetInnerHTML={{__html:`@keyframes scanLine{0%{transform:translateY(-100%);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(0%);opacity:0}}`}} />
-                    {/* Danger label */}
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
-                      ⚠ PHISHING TERDETEKSI
-                    </div>
-                    {/* Corner anchors */}
-                    {['top-0 left-0','top-0 right-0','bottom-0 left-0','bottom-0 right-0'].map((p) => (
-                      <div key={p} className={`absolute ${p} w-3 h-3 border-2 border-red-500`} />
-                    ))}
-                  </div>
+
                 </div>
               </div>
             </div>
@@ -166,7 +150,6 @@ export default function Home() {
                   {[
                     ['Deteksi phishing / malware', true],
                     ['Screenshot bukti visual', false],
-                    ['Kotak merah area scam', false],
                     ['Redirect chain lengkap', false],
                     ['Laporan PDF forensik', false],
                     ['Bukti siap laporan polisi', false],

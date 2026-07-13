@@ -128,11 +128,14 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
       <div className="absolute inset-0 bg-black/60 dark:bg-black/70 backdrop-blur-md" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full sm:max-w-lg max-h-[92vh] sm:max-h-[88vh] flex flex-col rounded-t-[28px] sm:rounded-[28px] overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.2)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)]
+      <div className="relative w-full sm:max-w-lg max-h-[85vh] sm:max-h-[88vh] flex flex-col rounded-t-[28px] sm:rounded-[28px] overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.2)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)]
         bg-white dark:bg-[#1c1c1e]">
 
-        {/* Drag handle (mobile) */}
-        <div className="sm:hidden flex justify-center pt-4 pb-2 shrink-0">
+        {/* Drag handle (mobile) - Clickable to close */}
+        <div 
+          className="sm:hidden flex justify-center pt-4 pb-2 shrink-0 cursor-pointer active:bg-gray-100/50 dark:active:bg-white/5 transition-colors"
+          onClick={onClose}
+        >
           <div className="w-12 h-1.5 rounded-full bg-gray-200/80 dark:bg-white/[0.12]" />
         </div>
 
