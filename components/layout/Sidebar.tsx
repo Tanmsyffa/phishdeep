@@ -98,10 +98,10 @@ export default function Sidebar() {
       {/* Bottom Section */}
       <div className="px-3 pb-4 space-y-1 border-t border-gray-100 dark:border-white/6 pt-3">
         {/* Free plan card */}
-        <div className="bg-blue-50 dark:bg-blue-500/8 border border-blue-100 dark:border-blue-500/15 rounded-xl px-3 py-2.5 mb-2">
+        <div className="bg-blue-50/80 dark:bg-blue-500/[0.08] rounded-xl px-3 py-2.5 mb-2">
           <p className="text-[11px] font-bold text-blue-600 dark:text-blue-400 mb-0.5">100% Gratis</p>
-          <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-snug">
-            Limit <span className="font-semibold text-gray-700 dark:text-gray-300">10 scan / hari</span>. Tanpa biaya.
+          <p className="text-[10px] text-gray-500 dark:text-gray-500 leading-snug">
+            Limit <span className="font-semibold text-gray-700 dark:text-gray-400">10 scan / hari</span>. Tanpa biaya.
           </p>
         </div>
 

@@ -128,9 +128,8 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
       <div className="absolute inset-0 bg-black/60 dark:bg-black/70 backdrop-blur-md" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full sm:max-w-lg max-h-[92vh] sm:max-h-[88vh] flex flex-col rounded-t-[28px] sm:rounded-[28px] overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.25)] dark:shadow-[0_32px_80px_rgba(0,0,0,0.5)]
-        bg-white dark:bg-[#1c1c1e]
-        border border-gray-200 dark:border-white/8">
+      <div className="relative w-full sm:max-w-lg max-h-[92vh] sm:max-h-[88vh] flex flex-col rounded-t-[28px] sm:rounded-[28px] overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.2)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)]
+        bg-white dark:bg-[#1c1c1e]">
 
         {/* Drag handle (mobile) */}
         <div className="sm:hidden flex justify-center pt-3 pb-1 shrink-0">
@@ -138,7 +137,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/8 shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-500/15 border border-blue-200 dark:border-blue-500/20 flex items-center justify-center">
               <BarChart2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
@@ -163,7 +162,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
           {/* Top metrics row — 2x2 on mobile, 4-col on sm+ */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {metrics.map(m => (
-              <div key={m.label} className={`${m.bg} border ${m.border} rounded-xl p-3 flex flex-col gap-1`}>
+              <div key={m.label} className={`${m.bg} rounded-xl p-3 flex flex-col gap-1`}>
                 <m.icon className={`w-3.5 h-3.5 ${m.color}`} />
                 <p className={`text-xl font-bold leading-none mt-0.5 ${m.num}`}>{m.value}</p>
                 <p className="text-[9px] font-semibold text-gray-500 dark:text-gray-400 leading-tight uppercase tracking-wide">{m.label}</p>
@@ -174,7 +173,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
           {/* Chart + Stats row — stacked on mobile, 2-col on sm+ */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Donut Chart — vertical layout, chart on top / legend below */}
-            <div className="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/6 rounded-xl p-4 overflow-hidden">
+            <div className="bg-gray-50 dark:bg-white/[0.04] rounded-xl p-4 overflow-hidden">
               <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">Distribusi Hasil</p>
               {total > 0 ? (
                 <div className="flex flex-col items-center gap-3">
@@ -203,7 +202,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
             {/* Right col */}
             <div className="space-y-3">
               {/* Jenis Target */}
-              <div className="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/6 rounded-xl p-4">
+              <div className="bg-gray-50 dark:bg-white/[0.04] rounded-xl p-4">
                 <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">Jenis Target</p>
                 <div className="space-y-3">
                   {[
@@ -224,7 +223,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
               </div>
 
               {/* Rata-rata Risiko */}
-              <div className="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/6 rounded-xl p-4">
+              <div className="bg-gray-50 dark:bg-white/[0.04] rounded-xl p-4">
                 <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wide">Rata-rata Risiko</p>
                 <div className="flex items-baseline gap-1 mb-2">
                   <span className={`text-2xl font-bold leading-none ${riskColor}`}>{Math.round(avgRisk)}</span>
@@ -241,10 +240,10 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
           </div>
 
           {/* Riwayat Scan Komunitas */}
-          <div className="border-t border-gray-100 dark:border-white/8 pt-4">
+          <div className="pt-2">
             <div className="flex items-center gap-2 mb-3">
-              <Users className="w-4 h-4 text-gray-400 dark:text-gray-400" />
-              <h3 className="text-sm font-bold text-gray-800 dark:text-white">Riwayat Terakhir Komunitas</h3>
+              <Users className="w-3.5 h-3.5 text-gray-400" />
+              <h3 className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Riwayat Terakhir Komunitas</h3>
             </div>
             {historyList.length === 0 ? (
               <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-6">Belum ada riwayat scan.</p>
@@ -262,7 +261,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
                   const resultText = isDanger ? "Berbahaya" : isSusp ? "Mencurigakan" : "Aman";
 
                   return (
-                    <div key={idx} className="p-3 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/8 hover:bg-gray-100 dark:hover:bg-white/8 transition-colors">
+                    <div key={idx} className="p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04] hover:bg-gray-100 dark:hover:bg-white/7 transition-colors">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 mb-1">
