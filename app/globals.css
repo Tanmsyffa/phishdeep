@@ -10,6 +10,15 @@
     font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   }
 
+  /* Set color-scheme for native elements */
+  :root {
+    color-scheme: light;
+  }
+  
+  .dark {
+    color-scheme: dark;
+  }
+
   /* iOS safe-area helpers */
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom, 0px);

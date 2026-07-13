@@ -64,10 +64,10 @@ export default function SearchFilter({
               }}
               className="w-full appearance-none border border-gray-200/60 dark:border-white/10 rounded-full pl-4 pr-8 py-2.5 text-sm bg-gray-50/80 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all cursor-pointer backdrop-blur-xl font-medium"
             >
-              <option value="all">Semua Jenis</option>
-              <option value="Link">Link</option>
-              <option value="APK">APK</option>
-              <option value="Dokumen">Dokumen</option>
+              <option value="all" className="bg-white dark:bg-[#1c1c1e] text-gray-900 dark:text-white">Semua Jenis</option>
+              <option value="Link" className="bg-white dark:bg-[#1c1c1e] text-gray-900 dark:text-white">Link</option>
+              <option value="APK" className="bg-white dark:bg-[#1c1c1e] text-gray-900 dark:text-white">APK</option>
+              <option value="Dokumen" className="bg-white dark:bg-[#1c1c1e] text-gray-900 dark:text-white">Dokumen</option>
             </select>
             <div className="absolute inset-y-0 right-0 flex items-center pr-2.5 pointer-events-none text-gray-400">
               <ChevronDown className="w-4 h-4" />
@@ -85,10 +85,10 @@ export default function SearchFilter({
               }}
               className="w-full appearance-none border border-gray-200/60 dark:border-white/10 rounded-full pl-4 pr-8 py-2.5 text-sm bg-gray-50/80 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all cursor-pointer backdrop-blur-xl font-medium"
             >
-              <option value="all">Semua Hasil</option>
-              <option value="Aman">Aman</option>
-              <option value="Mencurigakan">Mencurigakan</option>
-              <option value="Berbahaya">Berbahaya</option>
+              <option value="all" className="bg-white dark:bg-[#1c1c1e] text-gray-900 dark:text-white">Semua Hasil</option>
+              <option value="Aman" className="bg-white dark:bg-[#1c1c1e] text-gray-900 dark:text-white">Aman</option>
+              <option value="Mencurigakan" className="bg-white dark:bg-[#1c1c1e] text-gray-900 dark:text-white">Mencurigakan</option>
+              <option value="Berbahaya" className="bg-white dark:bg-[#1c1c1e] text-gray-900 dark:text-white">Berbahaya</option>
             </select>
             <div className="absolute inset-y-0 right-0 flex items-center pr-2.5 pointer-events-none text-gray-400">
               <ChevronDown className="w-4 h-4" />
