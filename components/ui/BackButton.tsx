@@ -20,7 +20,7 @@ export default function BackButton({ label = "Kembali", className = "" }: BackBu
         text-sm font-medium text-gray-600 dark:text-gray-300
         transition-all duration-200
         hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-200/60 dark:hover:border-blue-500/30 hover:bg-blue-50/60 dark:hover:bg-white/10 hover:shadow-md
-        active:scale-95 active:bg-blue-100/60 dark:active:bg-white/15 active:text-blue-700 dark:active:text-blue-300
+        active:scale-95 active:bg-blue-100/60 dark:active:-/20 active:text-blue-700 dark:active:text-blue-300
         group select-none
         ${className}
       `}

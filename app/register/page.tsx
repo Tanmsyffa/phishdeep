@@ -31,7 +31,7 @@ export default function RegisterPage({
 
         <div className="relative z-10 p-10 pb-14 space-y-8">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/8 border border-white/10 text-gray-400 text-xs font-semibold tracking-wide mb-5">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full -/10 border border-white/10 text-gray-400 text-xs font-semibold tracking-wide mb-5">
               <Lock className="w-3 h-3" /> Gratis Selamanya
             </div>
             <h1 className="text-4xl xl:text-[2.75rem] font-bold text-white leading-[1.2] tracking-tight">
@@ -88,7 +88,7 @@ export default function RegisterPage({
           </div>
 
           {/* Benefits — mobile only */}
-          <div className="lg:hidden bg-blue-50 dark:bg-blue-500/8 border border-blue-100 dark:border-blue-500/15 rounded-2xl p-4 mb-6 space-y-2.5">
+          <div className="lg:hidden bg-blue-50 dark:-/10 border border-blue-100 dark:-/20 rounded-2xl p-4 mb-6 space-y-2.5">
             {[
               'Riwayat scan tersimpan otomatis',
               'Laporan PDF forensik siap unduh',

@@ -28,7 +28,7 @@ export default function HelpPage() {
 
       {/* Header */}
       <div className="flex items-center gap-3 mb-1">
-        <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-500/15 flex items-center justify-center shrink-0">
+        <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-500/20 flex items-center justify-center shrink-0">
           <HelpCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
@@ -40,7 +40,7 @@ export default function HelpPage() {
       {/* Contact Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl p-6 flex flex-col gap-4 shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all duration-200">
-          <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-500/15 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-500/20 flex items-center justify-center shrink-0">
             <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
           <div className="flex-1">
@@ -58,7 +58,7 @@ export default function HelpPage() {
         </div>
 
         <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl p-6 flex flex-col gap-4 shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all duration-200">
-          <div className="w-10 h-10 rounded-full bg-green-50 dark:bg-green-500/15 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-full bg-green-50 dark:bg-green-500/20 flex items-center justify-center shrink-0">
             <MessageSquare className="w-5 h-5 text-green-600 dark:text-green-400" />
           </div>
           <div className="flex-1">
@@ -99,7 +99,7 @@ export default function HelpPage() {
       </div>
 
       {/* Contact info card */}
-      <div className="bg-blue-50/60 dark:bg-blue-500/8 border border-blue-100 dark:border-blue-500/15 rounded-2xl px-5 py-4 flex items-center gap-3">
+      <div className="bg-blue-50/60 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 rounded-2xl px-5 py-4 flex items-center gap-3">
         <Mail className="w-4 h-4 text-blue-500 shrink-0" />
         <p className="text-xs text-blue-700 dark:text-blue-300">
           Butuh bantuan mendesak? Email kami di{" "}

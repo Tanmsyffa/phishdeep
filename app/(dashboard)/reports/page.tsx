@@ -59,7 +59,7 @@ export default async function ReportsPage({
     <div className="max-w-5xl mx-auto space-y-5">
       {/* Header */}
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-500/15 flex items-center justify-center shrink-0">
+        <div className="w-10 h-10 rounded-full bg-blue-50 dark:-/20 flex items-center justify-center shrink-0">
           <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
         </div>
         <div>

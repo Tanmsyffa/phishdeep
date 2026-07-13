@@ -88,7 +88,7 @@ export default function FiturPage() {
         {/* CTA */}
         <section className="py-12 px-4">
           <div className="container mx-auto max-w-3xl">
-            <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/60 dark:border-white/8 rounded-3xl p-10 sm:p-14 text-center shadow-[0_4px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_40px_rgba(0,0,0,0.3)]">
+            <div className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/60 dark:-/10 rounded-3xl p-10 sm:p-14 text-center shadow-[0_4px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_40px_rgba(0,0,0,0.3)]">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-semibold mb-6">
                 <ShieldAlert className="w-3.5 h-3.5" /> Mulai Gratis, Tanpa Kartu Kredit
               </div>
@@ -98,7 +98,7 @@ export default function FiturPage() {
                 <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold px-8 py-3.5 rounded-full hover:bg-blue-700 transition-all duration-200 text-sm shadow-sm hover:-translate-y-0.5 active:scale-95 group">
                   Mulai Scan Gratis <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
-                <Link href="/cara-kerja" className="inline-flex items-center justify-center gap-2 bg-black/5 dark:bg-white/8 hover:bg-black/8 dark:hover:bg-white/12 border border-gray-200/60 dark:border-white/10 text-gray-700 dark:text-gray-300 font-semibold px-8 py-3.5 rounded-full transition-all duration-200 text-sm active:scale-95">
+                <Link href="/cara-kerja" className="inline-flex items-center justify-center gap-2 bg-black/5 dark:-/10 hover:-/10 dark:hover:bg-white/12 border border-gray-200/60 dark:border-white/10 text-gray-700 dark:text-gray-300 font-semibold px-8 py-3.5 rounded-full transition-all duration-200 text-sm active:scale-95">
                   Pelajari Cara Kerja
                 </Link>
               </div>

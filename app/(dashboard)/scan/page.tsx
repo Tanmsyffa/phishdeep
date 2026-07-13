@@ -137,7 +137,7 @@ function ScanForm() {
   return (
     <div className="max-w-6xl mx-auto">
       <header className="mb-6 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-500/15 flex items-center justify-center shrink-0">
+        <div className="w-10 h-10 rounded-full bg-blue-50 dark:-/20 flex items-center justify-center shrink-0">
           <Smartphone className="w-5 h-5 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
@@ -268,7 +268,7 @@ function ScanForm() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="bg-ios-card/80 dark:bg-white/10 backdrop-blur-xl p-5 rounded-3xl border border-gray-200/50 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
               <div className="flex items-center gap-3 mb-2.5">
-                <div className="w-8 h-8 bg-blue-50 dark:bg-blue-500/15 rounded-full flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 bg-blue-50 dark:-/20 rounded-full flex items-center justify-center shrink-0">
                   <ShieldAlert className="w-4 h-4 text-blue-500" />
                 </div>
                 <h3 className="font-bold text-gray-900 dark:text-white text-sm">Analisis Nyata</h3>
