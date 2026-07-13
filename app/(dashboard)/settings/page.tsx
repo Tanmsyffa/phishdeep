@@ -2,8 +2,9 @@
 
 import { useState, useTransition, useEffect, useRef } from "react";
 import { updateProfile } from "./actions";
+import { logout } from "@/app/auth-actions";
 import { createClient } from "@/lib/supabase/client";
-import { CheckCircle, XCircle, Loader2, User, ShieldCheck, Camera, Palette } from "lucide-react";
+import { CheckCircle, XCircle, Loader2, User, ShieldCheck, Camera, Palette, LogOut } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 
 function Toast({ message, type }: { message: string; type: "success" | "error" }) {
@@ -211,6 +212,25 @@ export default function SettingsPage() {
             <p className="text-xs text-gray-400 dark:text-gray-500">Sesuaikan tema antarmuka sesuai kenyamanan mata Anda.</p>
           </div>
           <ThemeToggle />
+        </div>
+      </div>
+
+      {/* Logout Card (Khusus mobile, karena desktop sudah ada di sidebar) */}
+      <div className="bg-red-50/50 dark:bg-red-500/5 backdrop-blur-xl rounded-3xl border border-red-100 dark:border-red-500/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden lg:hidden">
+        <div className="p-5 flex flex-row items-center justify-between gap-4">
+          <div>
+            <h2 className="font-bold text-red-600 dark:text-red-400 text-sm">Keluar Akun</h2>
+            <p className="text-[11px] text-red-500/80 dark:text-red-400/80 mt-0.5">Akhiri sesi Anda saat ini.</p>
+          </div>
+          <form action={logout}>
+            <button
+              type="submit"
+              className="inline-flex items-center gap-1.5 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 font-semibold py-2 px-4 rounded-full hover:bg-red-100 dark:hover:bg-red-500/20 border border-red-200 dark:border-red-500/20 transition-all text-[13px] shadow-sm active:scale-95"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              Keluar
+            </button>
+          </form>
         </div>
       </div>
     </div>
