@@ -39,7 +39,7 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="w-56 xl:w-60 bg-white/80 dark:bg-[#111111]/90 backdrop-blur-2xl text-gray-900 dark:text-gray-100 h-screen sticky top-0 flex flex-col border-r border-gray-100 dark:border-white/6 transition-colors"
+      className="w-56 xl:w-60 bg-white/80 dark:bg-[#111111]/90 backdrop-blur-2xl text-gray-900 dark:text-gray-100 h-screen sticky top-0 flex flex-col transition-colors"
       style={{ overflow: "hidden" }}
     >
       {/* Logo */}
@@ -96,12 +96,12 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom Section */}
-      <div className="px-3 pb-4 space-y-1 border-t border-gray-100 dark:border-white/6 pt-3">
+      <div className="px-3 pb-4 space-y-1 pt-2">
         {/* Free plan card */}
-        <div className="bg-blue-50/80 dark:bg-blue-500/[0.08] rounded-xl px-3 py-2.5 mb-2">
+        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl px-3 py-2.5 mb-2">
           <p className="text-[11px] font-bold text-blue-600 dark:text-blue-400 mb-0.5">100% Gratis</p>
-          <p className="text-[10px] text-gray-500 dark:text-gray-500 leading-snug">
-            Limit <span className="font-semibold text-gray-700 dark:text-gray-400">10 scan / hari</span>. Tanpa biaya.
+          <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-snug">
+            Limit <span className="font-semibold text-gray-700 dark:text-gray-300">10 scan / hari</span>. Tanpa biaya.
           </p>
         </div>
 
