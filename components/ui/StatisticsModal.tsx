@@ -132,8 +132,8 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
         bg-white dark:bg-[#1c1c1e]">
 
         {/* Drag handle (mobile) */}
-        <div className="sm:hidden flex justify-center pt-3 pb-1 shrink-0">
-          <div className="w-10 h-1 rounded-full bg-gray-300 dark:bg-white/20" />
+        <div className="sm:hidden flex justify-center pt-4 pb-2 shrink-0">
+          <div className="w-12 h-1.5 rounded-full bg-gray-200/80 dark:bg-white/[0.12]" />
         </div>
 
         {/* Header */}
@@ -149,10 +149,10 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all"
+            className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-800 dark:hover:text-white transition-colors"
             aria-label="Tutup"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4" strokeWidth={2.5} />
           </button>
         </div>
 
