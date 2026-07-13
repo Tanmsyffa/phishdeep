@@ -27,7 +27,7 @@ function DonutChart({ dangerous, suspicious, safe, total }: { dangerous: number;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     const dpr = window.devicePixelRatio || 1;
-    const size = 120;
+    const size = 100;
     canvas.width = size * dpr;
     canvas.height = size * dpr;
     canvas.style.width = `${size}px`;
@@ -63,7 +63,7 @@ function DonutChart({ dangerous, suspicious, safe, total }: { dangerous: number;
     ctx.globalCompositeOperation = "source-over";
   }, [dangerous, suspicious, safe, total]);
 
-  return <canvas ref={canvasRef} style={{ width: 120, height: 120 }} />;
+  return <canvas ref={canvasRef} style={{ width: 100, height: 100 }} />;
 }
 
 function CopyButton({ text }: { text: string }) {
@@ -161,38 +161,36 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
         <div className="p-4 sm:p-5 space-y-4 overflow-y-auto">
 
           {/* Top metrics row — 2x2 on mobile, 4-col on sm+ */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {metrics.map(m => (
-              <div key={m.label} className={`${m.bg} border ${m.border} rounded-2xl p-3 flex flex-col gap-1.5`}>
-                <m.icon className={`w-4 h-4 ${m.color}`} />
-                <p className={`text-2xl font-extrabold leading-none ${m.num}`}>{m.value}</p>
-                <p className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 leading-tight uppercase tracking-wider">{m.label}</p>
+              <div key={m.label} className={`${m.bg} border ${m.border} rounded-xl p-3 flex flex-col gap-1`}>
+                <m.icon className={`w-3.5 h-3.5 ${m.color}`} />
+                <p className={`text-xl font-bold leading-none mt-0.5 ${m.num}`}>{m.value}</p>
+                <p className="text-[9px] font-semibold text-gray-500 dark:text-gray-400 leading-tight uppercase tracking-wide">{m.label}</p>
               </div>
             ))}
           </div>
 
           {/* Chart + Stats row — stacked on mobile, 2-col on sm+ */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {/* Donut Chart */}
-            <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/8 rounded-2xl p-4 flex flex-col">
-              <p className="text-xs font-bold text-gray-700 dark:text-gray-300 mb-3">Distribusi Hasil</p>
+            {/* Donut Chart — vertical layout, chart on top / legend below */}
+            <div className="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/6 rounded-xl p-4 overflow-hidden">
+              <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">Distribusi Hasil</p>
               {total > 0 ? (
-                <div className="flex items-center gap-4">
-                  <div className="shrink-0">
-                    <DonutChart dangerous={dangerous} suspicious={suspicious} safe={safe} total={total} />
-                  </div>
-                  <div className="flex-1 space-y-2">
+                <div className="flex flex-col items-center gap-3">
+                  <DonutChart dangerous={dangerous} suspicious={suspicious} safe={safe} total={total} />
+                  <div className="w-full space-y-1.5">
                     {[
                       { label: "Berbahaya", val: dangerous, color: "bg-red-500" },
                       { label: "Mencurigakan", val: suspicious, color: "bg-amber-400" },
                       { label: "Aman", val: safe, color: "bg-emerald-500" },
                     ].map(item => (
-                      <div key={item.label} className="flex items-center justify-between text-xs">
-                        <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
-                          <span className={`w-2 h-2 rounded-full ${item.color} shrink-0`} />
+                      <div key={item.label} className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400">
+                          <span className={`w-1.5 h-1.5 rounded-full ${item.color} shrink-0`} />
                           {item.label}
                         </span>
-                        <span className="font-bold text-gray-800 dark:text-white">{item.val}</span>
+                        <span className="text-[11px] font-semibold text-gray-700 dark:text-gray-200">{item.val}</span>
                       </div>
                     ))}
                   </div>
@@ -205,19 +203,19 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
             {/* Right col */}
             <div className="space-y-3">
               {/* Jenis Target */}
-              <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/8 rounded-2xl p-4">
-                <p className="text-xs font-bold text-gray-700 dark:text-gray-300 mb-3">Jenis Target</p>
+              <div className="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/6 rounded-xl p-4">
+                <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">Jenis Target</p>
                 <div className="space-y-3">
                   {[
                     { label: "Link", val: linkCount, icon: <LinkIcon className="w-3 h-3 text-blue-500 dark:text-blue-400" />, bar: "bg-blue-500", track: "bg-blue-100 dark:bg-blue-500/15" },
                     { label: "APK", val: apkCount, icon: <Smartphone className="w-3 h-3 text-emerald-500 dark:text-emerald-400" />, bar: "bg-emerald-500", track: "bg-emerald-100 dark:bg-emerald-500/15" },
                   ].map(item => (
                     <div key={item.label}>
-                      <div className="flex justify-between text-[11px] mb-1.5">
-                        <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 font-medium">{item.icon}{item.label}</span>
-                        <span className="font-bold text-gray-800 dark:text-white">{item.val}</span>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <span className="flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400">{item.icon}{item.label}</span>
+                        <span className="text-[11px] font-semibold text-gray-700 dark:text-gray-200">{item.val}</span>
                       </div>
-                      <div className={`h-1.5 ${item.track} rounded-full overflow-hidden`}>
+                      <div className={`h-1 ${item.track} rounded-full overflow-hidden`}>
                         <div className={`h-full ${item.bar} rounded-full transition-all`} style={{ width: total > 0 ? `${(item.val / total) * 100}%` : "0%" }} />
                       </div>
                     </div>
@@ -226,17 +224,17 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
               </div>
 
               {/* Rata-rata Risiko */}
-              <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/8 rounded-2xl p-4">
-                <p className="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2">Rata-rata Risiko</p>
-                <div className="flex items-end gap-1 mb-2.5">
-                  <span className={`text-3xl font-extrabold leading-none ${riskColor}`}>{Math.round(avgRisk)}</span>
-                  <span className="text-gray-400 dark:text-gray-500 text-xs mb-0.5">/100</span>
+              <div className="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/6 rounded-xl p-4">
+                <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wide">Rata-rata Risiko</p>
+                <div className="flex items-baseline gap-1 mb-2">
+                  <span className={`text-2xl font-bold leading-none ${riskColor}`}>{Math.round(avgRisk)}</span>
+                  <span className="text-gray-400 dark:text-gray-500 text-[11px]">/100</span>
                 </div>
-                <div className={`h-2 ${riskTrack} rounded-full overflow-hidden mb-2`}>
+                <div className={`h-1 ${riskTrack} rounded-full overflow-hidden mb-2`}>
                   <div className={`h-full rounded-full ${riskBg} transition-all`} style={{ width: `${Math.min(avgRisk, 100)}%` }} />
                 </div>
-                <p className="text-[11px] text-gray-500 dark:text-gray-500">
-                  Level: <span className={`font-bold ${riskColor}`}>{riskLabel}</span>
+                <p className="text-[11px] text-gray-400 dark:text-gray-500">
+                  Level: <span className={`font-semibold ${riskColor}`}>{riskLabel}</span>
                 </p>
               </div>
             </div>
