@@ -158,7 +158,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
         </div>
 
         {/* Scrollable body */}
-        <div className="p-4 sm:p-5 space-y-4 overflow-y-auto">
+        <div className="p-4 sm:p-5 space-y-4 overflow-y-auto modal-scroll">
 
           {/* Top metrics row — 2x2 on mobile, 4-col on sm+ */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
