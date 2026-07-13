@@ -13,7 +13,7 @@ export default function Home() {
         {/* ── Hero ──────────────────────────────── */}
         <section className="pt-12 pb-20 overflow-hidden relative">
           {/* Subtle background orb — no neon */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-blue-500/5 dark:-/10 rounded-full blur-[100px] pointer-events-none -z-0" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-[100px] pointer-events-none -z-0" />
 
           <div className="container mx-auto px-5 max-w-5xl relative z-10">
             <div className="flex flex-col items-center text-center">
@@ -64,7 +64,7 @@ export default function Home() {
             {/* Browser Mockup */}
             <div className="mt-14 relative max-w-[680px] mx-auto">
               {/* Glow */}
-              <div className="absolute inset-0 -/10 dark:bg-blue-500/12 blur-[60px] rounded-3xl pointer-events-none" />
+              <div className="absolute inset-0 bg-blue-500/10 dark:bg-blue-500/12 blur-[60px] rounded-3xl pointer-events-none" />
 
               <div className="relative bg-ios-card dark:bg-ios-cardDark rounded-[28px] border border-gray-200/60 dark:border-white/10 shadow-[0_30px_80px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_80px_rgba(0,0,0,0.5)] overflow-hidden">
                 {/* Browser chrome */}
@@ -95,7 +95,7 @@ export default function Home() {
                   </div>
 
                   {/* Red detection box */}
-                  <div className="absolute inset-[16px] sm:inset-[20px] border-2 border-red-500 -/10 rounded-xl pointer-events-none">
+                  <div className="absolute inset-[16px] sm:inset-[20px] border-2 border-red-500 bg-red-500/10 rounded-xl pointer-events-none">
                     {/* Scan line animation (Composited) */}
                     <div
                       className="absolute left-0 right-0 h-full border-b-2 border-red-500/60"
@@ -127,9 +127,9 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
               {[
-                { icon: <LinkIcon className="w-5 h-5" />, color: 'text-blue-600 bg-blue-100 dark:-/20', title: 'Scan Link', desc: 'Deteksi phishing pada link beserta screenshot beranotasi, redirect chain, dan skor risiko lengkap.' },
-                { icon: <Smartphone className="w-5 h-5" />, color: 'text-emerald-600 bg-emerald-100 dark:-/20', title: 'Scan APK', desc: 'Analisis izin berbahaya, deteksi malware, dan overlay detection pada file APK Android.' },
-                { icon: <FileText className="w-5 h-5" />, color: 'text-rose-600 bg-rose-100 dark:-/20', title: 'Laporan Forensik', desc: 'Laporan PDF profesional siap digunakan sebagai bukti untuk laporan resmi ke pihak berwajib.' },
+                { icon: <LinkIcon className="w-5 h-5" />, color: 'text-blue-600 bg-blue-100 dark:bg-blue-500/20', title: 'Scan Link', desc: 'Deteksi phishing pada link beserta screenshot beranotasi, redirect chain, dan skor risiko lengkap.' },
+                { icon: <Smartphone className="w-5 h-5" />, color: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-500/20', title: 'Scan APK', desc: 'Analisis izin berbahaya, deteksi malware, dan overlay detection pada file APK Android.' },
+                { icon: <FileText className="w-5 h-5" />, color: 'text-rose-600 bg-rose-100 dark:bg-rose-500/20', title: 'Laporan Forensik', desc: 'Laporan PDF profesional siap digunakan sebagai bukti untuk laporan resmi ke pihak berwajib.' },
               ].map((f) => (
                 <div key={f.title} className="bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/5 p-6 rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col gap-4">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${f.color}`}>

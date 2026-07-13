@@ -37,7 +37,7 @@ export default function LoginPage({
         {/* Content */}
         <div className="relative z-10 p-10 pb-14 space-y-8">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full -/10 border border-white/10 text-gray-400 text-xs font-semibold tracking-wide mb-5">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-gray-400 text-xs font-semibold tracking-wide mb-5">
               <Lock className="w-3 h-3" /> Platform Analisis Forensik
             </div>
             <h1 className="text-4xl xl:text-[2.75rem] font-bold text-white leading-[1.2] tracking-tight">
@@ -55,8 +55,8 @@ export default function LoginPage({
               { icon: <Lock className="w-4 h-4 text-blue-400" />,      title: 'Privasi Terjamin',   desc: 'File dihapus otomatis setelah analisis.' },
               { icon: <ShieldAlert className="w-4 h-4 text-blue-400" />, title: 'Cerdas & Presisi',  desc: 'Didukung MITRE ATT&CK & Google Safe Browsing.' },
             ].map((f) => (
-              <div key={f.title} className="bg-white/5 border -/10 rounded-2xl p-4">
-                <div className="w-8 h-8 rounded-full -/10 flex items-center justify-center mb-3">
+              <div key={f.title} className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center mb-3">
                   {f.icon}
                 </div>
                 <p className="text-white font-semibold text-sm mb-1">{f.title}</p>

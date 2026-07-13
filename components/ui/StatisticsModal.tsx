@@ -95,7 +95,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
   const riskColor = avgRisk > 70 ? "text-red-500 dark:text-red-400" : avgRisk > 30 ? "text-amber-500 dark:text-amber-400" : "text-emerald-500 dark:text-emerald-400";
   const riskBg = avgRisk > 70 ? "bg-red-500" : avgRisk > 30 ? "bg-amber-400" : "bg-emerald-500";
   const riskLabel = avgRisk > 70 ? "Tinggi" : avgRisk > 30 ? "Sedang" : "Rendah";
-  const riskTrack = avgRisk > 70 ? "bg-red-100 dark:-/20" : avgRisk > 30 ? "bg-amber-100 dark:-/20" : "bg-emerald-100 dark:-/20";
+  const riskTrack = avgRisk > 70 ? "bg-red-100 dark:bg-red-500/20" : avgRisk > 30 ? "bg-amber-100 dark:bg-amber-400/20" : "bg-emerald-100 dark:bg-emerald-500/20";
 
   const groupedScans = scans.reduce((acc: any, scan: any) => {
     const key = scan.target_url;
@@ -116,10 +116,10 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
   ).slice(0, 15);
 
   const metrics = [
-    { label: "Total", value: total, icon: BarChart2, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:-/20", border: "border-blue-200 dark:border-blue-500/20", num: "text-blue-700 dark:text-white" },
-    { label: "Berbahaya", value: dangerous, icon: ShieldAlert, color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:-/20", border: "border-red-200 dark:border-red-500/20", num: "text-red-700 dark:text-white" },
-    { label: "Mencurigakan", value: suspicious, icon: AlertCircle, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:-/20", border: "border-amber-200 dark:border-amber-500/20", num: "text-amber-700 dark:text-white" },
-    { label: "Aman", value: safe, icon: CheckCircle, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:-/20", border: "border-emerald-200 dark:border-emerald-500/20", num: "text-emerald-700 dark:text-white" },
+    { label: "Total", value: total, icon: BarChart2, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/20", border: "border-blue-200 dark:border-blue-500/20", num: "text-blue-700 dark:text-white" },
+    { label: "Berbahaya", value: dangerous, icon: ShieldAlert, color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-500/20", border: "border-red-200 dark:border-red-500/20", num: "text-red-700 dark:text-white" },
+    { label: "Mencurigakan", value: suspicious, icon: AlertCircle, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/20", border: "border-amber-200 dark:border-amber-500/20", num: "text-amber-700 dark:text-white" },
+    { label: "Aman", value: safe, icon: CheckCircle, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-500/20", border: "border-emerald-200 dark:border-emerald-500/20", num: "text-emerald-700 dark:text-white" },
   ];
 
   return (
@@ -139,7 +139,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-blue-100 dark:-/20 border border-blue-200 dark:border-blue-500/20 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-500/20 border border-blue-200 dark:border-blue-500/20 flex items-center justify-center">
               <BarChart2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
@@ -149,7 +149,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:-/10 hover:bg-gray-200 dark:hover:-/20 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all"
             aria-label="Tutup"
           >
             <X className="w-4 h-4" />
@@ -206,8 +206,8 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
                 <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">Jenis Target</p>
                 <div className="space-y-3">
                   {[
-                    { label: "Link", val: linkCount, icon: <LinkIcon className="w-3 h-3 text-blue-500 dark:text-blue-400" />, bar: "bg-blue-500", track: "bg-blue-100 dark:-/20" },
-                    { label: "APK", val: apkCount, icon: <Smartphone className="w-3 h-3 text-emerald-500 dark:text-emerald-400" />, bar: "bg-emerald-500", track: "bg-emerald-100 dark:-/20" },
+                    { label: "Link", val: linkCount, icon: <LinkIcon className="w-3 h-3 text-blue-500 dark:text-blue-400" />, bar: "bg-blue-500", track: "bg-blue-100 dark:bg-blue-500/20" },
+                    { label: "APK", val: apkCount, icon: <Smartphone className="w-3 h-3 text-emerald-500 dark:text-emerald-400" />, bar: "bg-emerald-500", track: "bg-emerald-100 dark:bg-emerald-500/20" },
                   ].map(item => (
                     <div key={item.label}>
                       <div className="flex justify-between items-center mb-1.5">
@@ -254,14 +254,14 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
                   const isSusp = item.risk_score > 30 && item.risk_score <= 70;
                   const dotColor = isDanger ? "bg-red-500" : isSusp ? "bg-amber-400" : "bg-emerald-500";
                   const resultBadge = isDanger
-                    ? "bg-red-50 dark:-/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/20"
+                    ? "bg-red-50 dark:bg-red-500/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/20"
                     : isSusp
-                    ? "bg-amber-50 dark:-/20 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20"
-                    : "bg-emerald-50 dark:-/20 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20";
+                    ? "bg-amber-50 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20"
+                    : "bg-emerald-50 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20";
                   const resultText = isDanger ? "Berbahaya" : isSusp ? "Mencurigakan" : "Aman";
 
                   return (
-                    <div key={idx} className="p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04] hover:bg-gray-100 dark:hover:-/10 transition-colors">
+                    <div key={idx} className="p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04] hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 mb-1">
@@ -281,7 +281,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
                             {resultText}
                           </span>
                           {item.count > 1 && (
-                            <span className="inline-flex items-center justify-center px-2 py-0.5 bg-blue-50 dark:-/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 text-[10px] font-bold rounded-full">
+                            <span className="inline-flex items-center justify-center px-2 py-0.5 bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 text-[10px] font-bold rounded-full">
                               {item.count}×
                             </span>
                           )}

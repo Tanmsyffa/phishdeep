@@ -63,7 +63,7 @@ export default function Sidebar() {
               href={href}
               className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 active:scale-95 ${
                 active
-                  ? "bg-blue-600 text-white shadow-sm -/20"
+                  ? "bg-blue-600 text-white shadow-sm shadow-blue-600/20"
                   : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5"
               }`}
             >
@@ -83,7 +83,7 @@ export default function Sidebar() {
                 href={href}
                 className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 active:scale-95 ${
                   active
-                    ? "bg-blue-600 text-white shadow-sm -/20"
+                    ? "bg-blue-600 text-white shadow-sm shadow-blue-600/20"
                     : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5"
                 }`}
               >
@@ -109,7 +109,7 @@ export default function Sidebar() {
         <form action={logout}>
           <button
             type="submit"
-            className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:-/10 transition-all duration-150 active:scale-95"
+            className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all duration-150 active:scale-95"
           >
             <LogOut className="w-[15px] h-[15px] text-gray-400 shrink-0" />
             Keluar
