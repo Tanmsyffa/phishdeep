@@ -27,7 +27,7 @@ function DonutChart({ dangerous, suspicious, safe, total }: { dangerous: number;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     const dpr = window.devicePixelRatio || 1;
-    const size = 140;
+    const size = 120;
     canvas.width = size * dpr;
     canvas.height = size * dpr;
     canvas.style.width = `${size}px`;
@@ -40,7 +40,7 @@ function DonutChart({ dangerous, suspicious, safe, total }: { dangerous: number;
 
     if (total === 0) {
       ctx.beginPath(); ctx.arc(cx, cy, outerR, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255,255,255,0.08)"; ctx.fill();
+      ctx.fillStyle = "rgba(150,150,150,0.15)"; ctx.fill();
     } else {
       const segments = [
         { value: dangerous, color: "#ef4444" },
@@ -63,7 +63,7 @@ function DonutChart({ dangerous, suspicious, safe, total }: { dangerous: number;
     ctx.globalCompositeOperation = "source-over";
   }, [dangerous, suspicious, safe, total]);
 
-  return <canvas ref={canvasRef} style={{ width: 140, height: 140 }} />;
+  return <canvas ref={canvasRef} style={{ width: 120, height: 120 }} />;
 }
 
 function CopyButton({ text }: { text: string }) {
@@ -75,8 +75,8 @@ function CopyButton({ text }: { text: string }) {
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <button onClick={handleCopy} className="p-1 text-gray-400 hover:text-gray-200 transition-colors shrink-0" title="Salin ID">
-      {copied ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
+    <button onClick={handleCopy} className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-200 transition-colors shrink-0" title="Salin ID">
+      {copied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
     </button>
   );
 }
@@ -92,10 +92,10 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
   if (!isOpen) return null;
 
   const { total, dangerous, suspicious, safe, linkCount, apkCount, avgRisk } = stats;
-  const riskColor = avgRisk > 70 ? "text-red-400" : avgRisk > 30 ? "text-amber-400" : "text-emerald-400";
+  const riskColor = avgRisk > 70 ? "text-red-500 dark:text-red-400" : avgRisk > 30 ? "text-amber-500 dark:text-amber-400" : "text-emerald-500 dark:text-emerald-400";
   const riskBg = avgRisk > 70 ? "bg-red-500" : avgRisk > 30 ? "bg-amber-400" : "bg-emerald-500";
   const riskLabel = avgRisk > 70 ? "Tinggi" : avgRisk > 30 ? "Sedang" : "Rendah";
-  const riskTrack = avgRisk > 70 ? "bg-red-500/15" : avgRisk > 30 ? "bg-amber-400/15" : "bg-emerald-500/15";
+  const riskTrack = avgRisk > 70 ? "bg-red-100 dark:bg-red-500/15" : avgRisk > 30 ? "bg-amber-100 dark:bg-amber-400/15" : "bg-emerald-100 dark:bg-emerald-500/15";
 
   const groupedScans = scans.reduce((acc: any, scan: any) => {
     const key = scan.target_url;
@@ -116,40 +116,41 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
   ).slice(0, 15);
 
   const metrics = [
-    { label: "Total", value: total, icon: BarChart2, color: "text-blue-400", bg: "bg-blue-500/15", border: "border-blue-500/20" },
-    { label: "Berbahaya", value: dangerous, icon: ShieldAlert, color: "text-red-400", bg: "bg-red-500/15", border: "border-red-500/20" },
-    { label: "Mencurigakan", value: suspicious, icon: AlertCircle, color: "text-amber-400", bg: "bg-amber-500/15", border: "border-amber-500/20" },
-    { label: "Aman", value: safe, icon: CheckCircle, color: "text-emerald-400", bg: "bg-emerald-500/15", border: "border-emerald-500/20" },
+    { label: "Total", value: total, icon: BarChart2, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/15", border: "border-blue-200 dark:border-blue-500/20", num: "text-blue-700 dark:text-white" },
+    { label: "Berbahaya", value: dangerous, icon: ShieldAlert, color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-500/15", border: "border-red-200 dark:border-red-500/20", num: "text-red-700 dark:text-white" },
+    { label: "Mencurigakan", value: suspicious, icon: AlertCircle, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/15", border: "border-amber-200 dark:border-amber-500/20", num: "text-amber-700 dark:text-white" },
+    { label: "Aman", value: safe, icon: CheckCircle, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-500/15", border: "border-emerald-200 dark:border-emerald-500/20", num: "text-emerald-700 dark:text-white" },
   ];
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4" role="dialog" aria-modal="true">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60 dark:bg-black/70 backdrop-blur-md" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full sm:max-w-lg max-h-[92vh] sm:max-h-[88vh] flex flex-col rounded-t-[28px] sm:rounded-[28px] overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.5)]"
-        style={{ background: 'linear-gradient(145deg, rgba(28,28,30,0.98) 0%, rgba(22,22,26,0.99) 100%)', border: '1px solid rgba(255,255,255,0.08)' }}>
+      <div className="relative w-full sm:max-w-lg max-h-[92vh] sm:max-h-[88vh] flex flex-col rounded-t-[28px] sm:rounded-[28px] overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.25)] dark:shadow-[0_32px_80px_rgba(0,0,0,0.5)]
+        bg-white dark:bg-[#1c1c1e]
+        border border-gray-200 dark:border-white/8">
 
         {/* Drag handle (mobile) */}
         <div className="sm:hidden flex justify-center pt-3 pb-1 shrink-0">
-          <div className="w-10 h-1 rounded-full bg-white/20" />
+          <div className="w-10 h-1 rounded-full bg-gray-300 dark:bg-white/20" />
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/8 shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/8 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-blue-500/15 border border-blue-500/20 flex items-center justify-center">
-              <BarChart2 className="w-4 h-4 text-blue-400" />
+            <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-500/15 border border-blue-200 dark:border-blue-500/20 flex items-center justify-center">
+              <BarChart2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white">Statistik Komunitas</h2>
-              <p className="text-[11px] text-gray-400">Data scan dari semua pengguna PhishDeep</p>
+              <h2 className="text-sm font-bold text-gray-900 dark:text-white">Statistik Komunitas</h2>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400">Data scan dari semua pengguna PhishDeep</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-white/8 hover:bg-white/15 text-gray-400 hover:text-white transition-all"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/8 hover:bg-gray-200 dark:hover:bg-white/15 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all"
             aria-label="Tutup"
           >
             <X className="w-4 h-4" />
@@ -159,60 +160,62 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
         {/* Scrollable body */}
         <div className="p-4 sm:p-5 space-y-4 overflow-y-auto">
 
-          {/* Top metrics row */}
-          <div className="grid grid-cols-4 gap-2.5">
+          {/* Top metrics row — 2x2 on mobile, 4-col on sm+ */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             {metrics.map(m => (
-              <div key={m.label} className={`${m.bg} border ${m.border} rounded-2xl p-3 flex flex-col gap-2`}>
+              <div key={m.label} className={`${m.bg} border ${m.border} rounded-2xl p-3 flex flex-col gap-1.5`}>
                 <m.icon className={`w-4 h-4 ${m.color}`} />
-                <p className="text-2xl font-extrabold text-white leading-none">{m.value}</p>
-                <p className="text-[10px] font-semibold text-gray-400 leading-tight uppercase tracking-wider">{m.label}</p>
+                <p className={`text-2xl font-extrabold leading-none ${m.num}`}>{m.value}</p>
+                <p className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 leading-tight uppercase tracking-wider">{m.label}</p>
               </div>
             ))}
           </div>
 
-          {/* Chart + Stats row */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Chart + Stats row — stacked on mobile, 2-col on sm+ */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Donut Chart */}
-            <div className="bg-white/5 border border-white/8 rounded-2xl p-4 flex flex-col">
-              <p className="text-xs font-bold text-gray-300 mb-3">Distribusi Hasil</p>
+            <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/8 rounded-2xl p-4 flex flex-col">
+              <p className="text-xs font-bold text-gray-700 dark:text-gray-300 mb-3">Distribusi Hasil</p>
               {total > 0 ? (
-                <div className="flex flex-col items-center gap-3 flex-1">
-                  <DonutChart dangerous={dangerous} suspicious={suspicious} safe={safe} total={total} />
-                  <div className="w-full space-y-1.5">
+                <div className="flex items-center gap-4">
+                  <div className="shrink-0">
+                    <DonutChart dangerous={dangerous} suspicious={suspicious} safe={safe} total={total} />
+                  </div>
+                  <div className="flex-1 space-y-2">
                     {[
                       { label: "Berbahaya", val: dangerous, color: "bg-red-500" },
                       { label: "Mencurigakan", val: suspicious, color: "bg-amber-400" },
                       { label: "Aman", val: safe, color: "bg-emerald-500" },
                     ].map(item => (
-                      <div key={item.label} className="flex items-center justify-between text-[11px]">
-                        <span className="flex items-center gap-1.5 text-gray-400">
+                      <div key={item.label} className="flex items-center justify-between text-xs">
+                        <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
                           <span className={`w-2 h-2 rounded-full ${item.color} shrink-0`} />
                           {item.label}
                         </span>
-                        <span className="font-bold text-white">{item.val}</span>
+                        <span className="font-bold text-gray-800 dark:text-white">{item.val}</span>
                       </div>
                     ))}
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-gray-500 text-center py-8">Belum ada data</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-8">Belum ada data</p>
               )}
             </div>
 
             {/* Right col */}
             <div className="space-y-3">
               {/* Jenis Target */}
-              <div className="bg-white/5 border border-white/8 rounded-2xl p-4">
-                <p className="text-xs font-bold text-gray-300 mb-3">Jenis Target</p>
+              <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/8 rounded-2xl p-4">
+                <p className="text-xs font-bold text-gray-700 dark:text-gray-300 mb-3">Jenis Target</p>
                 <div className="space-y-3">
                   {[
-                    { label: "Link", val: linkCount, icon: <LinkIcon className="w-3 h-3 text-blue-400" />, bar: "bg-blue-500", track: "bg-blue-500/15" },
-                    { label: "APK", val: apkCount, icon: <Smartphone className="w-3 h-3 text-emerald-400" />, bar: "bg-emerald-500", track: "bg-emerald-500/15" },
+                    { label: "Link", val: linkCount, icon: <LinkIcon className="w-3 h-3 text-blue-500 dark:text-blue-400" />, bar: "bg-blue-500", track: "bg-blue-100 dark:bg-blue-500/15" },
+                    { label: "APK", val: apkCount, icon: <Smartphone className="w-3 h-3 text-emerald-500 dark:text-emerald-400" />, bar: "bg-emerald-500", track: "bg-emerald-100 dark:bg-emerald-500/15" },
                   ].map(item => (
                     <div key={item.label}>
                       <div className="flex justify-between text-[11px] mb-1.5">
-                        <span className="flex items-center gap-1.5 text-gray-400 font-medium">{item.icon}{item.label}</span>
-                        <span className="font-bold text-white">{item.val}</span>
+                        <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 font-medium">{item.icon}{item.label}</span>
+                        <span className="font-bold text-gray-800 dark:text-white">{item.val}</span>
                       </div>
                       <div className={`h-1.5 ${item.track} rounded-full overflow-hidden`}>
                         <div className={`h-full ${item.bar} rounded-full transition-all`} style={{ width: total > 0 ? `${(item.val / total) * 100}%` : "0%" }} />
@@ -223,16 +226,16 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
               </div>
 
               {/* Rata-rata Risiko */}
-              <div className="bg-white/5 border border-white/8 rounded-2xl p-4">
-                <p className="text-xs font-bold text-gray-300 mb-2">Rata-rata Risiko</p>
+              <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/8 rounded-2xl p-4">
+                <p className="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2">Rata-rata Risiko</p>
                 <div className="flex items-end gap-1 mb-2.5">
                   <span className={`text-3xl font-extrabold leading-none ${riskColor}`}>{Math.round(avgRisk)}</span>
-                  <span className="text-gray-500 text-xs mb-0.5">/100</span>
+                  <span className="text-gray-400 dark:text-gray-500 text-xs mb-0.5">/100</span>
                 </div>
                 <div className={`h-2 ${riskTrack} rounded-full overflow-hidden mb-2`}>
                   <div className={`h-full rounded-full ${riskBg} transition-all`} style={{ width: `${Math.min(avgRisk, 100)}%` }} />
                 </div>
-                <p className="text-[11px] text-gray-500">
+                <p className="text-[11px] text-gray-500 dark:text-gray-500">
                   Level: <span className={`font-bold ${riskColor}`}>{riskLabel}</span>
                 </p>
               </div>
@@ -240,13 +243,13 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
           </div>
 
           {/* Riwayat Scan Komunitas */}
-          <div className="border-t border-white/8 pt-4">
+          <div className="border-t border-gray-100 dark:border-white/8 pt-4">
             <div className="flex items-center gap-2 mb-3">
-              <Users className="w-4 h-4 text-gray-400" />
-              <h3 className="text-sm font-bold text-white">Riwayat Terakhir Komunitas</h3>
+              <Users className="w-4 h-4 text-gray-400 dark:text-gray-400" />
+              <h3 className="text-sm font-bold text-gray-800 dark:text-white">Riwayat Terakhir Komunitas</h3>
             </div>
             {historyList.length === 0 ? (
-              <p className="text-xs text-gray-500 text-center py-6">Belum ada riwayat scan.</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-6">Belum ada riwayat scan.</p>
             ) : (
               <div className="space-y-2">
                 {historyList.map((item: any, idx: number) => {
@@ -254,25 +257,25 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
                   const isSusp = item.risk_score > 30 && item.risk_score <= 70;
                   const dotColor = isDanger ? "bg-red-500" : isSusp ? "bg-amber-400" : "bg-emerald-500";
                   const resultBadge = isDanger
-                    ? "bg-red-500/15 text-red-400 border-red-500/20"
+                    ? "bg-red-50 dark:bg-red-500/15 text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/20"
                     : isSusp
-                    ? "bg-amber-500/15 text-amber-400 border-amber-500/20"
-                    : "bg-emerald-500/15 text-emerald-400 border-emerald-500/20";
+                    ? "bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20"
+                    : "bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20";
                   const resultText = isDanger ? "Berbahaya" : isSusp ? "Mencurigakan" : "Aman";
 
                   return (
-                    <div key={idx} className="p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 transition-colors">
+                    <div key={idx} className="p-3 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/8 hover:bg-gray-100 dark:hover:bg-white/8 transition-colors">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className={`w-2 h-2 rounded-full shrink-0 ${dotColor}`} />
-                            <p className="text-xs font-semibold text-white truncate">{item.target_url}</p>
+                            <p className="text-xs font-semibold text-gray-800 dark:text-white truncate">{item.target_url}</p>
                           </div>
-                          <p className="text-[10px] text-gray-500 truncate ml-3.5">
-                            Oleh <span className="font-medium text-gray-300">{item.user_name || 'Seorang pengguna'}</span>
+                          <p className="text-[10px] text-gray-500 dark:text-gray-500 truncate ml-3.5">
+                            Oleh <span className="font-medium text-gray-600 dark:text-gray-300">{item.user_name || 'Seorang pengguna'}</span>
                           </p>
                           <div className="flex items-center gap-1 mt-1.5 ml-3.5">
-                            <span className="text-[9px] font-mono text-gray-600 truncate max-w-[160px]">ID: {item.id}</span>
+                            <span className="text-[9px] font-mono text-gray-400 dark:text-gray-600 truncate max-w-[140px]">ID: {item.id}</span>
                             <CopyButton text={item.id} />
                           </div>
                         </div>
@@ -281,7 +284,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
                             {resultText}
                           </span>
                           {item.count > 1 && (
-                            <span className="inline-flex items-center justify-center px-2 py-0.5 bg-blue-500/15 text-blue-400 border border-blue-500/20 text-[10px] font-bold rounded-full">
+                            <span className="inline-flex items-center justify-center px-2 py-0.5 bg-blue-50 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 text-[10px] font-bold rounded-full">
                               {item.count}×
                             </span>
                           )}

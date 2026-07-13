@@ -8,10 +8,10 @@ export default function LoginPage({
   searchParams: { message: string }
 }) {
   return (
-    <div className="min-h-screen flex bg-ios-bg dark:bg-ios-bgDark pb-24 lg:pb-0">
+    <div className="min-h-screen flex bg-white dark:bg-ios-bgDark pb-24 lg:pb-0">
 
       {/* ── Left Panel (Desktop) ─────────────────── */}
-      <div className="hidden lg:flex w-[45%] xl:w-1/2 bg-[#0A0A0A] relative overflow-hidden flex-col justify-between shrink-0">
+      <div className="hidden lg:flex w-[45%] xl:w-1/2 relative overflow-hidden flex-col justify-between shrink-0 bg-gray-950 dark:bg-[#0A0A0A]">
 
         {/* Subtle dot grid */}
         <div
@@ -19,10 +19,10 @@ export default function LoginPage({
           style={{ backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)', backgroundSize: '28px 28px' }}
         />
         {/* Gradient vignette */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0A0A0A]/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70" />
 
-        {/* Orb — subtle, no neon */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] rounded-full bg-white/5 blur-[80px] pointer-events-none" />
+        {/* Orb */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] rounded-full bg-blue-600/10 blur-[100px] pointer-events-none" />
 
         {/* Logo */}
         <div className="relative z-10 p-10">
@@ -68,7 +68,12 @@ export default function LoginPage({
       </div>
 
       {/* ── Right Panel — Form ───────────────────── */}
-      <div className="flex-1 flex items-center justify-center p-6 py-12 sm:p-10 relative min-h-screen lg:min-h-0">
+      <div className="flex-1 flex items-center justify-center p-6 py-12 sm:p-10 relative min-h-screen lg:min-h-0 bg-gray-50 dark:bg-[#111111]">
+
+        {/* Subtle light mode background pattern */}
+        <div className="absolute inset-0 dark:hidden opacity-40"
+          style={{ backgroundImage: 'radial-gradient(circle at 80% 20%, rgba(59,130,246,0.08) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(99,102,241,0.06) 0%, transparent 50%)' }}
+        />
 
         {/* Mobile back button */}
         <div className="absolute top-5 left-5 lg:hidden">
@@ -77,7 +82,7 @@ export default function LoginPage({
           </Link>
         </div>
 
-        <div className="w-full max-w-[380px] animate-in fade-in slide-in-from-bottom-6 duration-500">
+        <div className="w-full max-w-[380px] animate-in fade-in slide-in-from-bottom-6 duration-500 relative z-10">
 
           {/* Mobile logo */}
           <div className="lg:hidden flex justify-center mb-8">
@@ -106,7 +111,7 @@ export default function LoginPage({
           <form action={signInWithGoogle}>
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-3 bg-white dark:bg-ios-cardDark border border-gray-200/80 dark:border-white/10 text-gray-800 dark:text-gray-200 font-semibold py-3.5 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 shadow-sm transition-all duration-200 active:scale-[0.98] text-sm"
+              className="w-full flex items-center justify-center gap-3 bg-white dark:bg-ios-cardDark border border-gray-200 dark:border-white/10 text-gray-800 dark:text-gray-200 font-semibold py-3.5 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98] text-sm"
             >
               <svg className="w-5 h-5 shrink-0" viewBox="0 0 48 48">
                 <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -135,7 +140,7 @@ export default function LoginPage({
           </p>
 
           {/* Switch to register */}
-          <div className="text-center text-sm text-gray-500 dark:text-gray-400 bg-ios-card/80 dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-2xl py-4 border border-gray-200/50 dark:border-white/5">
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-ios-cardDark/80 backdrop-blur-xl rounded-2xl py-4 border border-gray-200 dark:border-white/5 shadow-sm">
             Belum punya akun?{' '}
             <Link href="/register" className="text-blue-600 dark:text-blue-400 font-bold hover:underline">
               Daftar Gratis
