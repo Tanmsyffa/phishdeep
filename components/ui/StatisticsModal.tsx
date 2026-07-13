@@ -149,7 +149,7 @@ export default function StatisticsModal({ isOpen, onClose, stats, scans = [] }: 
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-800 dark:hover:text-white transition-colors"
+            className="hidden sm:flex w-8 h-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-800 dark:hover:text-white transition-colors"
             aria-label="Tutup"
           >
             <X className="w-4 h-4" strokeWidth={2.5} />
